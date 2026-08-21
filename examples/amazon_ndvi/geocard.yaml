@@ -1,0 +1,55 @@
+# GeoCard for the Amazon NDVI demo asset.
+#
+# IMPORTANT: this card describes SYNTHETIC demo imagery generated
+# procedurally. It is NOT real Sentinel-2 or Landsat data. The synthetic
+# nature is recorded in provenance and in every output raster's metadata.
+geocard_version: "0.1"
+id: sentinel-2-amazon
+type: data
+name: Sentinel-2 Amazon
+description: >
+  Synthetic Sentinel-2-like red/NIR imagery covering the Amazon rainforest
+  for the GeoNexus MVP demo. SYNTHETIC DATA - not real satellite imagery.
+tags:
+  - synthetic
+  - sentinel-2
+  - amazon
+  - demo
+spatial:
+  bbox: [-73.9, -15.0, -44.0, 5.0]
+  crs: "EPSG:4326"
+  resolution: 10
+temporal:
+  start: "2015-01-01"
+  end: "2025-12-31"
+  interval: "P5D"
+bands:
+  - name: B04
+    dtype: uint16
+    units: dn
+    description: Red band (synthetic)
+  - name: B08
+    dtype: uint16
+    units: dn
+    description: Near-infrared band (synthetic)
+capabilities:
+  - ndvi
+  - change-detection
+access:
+  protocol: geomcp
+  endpoint: "http://127.0.0.1:8787"
+  auth: none
+  format: GeoTIFF
+provenance:
+  provider: "GeoNexus Demo (synthetic)"
+  source: "Procedurally generated for the GeoNexus MVP demo"
+  lineage: "SYNTHETIC - not real Sentinel-2 data"
+license: "CC-BY-4.0"
+compliance:
+  sovereignty: "BR"
+  restrictions:
+    - demo-only
+  sensitivity: public
+trust:
+  verified: false
+  score: 0.1

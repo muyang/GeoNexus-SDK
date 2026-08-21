@@ -1,0 +1,62 @@
+"""Tests for the `geonexus` CLI commands."""
+
+from __future__ import annotations
+
+import json
+
+from geonexus import __version__
+from geonexus.cli import main
+
+
+def test_cli_version(capsys) -> None:
+    assert main(["version"]) == 0
+    out = capsys.readouterr().out
+    assert out.strip() == f"geonexus {__version__}"
+
+
+def test_cli_card_validate_ok(capsys) -> None:
+    path = "examples/amazon_ndvi/geocard.yaml"
+    assert main(["card", "validate", path]) == 0
+    assert "OK:" in capsys.readouterr().out
+
+
+def test_cli_card_validate_invalid(tmp_path, capsys) -> None:
+    bad = tmp_path / "bad.yaml"
+    bad.write_text("geocard_version: '0.1'\nid: x\ntype: data\nname: X\n", encoding="utf-8")
+    assert main(["card", "validate", str(bad)]) == 1
+    assert "INVALID" in capsys.readouterr().out
+
+
+def test_cli_card_inspect(tmp_path, capsys) -> None:
+    card = tmp_path / "card.json"
+    card.write_text(
+        json.dumps(
+            {
+                "geocard_version": "0.1",
+                "id": "inspect-me",
+                "type": "data",
+                "name": "Inspect",
+                "description": "d",
+            }
+        ),
+        encoding="utf-8",
+    )
+    assert main(["card", "inspect", str(card)]) == 0
+    out = capsys.readouterr().out
+    assert '"id": "inspect-me"' in out
+
+
+def test_cli_init(tmp_path, capsys) -> None:
+    project = tmp_path / "my-project"
+    assert main(["init", str(project)]) == 0
+    assert (project / "geocard.yaml").exists()
+    assert (project / "README.md").exists()
+    assert "Initialized" in capsys.readouterr().out
+
+
+def test_cli_unknown_command(capsys) -> None:
+    import pytest
+
+    with pytest.raises(SystemExit) as exc_info:
+        main(["not-a-command"])
+    assert exc_info.value.code == 2

@@ -1,0 +1,68 @@
+# Changelog
+
+All notable changes to GeoNexus (the reference stack) are documented here.
+Format follows [Keep a Changelog](https://keepachangelog.com/) and the
+project uses Semantic Versioning.
+
+## [1.0.0] - 2026-08-21
+
+### Added
+
+- **GeoCard 1.0** — schema `geocard_version` now accepts both `0.1` and
+  `1.0` (legacy cards stay valid); the SDK emits `1.0` by default.
+- **GeoMCP 1.0** — protocol version advertised as `1.0.0`; method set and
+  error code registry frozen for the 1.x line.
+- **Conformance suites** (`tests/conformance/`): GeoCard validation vectors
+  (6 valid / 14 invalid cases) and GeoMCP JSON-RPC vectors (11 request
+  cases + 4 invalid envelopes), run independently of the SDK.
+- **STAC write side** — `geocard_to_stac_item` / `geocard_to_stac_catalog` /
+  `save_stac_item`, CLI `geonexus card export-stac`, `geonexus:…` extension
+  fields, `demo stac-write` (`docs/STAC.md`).
+- **GGIHS dashboard** — `GET /` single-file HTML dashboard on the GGIHS
+  service (`/summary`, `/nodes`, `/catalog` aggregation).
+- **Registry federation** — pull-based peer sync (`RegistryFederator`,
+  `registry start --peer`, `registry sync`, `POST /sync`).
+- **GeoNode-to-GeoNode federation** — node-level delegation with
+  `__geonode_delegate` loop guard, health-aware routing (`GET /nodes`,
+  `--health-probe`), `demo federation-deep`.
+- **Governance docs** — `docs/API_STABILITY.md` (frozen public API +
+  deprecation policy), `docs/RELEASE.md` (release process), this changelog.
+
+### Changed
+
+- Package, GeoCard schema and GeoMCP protocol versioned to 1.0.0.
+- `docs/GEOCARD.md` and `docs/GEOMCP.md` promoted to formal specifications
+  (versioning, extension policy, per-method schemas, error code registry,
+  transport bindings, conformance statements).
+
+### Fixed
+
+- IOField `required` no longer emitted when `False` (schema-valid output for
+  `outputs` sections).
+- Registry `extent.spatial.crs` handling for string-vs-list CRS (pygeoapi
+  interop); job results discovery via qualified OGC `rel` URIs.
+
+### Released
+
+- **v1.0.0 published to PyPI as `geonexus-sdk`** (sdist + wheel; the bare
+  `geonexus` name is occupied by an unrelated package, the import package
+  stays `geonexus`). Rehearsed on Test PyPI (`geonexus==1.0.0`) and verified
+  from a clean venv: `pip install geonexus-sdk` → `import geonexus` →
+  `geonexus version` reports 1.0.0. See `docs/RELEASE.md`.
+
+## [0.1.0] - 2026-08-19
+
+### Added
+
+- GeoCard schema 0.1 + Python SDK (model/builder/loader/validator,
+  ContractValidator).
+- GeoMCP 0.1.0 — JSON-RPC 2.0 protocol, FastAPI server, httpx client.
+- Local GeoNode (GeoCard registry, Skill registry, local runtime),
+  GeoSkill abstraction, `geonexus` CLI.
+- Amazon NDVI demo (synthetic data), real Sentinel-2 STAC demo,
+  federated/pipeline/agent/OGC demos.
+- Shared GeoCard Registry with persistence + API-key auth; GeoAgent planner
+  (DAG pipelines, LLM goal translation); official MCP SDK bridge
+  (stdio + Streamable HTTP); STAC/OGC API adapters (read).
+- CI (pytest + ruff + mypy + build on 3.11/3.12), wheel packaging with the
+  GeoCard schema shipped as package data.
