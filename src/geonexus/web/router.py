@@ -235,6 +235,14 @@ def create_web_router(config: WebConfig) -> APIRouter:
             # at the registry (reduces hallucinated skill names).
             goal = plan_from_text_with_registry(body.text, registry_url, config=llm_config)
             plan = GeoAgentPlanner(registry_url).plan(goal)
+            # Node credential for pushdown execution (BFF holds node keys).
+            node_key: str | None = None
+            if config.node_api_keys:
+                node_key = (
+                    config.node_api_keys.get(config.default_node_url or "")
+                    if config.default_node_url
+                    else None
+                ) or next(iter(config.node_api_keys.values()), None)
             evaluation: dict[str, Any] | None = None
             if body.reflective:
                 with PlanReflector(config=llm_config) as reflector:
@@ -242,13 +250,14 @@ def create_web_router(config: WebConfig) -> APIRouter:
                         registry_url,
                         reflector,
                         max_reflections=body.max_reflections or 3,
+                        api_key=node_key,
                     ).run(plan)
                     # Self-assessment of the finished plan.
                     evaluation = evaluate_plan(plan, reflector=reflector)
             else:
                 from ..agent.planner import PlanExecutor
 
-                with PlanExecutor(registry_url) as executor:
+                with PlanExecutor(registry_url, api_key=node_key) as executor:
                     plan = executor.run(plan)
             return {
                 "goal": goal.model_dump(mode="json"),

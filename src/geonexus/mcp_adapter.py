@@ -104,7 +104,7 @@ def run_stdio(server: GeoMCPServer) -> None:
 def create_streamable_http_app(server: GeoMCPServer) -> Any:
     """Build the MCP Streamable HTTP app (for serving under uvicorn)."""
     mcp = create_mcp_server(server)
-    return mcp.streamable_http_app
+    return mcp.streamable_http_app()
 
 
 def run_http(

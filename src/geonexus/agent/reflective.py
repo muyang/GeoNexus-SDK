@@ -213,8 +213,9 @@ class ReflectiveExecutor(PlanExecutor):
         max_reflections: int = DEFAULT_MAX_REFLECTIONS,
         timeout: float = 30.0,
         available_skills: list[str] | None = None,
+        api_key: str | None = None,
     ) -> None:
-        super().__init__(registry_url, timeout=timeout)
+        super().__init__(registry_url, timeout=timeout, api_key=api_key)
         self.reflector = reflector
         self.max_reflections = max_reflections
         self._available_skills = available_skills

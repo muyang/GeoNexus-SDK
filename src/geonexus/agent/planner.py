@@ -361,8 +361,21 @@ class PlanExecutor:
     templates in step params are resolved from earlier steps' results.
     """
 
-    def __init__(self, registry_url: str, timeout: float = 30.0) -> None:
-        self.client = FederatedGeoMCPClient(registry_url, timeout=timeout)
+    def __init__(
+        self,
+        registry_url: str,
+        timeout: float = 30.0,
+        api_key: str | None = None,
+    ) -> None:
+        """Create an executor.
+
+        Args:
+            registry_url: Base URL of the shared GeoCard Registry.
+            timeout: Request timeout for node calls.
+            api_key: Optional ``X-API-Key`` forwarded on node calls — needed
+                when nodes enforce authentication (server-side / BFF usage).
+        """
+        self.client = FederatedGeoMCPClient(registry_url, timeout=timeout, api_key=api_key)
 
     def run(self, plan: Plan) -> Plan:
         by_id = {s.step_id: s for s in plan.steps}
@@ -413,10 +426,15 @@ class PlanExecutor:
         self.close()
 
 
-def run_goal(goal: Goal, registry_url: str, timeout: float = 30.0) -> Plan:
+def run_goal(
+    goal: Goal,
+    registry_url: str,
+    timeout: float = 30.0,
+    api_key: str | None = None,
+) -> Plan:
     """Plan a goal (capability-based or declarative pipeline) and execute it,
-    returning the completed plan."""
+    returning the completed plan. ``api_key`` is forwarded on node calls."""
     planner = GeoAgentPlanner(registry_url, timeout=timeout)
     plan = planner.plan_pipeline(goal) if goal.steps else planner.plan(goal)
-    with PlanExecutor(registry_url, timeout=timeout) as executor:
+    with PlanExecutor(registry_url, timeout=timeout, api_key=api_key) as executor:
         return executor.run(plan)

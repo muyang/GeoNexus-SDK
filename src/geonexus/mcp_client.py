@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
@@ -174,6 +175,18 @@ class MCPToolClient:
     _session_factory: SessionFactory = field(repr=False)
     timeout: float = 120.0
 
+    # Context-manager support: the client is a lightweight handle (connections
+    # are opened per call), so __enter__/__exit__ are effectively no-ops kept
+    # for API symmetry::
+
+    #     with MCPToolClient.stdio("npx", "-y", "pkg") as mcp:
+    #         mcp.list_tools()
+    def __enter__(self) -> MCPToolClient:
+        return self
+
+    def __exit__(self, *exc: Any) -> None:
+        return None
+
     # ------------------------------------------------------------------ #
     # Factories
     # ------------------------------------------------------------------ #
@@ -294,10 +307,46 @@ def _tool_result_to_dict(result: Any) -> dict[str, Any]:
     return {"text": "\n".join(texts)}
 
 
+class _LoopThread:
+    """Dedicated background event loop for MCP calls.
+
+    MCP SDK clients bind to the event loop that creates them, and skill
+    handlers run on arbitrary worker threads (FastAPI thread pools, plan
+    workers) that may already have — or see — a running loop, where
+    ``asyncio.run`` / ``run_until_complete`` are rejected (Python 3.12+).
+    Routing every call through one dedicated loop with
+    ``run_coroutine_threadsafe`` sidesteps all of that and is thread-safe.
+    """
+
+    def __init__(self) -> None:
+        self.loop = asyncio.new_event_loop()
+        self._thread = threading.Thread(target=self._run, daemon=True, name="mcp-loop")
+        self._thread.start()
+
+    def _run(self) -> None:
+        asyncio.set_event_loop(self.loop)
+        self.loop.run_forever()
+
+    def run(self, coro: Any, timeout: float) -> Any:
+        future = asyncio.run_coroutine_threadsafe(coro, self.loop)
+        return future.result(timeout=timeout)
+
+
+_LOOP = _LoopThread()
+
+
 def _run_async(coro: Any, timeout: float) -> Any:
-    """Run an async coroutine to completion (sync bridge for handlers)."""
+    """Run an async coroutine to completion (sync bridge for handlers).
+
+    All MCP work is executed on the module's dedicated background loop, so
+    handlers work from any thread — including FastAPI thread-pool contexts
+    where a running loop is visible and ``asyncio.run`` would raise.
+    """
+    async def _guarded() -> Any:
+        return await asyncio.wait_for(coro, timeout=timeout)
+
     try:
-        return asyncio.run(asyncio.wait_for(coro, timeout=timeout))
+        return _LOOP.run(_guarded(), timeout=timeout + 1)
     except asyncio.TimeoutError as exc:
         raise MCPClientError(f"MCP call timed out after {timeout}s") from exc
     except MCPClientError:
