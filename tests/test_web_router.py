@@ -248,6 +248,164 @@ class TestGoals:
         assert state["status"] == "failed"
         assert "GEONEXUS_LLM_API_KEY" in (state["error"] or "")
 
+    def test_goals_reflective_flow(
+        self, client: TestClient, token: str, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """reflective=True (default) runs the reflective executor and attaches
+        an evaluation to the task result."""
+        from geonexus.agent import Goal as AgentGoal
+        from geonexus.agent import Plan, PlanStep
+
+        class _Cfg:
+            def is_configured(self) -> bool:
+                return True
+
+            base_url = "https://example.test/v1"
+            api_key = "k"
+            model = "m"
+
+        monkeypatch.setattr("geonexus.web.router.LLMConfig.from_env", staticmethod(lambda: _Cfg()))
+
+        class _Reg:
+            def __enter__(self) -> _Reg:
+                return self
+
+            def __exit__(self, *exc: Any) -> None:
+                return None
+
+            def list_skills(self) -> list[dict]:
+                return [{"skill": {"name": "ndvi", "capabilities": ["ndvi"]}, "node_url": "http://n:8787"}]
+
+        monkeypatch.setattr("geonexus.registry.RegistryClient", lambda *a, **k: _Reg())
+
+        def _fake_plan(text, registry_url, config=None, **kw):
+            return AgentGoal(
+                capability="ndvi",
+                steps=[{"skill": "ndvi", "label": "compute"}],
+            )
+
+        monkeypatch.setattr("geonexus.web.router.plan_from_text_with_registry", _fake_plan)
+
+        def _fake_planner(registry_url, **kw):
+            class _P:
+                def plan(self, goal: AgentGoal) -> Plan:
+                    plan = Plan(goal=goal.model_dump(exclude_none=True), registry_url=registry_url)
+                    plan.steps.append(
+                        PlanStep(
+                            step_id=1,
+                            kind="skill-only",
+                            skill="ndvi",
+                            node_url="http://n:8787",
+                            geocards=[],
+                            spatial=None,
+                            temporal=None,
+                            params={},
+                            description="compute",
+                        )
+                    )
+                    return plan
+
+            return _P()
+
+        monkeypatch.setattr("geonexus.web.router.GeoAgentPlanner", _fake_planner)
+
+        class _FakeExecutor:
+            def __init__(self, *a: Any, **kw: Any) -> None:
+                pass
+
+            def run(self, plan: Plan) -> Plan:
+                for step in plan.steps:
+                    step.status = "done"
+                    step.result = {"outputs": {"ndvi_raster": "/tmp/x.tif"}}
+                return plan
+
+        monkeypatch.setattr("geonexus.web.router.ReflectiveExecutor", _FakeExecutor)
+        monkeypatch.setattr(
+            "geonexus.web.router.evaluate_plan",
+            lambda plan, reflector=None: {"satisfied": True, "score": 95, "notes": "ok"},
+        )
+
+        resp = client.post("/api/goals", headers=_auth(token), json={"text": "ndvi please"})
+        tid = resp.json()["task_id"]
+        for _ in range(100):
+            state = client.get(f"/api/tasks/{tid}", headers=_auth(token)).json()
+            if state["status"] in ("done", "failed"):
+                break
+            time.sleep(0.05)
+        assert state["status"] == "done"
+        assert state["result"]["reflective"] is True
+        assert state["result"]["evaluation"] == {"satisfied": True, "score": 95, "notes": "ok"}
+        assert state["result"]["plan"]["steps"][0]["status"] == "done"
+
+    def test_goals_non_reflective_flag(
+        self, client: TestClient, token: str, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """reflective=False uses the plain PlanExecutor path."""
+        from geonexus.agent import Goal as AgentGoal
+        from geonexus.agent import Plan
+
+        class _Cfg:
+            def is_configured(self) -> bool:
+                return True
+
+            base_url = "https://example.test/v1"
+            api_key = "k"
+            model = "m"
+
+        monkeypatch.setattr("geonexus.web.router.LLMConfig.from_env", staticmethod(lambda: _Cfg()))
+
+        class _Reg:
+            def __enter__(self) -> _Reg:
+                return self
+
+            def __exit__(self, *exc: Any) -> None:
+                return None
+
+            def list_skills(self) -> list[dict]:
+                return [{"skill": {"name": "ndvi", "capabilities": ["ndvi"]}, "node_url": "http://n:8787"}]
+
+        monkeypatch.setattr("geonexus.registry.RegistryClient", lambda *a, **k: _Reg())
+
+        def _fake_plan(text, registry_url, config=None, **kw):
+            return AgentGoal(capability="ndvi")
+
+        monkeypatch.setattr("geonexus.web.router.plan_from_text_with_registry", _fake_plan)
+
+        def _fake_planner(registry_url, **kw):
+            class _P:
+                def plan(self, goal: AgentGoal) -> Plan:
+                    return Plan(goal=goal.model_dump(exclude_none=True), registry_url=registry_url)
+
+            return _P()
+
+        monkeypatch.setattr("geonexus.web.router.GeoAgentPlanner", _fake_planner)
+
+        used_reflective = {"v": False}
+
+        class _FakeExecutor:
+            def __init__(self, *a: Any, **kw: Any) -> None:
+                pass
+
+            def run(self, plan: Plan) -> Plan:
+                used_reflective["v"] = True
+                return plan
+
+        monkeypatch.setattr("geonexus.web.router.ReflectiveExecutor", _FakeExecutor)
+
+        resp = client.post(
+            "/api/goals", headers=_auth(token), json={"text": "ndvi", "reflective": False}
+        )
+        tid = resp.json()["task_id"]
+        for _ in range(100):
+            state = client.get(f"/api/tasks/{tid}", headers=_auth(token)).json()
+            if state["status"] in ("done", "failed"):
+                break
+            time.sleep(0.05)
+        assert state["status"] == "done"
+        assert state["result"]["reflective"] is False
+        assert state["result"]["evaluation"] is None
+        assert used_reflective["v"] is False
+
 
 # --------------------------------------------------------------------------- #
 # Task endpoints

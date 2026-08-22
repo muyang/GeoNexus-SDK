@@ -44,6 +44,13 @@ project uses Semantic Versioning.
   - `PlanStep.reflections` field + `skipped` status; `docs/AGENT.md`
     updated with the reflective-execution guide.
 
+- **Web × Agent confluence (v1.1)** — `POST /api/goals` upgraded to the full
+  reflective stack: registry-grounded planning → `ReflectiveExecutor`
+  (LLM repairs failed steps) → `evaluate_plan` self-assessment. The task
+  result carries `reflective` and `evaluation` fields; `"reflective": false`
+  opts back into plain deterministic execution. `docs/WEB.md` documents the
+  flow.
+
 ## [1.0.0] - 2026-08-21
 
 ### Added

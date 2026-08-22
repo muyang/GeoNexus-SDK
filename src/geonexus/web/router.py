@@ -30,8 +30,12 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
-from ..agent.llm_planner import LLMConfig, plan_from_text
-from ..agent.planner import run_goal
+from ..agent.llm_planner import (
+    LLMConfig,
+    plan_from_text_with_registry,
+)
+from ..agent.planner import GeoAgentPlanner
+from ..agent.reflective import PlanReflector, ReflectiveExecutor, evaluate_plan
 from ..geomcp.client import GeoMCPClient
 from ..registry.client import RegistryClient
 from .auth import BearerAuth, JWTConfig, create_token
@@ -108,6 +112,14 @@ class ExecuteRequest(BaseModel):
 class GoalRequest(BaseModel):
     text: str
     registry_url: str | None = None
+    reflective: bool = True
+    """Enable reflective execution (v1.1): on step failure the LLM proposes a
+    repair (retry/replace/skip/abort) and the executor retries, then the
+    finished plan is self-assessed. Requires the same LLM config as planning.
+    Set ``false`` for plain deterministic execution."""
+
+    max_reflections: int | None = None
+    """Override the reflection budget (default 3)."""
 
 
 class TaskResponse(BaseModel):
@@ -219,9 +231,31 @@ def create_web_router(config: WebConfig) -> APIRouter:
                     "LLM planner not configured: set GEONEXUS_LLM_API_KEY / "
                     "GEONEXUS_LLM_BASE_URL / GEONEXUS_LLM_MODEL"
                 )
-            goal = plan_from_text(body.text, config=llm_config)
-            plan = run_goal(goal, registry_url=registry_url)
-            return {"goal": goal.model_dump(mode="json"), "plan": plan.to_dict()}
+            # v1.1: ground the translation in the skills that actually exist
+            # at the registry (reduces hallucinated skill names).
+            goal = plan_from_text_with_registry(body.text, registry_url, config=llm_config)
+            plan = GeoAgentPlanner(registry_url).plan(goal)
+            evaluation: dict[str, Any] | None = None
+            if body.reflective:
+                with PlanReflector(config=llm_config) as reflector:
+                    plan = ReflectiveExecutor(
+                        registry_url,
+                        reflector,
+                        max_reflections=body.max_reflections or 3,
+                    ).run(plan)
+                    # Self-assessment of the finished plan.
+                    evaluation = evaluate_plan(plan, reflector=reflector)
+            else:
+                from ..agent.planner import PlanExecutor
+
+                with PlanExecutor(registry_url) as executor:
+                    plan = executor.run(plan)
+            return {
+                "goal": goal.model_dump(mode="json"),
+                "plan": plan.to_dict(),
+                "reflective": body.reflective,
+                "evaluation": evaluation,
+            }
 
         tid = config.tasks.submit(_job, message=f"goal: {body.text[:60]}")
         return TaskResponse(task_id=tid, status=QUEUED)

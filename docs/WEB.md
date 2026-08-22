@@ -43,7 +43,7 @@ geonexus web start --registry http://127.0.0.1:8790 --port 8900
 | GET | `/api/skills` | Bearer | Registry skill list |
 | GET | `/api/nodes` | Bearer | Registry node view |
 | POST | `/api/execute` | Bearer | Run a skill on a node (async, 202) |
-| POST | `/api/goals` | Bearer | LLM-plan a natural-language goal (async, 202) |
+| POST | `/api/goals` | Bearer | LLM-plan a natural-language goal (async, 202; reflective execution + self-assessment by default) |
 | GET | `/api/tasks` | Bearer | List tasks |
 | GET | `/api/tasks/{id}` | Bearer | Task state (+ result when done) |
 | GET | `/api/tasks/{id}/stream` | Bearer | SSE progress stream |
@@ -111,6 +111,36 @@ a background thread pool (`TaskManager`) and returns a `task_id` immediately.
 - `GET /api/tasks/{id}/stream` is SSE (`data: {json}\n\n` per state change).
 - `TaskManager(persist=...)` accepts a callback for pluggable persistence
   (JSONL / Redis / Postgres) for horizontally scaled deployments.
+
+## Reflective goals (v1.1)
+
+`POST /api/goals` runs a natural-language request through the full v1.1
+stack by default:
+
+1. **Registry-grounded planning** — the skills that actually exist at the
+   registry are discovered first, and the LLM translates the request into a
+   `Goal` using only those skills (`plan_from_text_with_registry`).
+2. **Reflective execution** — the plan runs via `ReflectiveExecutor`; if a
+   step fails, the LLM diagnoses it (with the context of completed steps)
+   and proposes `retry` / `replace` / `skip` / `abort`, bounded by
+   `max_reflections` (default 3).
+3. **Self-assessment** — `evaluate_plan` reviews the finished plan against
+   the goal; the result is attached to the task as `evaluation`
+   (`{satisfied, score, notes}`).
+
+The task result shape:
+
+```json
+{
+  "goal": {...},
+  "plan": {"goal": {...}, "registry": "...", "steps": [{"status": "...", "reflections": [...]}]},
+  "reflective": true,
+  "evaluation": {"satisfied": true, "score": 92, "notes": "..."}
+}
+```
+
+Set `"reflective": false` in the request body for plain deterministic
+execution (no repair, no evaluation).
 
 ## Deployment topologies
 
