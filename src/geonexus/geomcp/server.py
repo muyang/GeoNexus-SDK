@@ -88,6 +88,14 @@ class GeoMCPServer:
             requests referencing GeoCards this node does not own are
             **delegated** to the owning node (V1.0+ node-level pushdown).
         forward_timeout: Timeout for delegated execution requests.
+        api_keys: Optional set of ``X-API-Key`` values. When non-empty, the
+            write method ``geo.execute`` requires a matching header; read
+            methods (``geo.capabilities``, ``geo.describe``, ``geo.health``)
+            stay open for discovery (mirrors the registry's auth policy).
+        forward_api_key: Optional ``X-API-Key`` sent on **outbound delegated**
+            requests to other nodes. Independent of the inbound ``api_keys``:
+            a node may require its own key while presenting a different
+            credential to peers (per-node / cross-domain deployments).
     """
 
     def __init__(
@@ -99,11 +107,15 @@ class GeoMCPServer:
         contract_validator: ContractValidator | None = None,
         registry_url: str | None = None,
         forward_timeout: float = 60.0,
+        api_keys: set[str] | None = None,
+        forward_api_key: str | None = None,
     ) -> None:
         self.name = name
         self.engine = engine
         self.registry_url = registry_url
         self.forward_timeout = forward_timeout
+        self.api_keys = set(api_keys or ())
+        self.forward_api_key = forward_api_key
         self.geocard_registry = geocard_registry
         self.skill_registry = skill_registry
         self.contract_validator = contract_validator or ContractValidator()
@@ -357,7 +369,10 @@ class GeoMCPServer:
         try:
             from .client import GeoMCPClient, GeoMCPClientError
 
-            with GeoMCPClient(owner, timeout=self.forward_timeout) as client:
+            # Present this node's outbound credential to the owner so the
+            # delegated execution authenticates (per-node key model).
+            forward_key = self.forward_api_key
+            with GeoMCPClient(owner, timeout=self.forward_timeout, api_key=forward_key) as client:
                 return client.execute(
                     skill=params.skill,
                     geocards=params.geocards,
@@ -417,8 +432,24 @@ class GeoMCPServer:
           - ``POST /geomcp``        — JSON-RPC dispatch
           - ``GET  /health``        — health check
           - ``GET  /capabilities``  — protocol surface
+
+        When :attr:`api_keys` is non-empty, ``geo.execute`` requests require
+        an ``X-API-Key`` header; discovery methods stay open.
         """
         app = FastAPI(title=f"GeoMCP server: {self.name}", version=PROTOCOL_VERSION)
+
+        def _require_execute_key(request: Request, payload: dict[str, Any]) -> None:
+            if not self.api_keys:
+                return
+            method = payload.get("method")
+            if method != "geo.execute":
+                return
+            supplied = request.headers.get("X-API-Key")
+            if supplied not in self.api_keys:
+                raise GeoMCPProtocolError(
+                    INVALID_PARAMS,
+                    "geo.execute requires a valid X-API-Key header",
+                )
 
         @app.post("/geomcp")
         async def geomcp_endpoint(request: Request) -> JSONResponse:
@@ -435,6 +466,21 @@ class GeoMCPServer:
                         },
                     },
                     status_code=400,
+                )
+            try:
+                _require_execute_key(request, payload)
+            except GeoMCPProtocolError as exc:
+                return JSONResponse(
+                    {
+                        "jsonrpc": "2.0",
+                        "id": payload.get("id"),
+                        "error": {
+                            "code": exc.code,
+                            "message": str(exc),
+                            "data": exc.data,
+                        },
+                    },
+                    status_code=401,
                 )
             response = self._dispatcher.dispatch(payload)
             status = 200

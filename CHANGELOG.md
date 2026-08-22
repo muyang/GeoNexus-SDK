@@ -8,6 +8,27 @@ project uses Semantic Versioning.
 
 ### Added
 
+- **`geonexus.web` (v1.1)** — Web backend-for-frontend layer:
+  - JWT auth (`JWTConfig` HS256/RS256, stateless, distributed-friendly;
+    `BearerAuth` / `APIKeyAuth` FastAPI dependencies).
+  - Async `TaskManager` (background thread pool, `queued → running →
+    done | failed | cancelled`, cooperative cancel, progress updates,
+    pluggable persistence callback).
+  - REST router (`create_web_router` / `create_web_app`): `/api/auth/login`,
+    `/api/health`, `/api/cards`, `/api/skills`, `/api/nodes`,
+    `/api/execute` (202 async), `/api/goals` (202 async), `/api/tasks`,
+    `/api/tasks/{id}`, `/api/tasks/{id}/stream` (SSE),
+    `/api/tasks/{id}/cancel`.
+  - Node-level auth: `GeoMCPServer(api_keys=...)` gates `geo.execute` with
+    `X-API-Key` (read methods stay open); `GeoMCPClient(api_key=...)` and
+    `FederatedGeoMCPClient(api_key=...)` forward the header;
+    `GeoMCPServer(forward_api_key=...)` for node-to-node delegation
+    credentials (per-node key model).
+  - CLI `geonexus web start` (`--registry`, `--node`, `--node-api-key`,
+    `--cors-origin`, `--jwt-secret`).
+  - `docs/WEB.md` (auth model, endpoints, deployment topologies, security).
+  - Dependencies: `PyJWT>=2.8`, `cryptography>=42.0`.
+
 - **Reflective GeoAgent (v1.1)** — LLM-assisted repair on the deterministic
   executor:
   - `plan_from_text_with_registry()` — registry-grounded goal translation

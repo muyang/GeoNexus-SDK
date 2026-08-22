@@ -45,6 +45,8 @@ class GeoMCPClient:
     Args:
         base_url: Server root URL, e.g. ``http://127.0.0.1:8787``.
         timeout: Request timeout in seconds.
+        api_key: Optional ``X-API-Key`` sent on every request. Required when
+            the server enforces node authentication (``geo.execute``).
         client: Optional pre-configured ``httpx.Client`` (advanced use).
     """
 
@@ -52,10 +54,12 @@ class GeoMCPClient:
         self,
         base_url: str,
         timeout: float = 30.0,
+        api_key: str | None = None,
         client: httpx.Client | None = None,
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
+        self.api_key = api_key
         self._client = client or httpx.Client(base_url=self.base_url, timeout=timeout)
 
     # ------------------------------------------------------------------ #
@@ -126,8 +130,9 @@ class GeoMCPClient:
     ) -> dict[str, Any]:
         request_id = request_id or make_request_id()
         payload = build_request(method, params, id=request_id)
+        headers = {"X-API-Key": self.api_key} if self.api_key else None
         try:
-            response = self._client.post("/geomcp", json=payload)
+            response = self._client.post("/geomcp", json=payload, headers=headers)
         except httpx.TimeoutException as exc:
             raise GeoMCPClientError(
                 f"GeoMCP request timed out after {self.timeout}s (method={method})"

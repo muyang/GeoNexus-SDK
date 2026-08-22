@@ -32,6 +32,8 @@ dependencies = [
     "fastapi>=0.110",
     "uvicorn>=0.27",
     "httpx>=0.26",
+    "PyJWT>=2.8",
+    "cryptography>=42.0",
 ]
 
 [project.urls]
@@ -73,7 +75,7 @@ exclude = [".venv", "output", "build", "dist"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM"]
-ignore = ["E501", "SIM108"]
+ignore = ["E501", "SIM108", "B008"]  # B008: FastAPI Depends() in defaults is idiomatic
 
 [tool.mypy]
 python_version = "3.12"

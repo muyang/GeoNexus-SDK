@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
 from geonexus import __version__
 from geonexus.cli import main
 
@@ -55,8 +57,16 @@ def test_cli_init(tmp_path, capsys) -> None:
 
 
 def test_cli_unknown_command(capsys) -> None:
-    import pytest
-
     with pytest.raises(SystemExit) as exc_info:
         main(["not-a-command"])
     assert exc_info.value.code == 2
+
+
+def test_cli_web_start_help(capsys) -> None:
+    with pytest.raises(SystemExit) as exc_info:
+        main(["web", "start", "--help"])
+    assert exc_info.value.code == 0
+    out = capsys.readouterr().out
+    assert "--registry" in out
+    assert "--node-api-key" in out
+    assert "--cors-origin" in out
