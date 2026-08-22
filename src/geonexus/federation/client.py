@@ -26,11 +26,19 @@ class FederatedGeoMCPClient:
     Args:
         registry_url: Base URL of the shared GeoCard Registry.
         timeout: Request timeout in seconds (registry and node calls).
+        api_key: Optional ``X-API-Key`` forwarded on every node call. Use
+            when nodes enforce authentication (server-side / BFF usage).
     """
 
-    def __init__(self, registry_url: str, timeout: float = 30.0) -> None:
+    def __init__(
+        self,
+        registry_url: str,
+        timeout: float = 30.0,
+        api_key: str | None = None,
+    ) -> None:
         self.registry_url = registry_url.rstrip("/")
         self.timeout = timeout
+        self.api_key = api_key
         self._registry = RegistryClient(self.registry_url, timeout=timeout)
         self._nodes: dict[str, GeoMCPClient] = {}
 
@@ -248,7 +256,9 @@ class FederatedGeoMCPClient:
     # ------------------------------------------------------------------ #
     def _node_client(self, node_url: str) -> GeoMCPClient:
         if node_url not in self._nodes:
-            self._nodes[node_url] = GeoMCPClient(node_url, timeout=self.timeout)
+            self._nodes[node_url] = GeoMCPClient(
+                node_url, timeout=self.timeout, api_key=self.api_key
+            )
         return self._nodes[node_url]
 
     def close(self) -> None:

@@ -841,6 +841,35 @@ def cmd_ggihs_start(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_web_start(args: argparse.Namespace) -> int:
+    from .web import JWTConfig, WebConfig, run_web
+
+    jwt = JWTConfig(secret=args.jwt_secret)
+    config = WebConfig(
+        registry_url=args.registry,
+        jwt=jwt,
+        default_node_url=args.node,
+        node_api_keys=dict(_split_node_keys(args.node_api_key)),
+    )
+    print(
+        f"Starting GeoNexus Web BFF on {args.host}:{args.port} "
+        f"(registry={args.registry}, node={args.node or 'none'}) ..."
+    )
+    run_web(config, host=args.host, port=args.port, cors_origins=args.cors_origin)
+    return 0
+
+
+def _split_node_keys(pairs: list[str] | None) -> list[tuple[str, str]]:
+    """Parse ``node_url=api_key`` pairs into (url, key) tuples."""
+    result: list[tuple[str, str]] = []
+    for pair in pairs or []:
+        if "=" not in pair:
+            raise SystemExit(f"ERROR: --node-api-key expects URL=KEY, got {pair!r}")
+        url, key = pair.split("=", 1)
+        result.append((url, key))
+    return result
+
+
 def cmd_demo_ggihs(args: argparse.Namespace) -> int:
     examples_dir = _find_examples_dir()
     if examples_dir is None:
@@ -1178,6 +1207,38 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_ggihs_start.add_argument("--probe-timeout", type=float, default=3.0)
     p_ggihs_start.set_defaults(func=cmd_ggihs_start)
+
+    web = sub.add_parser("web", help="GeoNexus Web BFF service (v1.1)")
+    web_sub = web.add_subparsers(dest="web_command", required=True)
+    p_web_start = web_sub.add_parser(
+        "start", help="Start the Web backend-for-frontend (JWT + async tasks)"
+    )
+    p_web_start.add_argument(
+        "--registry", default="http://127.0.0.1:8790", help="Shared GeoCard Registry URL"
+    )
+    p_web_start.add_argument("--host", default="127.0.0.1")
+    p_web_start.add_argument("--port", type=int, default=8900)
+    p_web_start.add_argument(
+        "--jwt-secret",
+        default="geonexus-dev-secret-change-me-0123456789abcdef",
+        help="JWT HMAC secret (HS256); set a real secret in production",
+    )
+    p_web_start.add_argument(
+        "--node", default=None, help="Default GeoNode URL for /api/execute"
+    )
+    p_web_start.add_argument(
+        "--node-api-key",
+        action="append",
+        default=None,
+        help="Node credential as URL=KEY (repeatable)",
+    )
+    p_web_start.add_argument(
+        "--cors-origin",
+        action="append",
+        default=None,
+        help="Allowed CORS origin (repeatable)",
+    )
+    p_web_start.set_defaults(func=cmd_web_start)
 
     p_ggihs_demo = demo_sub.add_parser(
         "ggihs",
