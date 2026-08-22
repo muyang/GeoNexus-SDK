@@ -104,6 +104,45 @@ silently skips the LLM step.
   possibly LLM-assisted — will build on. The `Goal` / `Plan` / `PlanStep`
   structures are deliberately plain JSON so any planner can drive them.
 
+## Reflective execution (V1.1: LLM-assisted repair)
+
+V1.1 adds **LLM-assisted reflection** on top of the deterministic executor.
+The LLM never executes — it only *advises*; all execution stays on
+`PlanExecutor`:
+
+- **Registry-grounded planning** — `plan_from_text_with_registry(text,
+  registry_url)` discovers the skills that actually exist at a registry and
+  grounds the LLM translation in them (no hallucinated skill names):
+
+  ```python
+  from geonexus.agent import plan_from_text_with_registry
+  goal = plan_from_text_with_registry("分析亚马逊 2015 与 2025 植被变化",
+                                      "http://127.0.0.1:8790")
+  ```
+
+- **PlanReflector** — given the goal, a failed step, the error and the
+  *context of already-completed steps* (multi-turn), an LLM proposes a
+  repair: `retry` (same step), `replace` (new skill/params), `skip` (drop
+  the step) or `abort` (give up).
+
+- **ReflectiveExecutor** — runs a plan like `PlanExecutor`; on failure it
+  reflects and retries per the advice, bounded by `max_reflections`
+  (default 3). Each step records its `reflections` history (observable via
+  `step.to_dict()`):
+
+  ```python
+  from geonexus.agent import PlanReflector, ReflectiveExecutor, Goal, GeoAgentPlanner
+  plan = GeoAgentPlanner("http://127.0.0.1:8790").plan(goal)
+  with PlanReflector() as reflector:
+      plan = ReflectiveExecutor("http://127.0.0.1:8790", reflector).run(plan)
+  for step in plan.steps:
+      print(step.step_id, step.status, step.reflections)
+  ```
+
+- **Result self-assessment** — `evaluate_plan(plan, reflector=...)` asks the
+  LLM to review the finished plan against the goal and returns
+  `{"satisfied": bool, "score": 0..100, "notes": str}`.
+
 ## API
 
 ```python

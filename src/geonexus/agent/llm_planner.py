@@ -177,3 +177,54 @@ def plan_from_text(
             available_capabilities=available_capabilities,
             available_skills=available_skills,
         )
+
+
+def plan_from_text_with_registry(
+    goal_text: str,
+    registry_url: str,
+    config: LLMConfig | None = None,
+    client: httpx.Client | None = None,
+    timeout: float = 30.0,
+) -> Goal:
+    """Translate natural language into a Goal, grounding the LLM in the
+    skills that actually exist at a registry.
+
+    Discovers registered skills first (``RegistryClient.list_skills()``) and
+    passes them as the available capabilities/skills, so the LLM can only
+    select real, deployable skills — reducing hallucinated skill names. The
+    registry is consulted for discovery only; execution happens later via the
+    deterministic planner/executor.
+
+    Raises:
+        ExecutionError: when the registry is unreachable or has no skills.
+    """
+    from ..registry import RegistryClient, RegistryClientError
+
+    capabilities: list[str] = []
+    skills: list[str] = []
+    try:
+        with RegistryClient(registry_url, timeout=timeout) as registry:
+            entries = registry.list_skills()
+    except RegistryClientError as exc:
+        raise ExecutionError(f"Registry skill discovery failed: {exc}") from exc
+    for entry in entries:
+        skill = entry.get("skill") if isinstance(entry, dict) else None
+        if not isinstance(skill, dict):
+            continue
+        name = skill.get("name")
+        if name:
+            skills.append(name)
+        caps = skill.get("capabilities") or []
+        if isinstance(caps, list):
+            capabilities.extend(str(c) for c in caps)
+    capabilities = list(dict.fromkeys(capabilities))
+    skills = list(dict.fromkeys(skills))
+    if not skills:
+        raise ExecutionError(f"No skills registered at {registry_url}")
+    return plan_from_text(
+        goal_text,
+        available_capabilities=capabilities or None,
+        available_skills=skills,
+        config=config,
+        client=client,
+    )

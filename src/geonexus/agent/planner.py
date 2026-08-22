@@ -85,9 +85,11 @@ class PlanStep:
     params: dict[str, Any]
     description: str
     depends_on: list[int] = field(default_factory=list)
-    status: str = "pending"  # pending | done | failed
+    status: str = "pending"  # pending | done | failed | skipped
     result: dict[str, Any] | None = None
     error: str | None = None
+    # Reflection history (populated by ReflectiveExecutor; empty otherwise).
+    reflections: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -103,6 +105,7 @@ class PlanStep:
             "depends_on": self.depends_on,
             "status": self.status,
             "error": self.error,
+            "reflections": self.reflections,
         }
 
 

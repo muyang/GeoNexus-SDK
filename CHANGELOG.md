@@ -4,6 +4,25 @@ All notable changes to GeoNexus (the reference stack) are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/) and the
 project uses Semantic Versioning.
 
+## [Unreleased]
+
+### Added
+
+- **Reflective GeoAgent (v1.1)** — LLM-assisted repair on the deterministic
+  executor:
+  - `plan_from_text_with_registry()` — registry-grounded goal translation
+    (LLM can only pick skills that actually exist at the registry).
+  - `PlanReflector` — LLM diagnosis of a failed plan step (multi-turn
+    context: goal + error + completed-step summaries) producing a repair
+    action: `retry` / `replace` / `skip` / `abort`.
+  - `ReflectiveExecutor` — runs plans like `PlanExecutor`, reflects on
+    failures and retries per advice, bounded by `max_reflections`; each
+    step records its `reflections` history.
+  - `evaluate_plan()` — LLM self-assessment of a finished plan
+    (`satisfied` / `score` / `notes`).
+  - `PlanStep.reflections` field + `skipped` status; `docs/AGENT.md`
+    updated with the reflective-execution guide.
+
 ## [1.0.0] - 2026-08-21
 
 ### Added
