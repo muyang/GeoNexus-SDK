@@ -47,6 +47,8 @@ class Skill:
     output_schema: dict[str, Any] = field(default_factory=dict)
     handler: Handler | None = None
     geocard: GeoCard | None = None
+    # Origin metadata (e.g. "mcp:<tool>") for imported skills.
+    mcp_source: str | None = None
 
     def describe(self) -> dict[str, Any]:
         """Serialize the skill for GeoMCP ``geo.describe`` / capabilities."""

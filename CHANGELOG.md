@@ -51,6 +51,16 @@ project uses Semantic Versioning.
   opts back into plain deterministic execution. `docs/WEB.md` documents the
   flow.
 
+- **MCP client bridge (v1.1)** — `geonexus.mcp_client` imports tools from
+  external MCP servers (stdio or Streamable HTTP) as GeoSkills:
+  `MCPToolClient.stdio(...)` / `.http(...)` / `.list_tools()` /
+  `.to_skills()` / `.register_into()`; `MCPTool.to_skill()` wraps a tool
+  with a forwarding handler; `Skill.mcp_source` origin metadata;
+  `GeoNode.register_skill_objects()` batch registration; CLI
+  `geonexus mcp import`. Together with the server-side adapter this makes
+  GeoNexus both an MCP host and client (verified end-to-end against our own
+  `mcp run` server). `docs/MCP.md` client-side guide.
+
 ## [1.0.0] - 2026-08-21
 
 ### Added

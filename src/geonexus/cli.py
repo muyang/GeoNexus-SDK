@@ -721,6 +721,31 @@ def cmd_mcp_serve(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_mcp_import(args: argparse.Namespace) -> int:
+    """Import tools from an external MCP server as GeoSkills (V1.1)."""
+    from .geonode import GeoNode
+    from .mcp_client import MCPToolClient
+
+    if args.http:
+        client = MCPToolClient.http(args.http, name=args.name)
+    else:
+        client = MCPToolClient.stdio(args.command, *args.args, name=args.name)
+
+    node = GeoNode(name=args.node_name)
+    try:
+        skills = client.register_into(node, prefix=args.prefix or "")
+    except Exception as exc:  # noqa: BLE001 - surface connection failures
+        print(f"ERROR: MCP import failed: {exc}", file=sys.stderr)
+        return 1
+    print(f"Imported {len(skills)} MCP tool(s) as GeoSkills:")
+    for skill in skills:
+        print(f"  - {skill.name}  ({skill.mcp_source})")
+    if args.list_only:
+        return 0
+    print(f"Node '{node.name}' now exposes {len(skills)} imported skill(s).")
+    return 0
+
+
 def cmd_demo_agent(args: argparse.Namespace) -> int:
     examples_dir = _find_examples_dir()
     if examples_dir is None:
@@ -1302,6 +1327,22 @@ def build_parser() -> argparse.ArgumentParser:
     p_mcp_serve.add_argument("--name", default="local-node")
     p_mcp_serve.add_argument("--bare", action="store_true", help="No demo assets")
     p_mcp_serve.set_defaults(func=cmd_mcp_serve)
+    p_mcp_import = mcp_sub.add_parser(
+        "import",
+        help="Import tools from an external MCP server as GeoSkills (V1.1)",
+    )
+    p_mcp_import.add_argument(
+        "--http", default=None, help="Streamable HTTP endpoint URL of the MCP server"
+    )
+    p_mcp_import.add_argument("command", nargs="?", default=None, help="stdio: executable")
+    p_mcp_import.add_argument("args", nargs="*", help="stdio: command-line arguments")
+    p_mcp_import.add_argument("--name", default=None, help="Source name (default: derived)")
+    p_mcp_import.add_argument("--node-name", default="mcp-import-node")
+    p_mcp_import.add_argument("--prefix", default="mcp-", help="Skill name prefix")
+    p_mcp_import.add_argument(
+        "--list-only", action="store_true", help="List imported skills without a node"
+    )
+    p_mcp_import.set_defaults(func=cmd_mcp_import)
 
     p_init = sub.add_parser("init", help="Scaffold a new GeoNexus project")
     p_init.add_argument("project", help="Project directory to create")

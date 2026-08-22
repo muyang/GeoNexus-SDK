@@ -19,7 +19,8 @@ notice (`_`-prefixed names, private modules, import paths under
 | `geonexus.web` | `WebConfig`, `JWTConfig`, `BearerAuth`, `APIKeyAuth`, `AuthError`, `create_token`, `decode_token`, `create_web_router`, `create_web_app`, `run_web`, `TaskManager`, `Task`, `TaskNotFoundError`, `TaskNotCancellableError`, `LoginRequest`, `LoginResponse`, `ExecuteRequest`, `GoalRequest`, `TaskResponse`, state constants (`QUEUED`, `RUNNING`, `DONE`, `FAILED`, `CANCELLED`) |
 | `geonexus.adapters` | `import_stac_item`, `fetch_stac_item`, `stac_item_to_geocard`, `geocard_to_stac_item`, `geocard_to_stac_catalog`, `save_stac_item`, `fetch_ogc_collection`, `fetch_ogc_feature`, `fetch_ogc_process`, `list_ogc_collections`, `list_ogc_processes`, `ogc_collection_to_geocard`, `ogc_feature_to_geocard`, `ogc_process_to_geocard`, `fetch_ogc_coverage_metadata`, `fetch_coverage_range`, `parse_coveragejson`, `coverage_to_geotiff`, `OgcProcessExecutor`, `make_ogc_process_skill`, `make_ogc_process_handler`, `register_ogc_process_skill`, and their error types (`StacAdapterError`, `OgcAdapterError`, `OgcCoverageError`, `OgcProcessExecutionError`) |
 | `geonexus.mcp_adapter` | `create_mcp_server`, `create_streamable_http_app`, `run_stdio`, `run_http` |
-| CLI | `geonexus version`, `card validate|inspect|import-stac|import-ogc|import-ogc-process|import-ogc-coverage|export-stac`, `node start`, `registry start|register|search|sync|skill`, `skill list`, `inspector`, `agent run|ask`, `mcp run|serve`, `ggihs start`, `demo *`, `init` |
+| `geonexus.mcp_client` | `MCPToolClient`, `MCPTool`, `MCPClientError` |
+| CLI | `geonexus version`, `card validate|inspect|import-stac|import-ogc|import-ogc-process|import-ogc-coverage|export-stac`, `node start`, `registry start|register|search|sync|skill`, `skill list`, `inspector`, `agent run|ask`, `mcp run|serve|import`, `ggihs start`, `demo *`, `init` |
 
 ## Versioning & compatibility
 

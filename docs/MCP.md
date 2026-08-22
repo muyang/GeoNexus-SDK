@@ -1,8 +1,14 @@
-# MCP Bridge (V0.5)
+# MCP Bridge (V0.5 → V1.1)
 
-The **Model Context Protocol (MCP)** bridge exposes GeoMCP as standard MCP
-tools, so any MCP host (Claude Desktop, MCP-enabled assistants, custom
-clients) can drive GeoNexus.
+The **Model Context Protocol (MCP)** bridge makes GeoNexus both an MCP
+**host** and an MCP **client**:
+
+- **Server side (V0.5/V1.0)** — expose GeoMCP as standard MCP tools, so any
+  MCP host (Claude Desktop, MCP-enabled assistants, custom clients) can drive
+  GeoNexus.
+- **Client side (V1.1)** — connect to *external* MCP servers and import
+  their tools as GeoSkills, so the GeoAgent planner/executor can use them
+  like any local skill.
 
 ## Why
 
@@ -90,6 +96,47 @@ identical.
 - CLI: `geonexus mcp run` / `geonexus mcp serve` (in `src/geonexus/cli.py`).
 - Smoke tests: `tests/test_mcp_adapter.py` covers the stdio handshake and
   the full Streamable HTTP session (initialize → tools/list → tools/call).
+
+## Client side (V1.1): import external MCP tools as GeoSkills
+
+`geonexus.mcp_client` connects to an external MCP server (stdio or
+Streamable HTTP), enumerates its tools, and wraps each as a GeoSkill whose
+handler forwards calls to the MCP server:
+
+```python
+from geonexus.mcp_client import MCPToolClient
+from geonexus.geonode import GeoNode
+
+# stdio transport: launch the MCP server as a subprocess
+with MCPToolClient.stdio("npx", "-y", "some-mcp-server") as mcp:
+    tools = mcp.list_tools()                  # [MCPTool(name, description, input_schema)]
+    skills = mcp.to_skills(prefix="ext-")     # [Skill] — handlers call the MCP tool
+
+node = GeoNode(name="imported-node")
+node.register_skill_objects(skills)           # GeoAgent can now plan/execute them
+
+# Streamable HTTP transport
+with MCPToolClient.http("http://host:9000/mcp", headers={"Authorization": "Bearer x"}) as mcp:
+    mcp.register_into(node, prefix="ext-")
+```
+
+CLI:
+
+```bash
+geonexus mcp import --http http://host:9000/mcp --prefix ext-
+geonexus mcp import npx -y some-mcp-server --prefix ext-
+```
+
+Notes:
+
+- MCP is async; skill handlers are sync. Each tool call opens its own
+  `ClientSession` lifecycle bridged with `asyncio.run` — safe for the
+  concurrent plan worker threads (a connection per call).
+- `structuredContent` results are returned losslessly; text content blocks
+  are flattened to `{"text": ...}`.
+- Imported skills carry `mcp_source` (e.g. `mcp:tool-name`) and register
+  with the planner like any other skill — combine with the reflective
+  executor for cross-system self-healing pipelines.
 
 ## Limitations
 

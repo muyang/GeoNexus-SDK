@@ -149,6 +149,12 @@ class GeoNode:
         self.skill_registry.register(skill)
         return self
 
+    def register_skill_objects(self, skills: list[Skill]) -> GeoNode:
+        """Register many pre-built skills (e.g. imported MCP tools)."""
+        for skill in skills:
+            self.skill_registry.register(skill)
+        return self
+
     # ------------------------------------------------------------------ #
     # Federation (V0.3+): advertise this node's cards and skills to a
     # shared registry
