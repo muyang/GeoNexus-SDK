@@ -69,6 +69,9 @@ def create_web_app(
             allow_headers=["*"],
         )
     app.include_router(create_web_router(config))
+    from .datasets import create_datasets_router
+
+    app.include_router(create_datasets_router(config))
     app.state.web_config = config
     return app
 

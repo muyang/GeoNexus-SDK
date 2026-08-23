@@ -79,6 +79,13 @@ class WebConfig:
     default_node_url: str | None = None
     llm: LLMConfig | None = None
     task_manager: TaskManager | None = None
+    # Data registration workflow (v1.1).
+    datasets_dir: str | None = None
+    """Where uploaded dataset files are stored (default: ./uploads)."""
+    registry_api_key: str | None = None
+    """API key for registry write endpoints (register pending / approve)."""
+    upload_node_url: str | None = None
+    """Node that owns uploaded datasets (advertised in their GeoCards)."""
 
     @property
     def tasks(self) -> TaskManager:

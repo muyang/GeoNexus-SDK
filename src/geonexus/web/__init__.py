@@ -13,6 +13,7 @@ from .auth import (
     create_token,
     decode_token,
 )
+from .datasets import DatasetSubmit, create_datasets_router
 from .router import (
     ExecuteRequest,
     GoalRequest,
@@ -44,6 +45,8 @@ __all__ = [
     "create_token",
     "decode_token",
     "create_web_router",
+    "create_datasets_router",
+    "DatasetSubmit",
     "TaskManager",
     "Task",
     "TaskNotFoundError",
