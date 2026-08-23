@@ -33,6 +33,31 @@ from .ogc_exec import (
     make_ogc_process_skill,
     register_ogc_process_skill,
 )
+from .ogc_records import (
+    fetch_ogc_record,
+    list_ogc_record_collections,
+    list_ogc_records,
+    ogc_record_collection_to_geocard,
+    ogc_record_to_geocard,
+)
+from .ogc_tiles import (
+    fetch_ogc_style,
+    fetch_ogc_tileset,
+    list_ogc_styles,
+    list_ogc_tilesets,
+    ogc_style_to_geocard,
+    ogc_tileset_to_geocard,
+    ogc_visualization_to_geocards,
+)
+from .ogc_wms import (
+    OgcLegacyError,
+    fetch_wms_capabilities,
+    fetch_wmts_capabilities,
+    list_wms_layers,
+    list_wmts_layers,
+    wms_layer_to_geocard,
+    wmts_layer_to_geocard,
+)
 from .stac import (
     StacAdapterError,
     fetch_stac_item,
@@ -70,4 +95,26 @@ __all__ = [
     "fetch_ogc_coverage_metadata",
     "fetch_coverage_range",
     "coverage_to_geotiff",
+    # OGC API - Records (v1.1)
+    "list_ogc_record_collections",
+    "fetch_ogc_record",
+    "list_ogc_records",
+    "ogc_record_collection_to_geocard",
+    "ogc_record_to_geocard",
+    # OGC API - Tiles / Maps / Styles (v1.1)
+    "list_ogc_tilesets",
+    "fetch_ogc_tileset",
+    "ogc_tileset_to_geocard",
+    "list_ogc_styles",
+    "fetch_ogc_style",
+    "ogc_style_to_geocard",
+    "ogc_visualization_to_geocards",
+    # WMS / WMTS (v1.1)
+    "OgcLegacyError",
+    "fetch_wms_capabilities",
+    "list_wms_layers",
+    "wms_layer_to_geocard",
+    "fetch_wmts_capabilities",
+    "list_wmts_layers",
+    "wmts_layer_to_geocard",
 ]

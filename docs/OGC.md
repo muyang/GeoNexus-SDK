@@ -1,10 +1,14 @@
-# OGC API adapter (V1.0)
+# OGC API adapter (V1.0 → V1.1)
 
 GeoNexus does not replace OGC standards — it **adapts** them. The OGC API
 adapters import the read side of OGC API services into GeoCards, bridge the
 write side (execution) into GeoSkills, and retrieve raster data via
 Coverages — so discovery, contract validation, federation and execution
 treat standards-based services like any other GeoNexus asset.
+
+V1.1 adds three more OGC families: **Records** (catalogue discovery),
+**Tiles / Maps / Styles** (the visualization plane) and the legacy
+**WMS / WMTS** services.
 
 ## What it bridges
 
@@ -14,10 +18,51 @@ treat standards-based services like any other GeoNexus asset.
 | OGC API - **Features** items (GeoJSON Feature) | `type: data` card | a single feature as an asset (bbox from geometry) |
 | OGC API - **Processes** | `type: skill` card | a process as a reusable capability (inputs/outputs mapped) |
 | OGC API - **Coverages** | `type: data` card (bands) + **raster retrieval** | coverage metadata as bands; ranges fetched as CoverageJSON → numpy → GeoTIFF |
+| OGC API - **Records** (v1.1) | `type: data` card | catalogue / dataset discovery: themes → capabilities, keywords → tags, data links → access |
+| OGC API - **Tiles / Maps / Styles** (v1.1) | `type: data` / `skill` card | renderable tile layers (`tiles` capability, `{z}/{y}/{x}` endpoint) and styles (`styling` capability) |
+| **WMS / WMTS** (v1.1) | `type: data` card | legacy map/tile services via GetCapabilities → GetMap / GetTile endpoints |
 
-Every imported card records `access.protocol = "ogcapi"` and the service
-endpoint, plus provenance (`Imported from OGC API ...`), so execution stays
-on the node that owns the data — the GeoNexus principle.
+Every imported card records `access.protocol = "ogcapi"` (or `wms` /
+`wmts`) and the service endpoint, plus provenance (`Imported from
+OGC API ...`), so execution stays on the node that owns the data — the
+GeoNexus principle.
+
+## V1.1: Records, Tiles/Styles, WMS/WMTS (Python API)
+
+```python
+from geonexus.adapters import (
+    # OGC API - Records (catalogue discovery)
+    list_ogc_records, fetch_ogc_record, ogc_record_to_geocard,
+    list_ogc_record_collections, ogc_record_collection_to_geocard,
+    # OGC API - Tiles / Maps / Styles (visualization plane)
+    list_ogc_tilesets, ogc_tileset_to_geocard,
+    list_ogc_styles, ogc_style_to_geocard, ogc_visualization_to_geocards,
+    # WMS / WMTS (legacy services)
+    list_wms_layers, wms_layer_to_geocard,
+    list_wmts_layers, wmts_layer_to_geocard,
+)
+
+record_cards = [ogc_record_to_geocard(r, base) for r in list_ogc_records(base)]
+tile_cards = ogc_visualization_to_geocards(base)          # tiles + styles
+wms_cards = [wms_layer_to_geocard(l, wms_url) for l in list_wms_layers(wms_url)]
+wmts_cards = [wmts_layer_to_geocard(l, wmts_url) for l in list_wmts_layers(wmts_url)]
+
+# Register any of them into a GeoCard registry for discovery:
+# registry.register(card, node_url="...")
+```
+
+Notes:
+
+- **Records**: `themes` become discoverable `capabilities`, `keywords`
+  become `tags`, and data-download `links` (rel `data` / `enclosure`) become
+  the `access.endpoint` — so a catalogue record is immediately
+  contract-checkable.
+- **Tiles / Styles**: tilesets get a `tiles` capability with the `{z}/{y}/{x}`
+  template endpoint for map clients (MapLibre / Leaflet); styles become
+  `type: skill` cards with a `styling` capability.
+- **WMS / WMTS**: GetCapabilities is parsed (xmltodict when installed, else
+  a dependency-free light parser); each advertised layer becomes a card with
+  the GetMap / GetTile endpoint ready to render.
 
 ## CLI
 

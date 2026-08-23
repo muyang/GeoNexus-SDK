@@ -61,6 +61,22 @@ project uses Semantic Versioning.
   GeoNexus both an MCP host and client (verified end-to-end against our own
   `mcp run` server). `docs/MCP.md` client-side guide.
 
+- **OGC coverage expansion (v1.1)** — three more OGC families as adapters:
+  - **OGC API - Records** (`ogc_records.py`): catalogue discovery —
+    `list_ogc_records` / `fetch_ogc_record` / `ogc_record_to_geocard`
+    (themes → capabilities, keywords → tags, data links → access).
+  - **OGC API - Tiles / Maps / Styles** (`ogc_tiles.py`): visualization
+    plane — `list_ogc_tilesets` / `ogc_tileset_to_geocard` (`tiles`
+    capability, `{z}/{y}/{x}` endpoint), `list_ogc_styles` /
+    `ogc_style_to_geocard` (`styling` capability),
+    `ogc_visualization_to_geocards`.
+  - **WMS / WMTS** (`ogc_wms.py`): legacy services — GetCapabilities
+    parsing (xmltodict or dependency-free light parser),
+    `list_wms_layers` / `wms_layer_to_geocard` (GetMap),
+    `list_wmts_layers` / `wmts_layer_to_geocard` (GetTile).
+  - `docs/OGC.md` V1.1 section; 18 new tests (records 11 + tiles/styles/WMS
+    +7).
+
 ## [1.0.0] - 2026-08-21
 
 ### Added
