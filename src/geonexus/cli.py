@@ -798,6 +798,126 @@ def cmd_card_import_ogc_coverage(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_card_import_ogc_records(args: argparse.Namespace) -> int:
+    """Import OGC API - Records (catalogue) as GeoCards (V1.1)."""
+    from .adapters import (
+        OgcAdapterError,
+        fetch_ogc_record,
+        list_ogc_records,
+        ogc_record_to_geocard,
+    )
+
+    try:
+        if args.record:
+            if args.collection:
+                data = fetch_ogc_record(
+                    args.url, args.record, collection_id=args.collection, timeout=args.timeout
+                )
+            else:
+                data = fetch_ogc_record(args.url, args.record, timeout=args.timeout)
+            card = ogc_record_to_geocard(data, args.url)
+            _print_imported_card(card, args.record, "OGC record")
+            if args.output:
+                card.save(args.output)
+                print(f"  saved to:    {args.output}")
+            return 0
+        records = list_ogc_records(
+            args.url,
+            collection_id=args.collection,
+            limit=args.limit,
+            bbox=args.bbox,
+            q=args.query,
+            timeout=args.timeout,
+        )
+    except OgcAdapterError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
+    if not records:
+        print("No records found.")
+        return 0
+    print(f"Found {len(records)} record(s):")
+    for record in records:
+        card = ogc_record_to_geocard(record, args.url)
+        print(f"  - {card.id}: {card.name}  ({card.description[:60]})")
+    if args.output:
+        # Save the first record to the output file (single-card output).
+        card = ogc_record_to_geocard(records[0], args.url)
+        card.save(args.output)
+        print(f"  saved first record to: {args.output}")
+    return 0
+
+
+def cmd_card_import_ogc_tiles(args: argparse.Namespace) -> int:
+    """Import OGC API - Tiles / Maps / Styles as GeoCards (V1.1)."""
+    from .adapters import (
+        OgcAdapterError,
+        fetch_ogc_style,
+        fetch_ogc_tileset,
+        ogc_style_to_geocard,
+        ogc_tileset_to_geocard,
+    )
+
+    try:
+        if args.tileset:
+            data = fetch_ogc_tileset(
+                args.url, args.tileset, collection_id=args.collection, timeout=args.timeout
+            )
+            card = ogc_tileset_to_geocard(data, args.url)
+            _print_imported_card(card, args.tileset, "OGC tileset")
+        elif args.style:
+            data = fetch_ogc_style(
+                args.url, args.style, collection_id=args.collection, timeout=args.timeout
+            )
+            card = ogc_style_to_geocard(data, args.url)
+            _print_imported_card(card, args.style, "OGC style")
+        else:
+            print("ERROR: pass --tileset or --style (or omit for both)", file=sys.stderr)
+            return 1
+    except OgcAdapterError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
+    if args.output:
+        card.save(args.output)
+        print(f"  saved to:    {args.output}")
+    return 0
+
+
+def cmd_card_import_ogc_legacy(args: argparse.Namespace) -> int:
+    """Import WMS / WMTS layers as GeoCards (V1.1)."""
+    from .adapters import (
+        OgcLegacyError,
+        list_wms_layers,
+        list_wmts_layers,
+        wms_layer_to_geocard,
+        wmts_layer_to_geocard,
+    )
+
+    try:
+        to_card: Any
+        if args.service == "wms":
+            layers = list_wms_layers(args.url, timeout=args.timeout)
+            to_card = wms_layer_to_geocard
+        else:
+            layers = list_wmts_layers(args.url, timeout=args.timeout)
+            to_card = wmts_layer_to_geocard
+    except OgcLegacyError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
+    if not layers:
+        print("No layers found.")
+        return 0
+    print(f"Found {len(layers)} {args.service.upper()} layer(s):")
+    cards = []
+    for layer in layers:
+        card = to_card(layer, args.url)
+        cards.append(card)
+        print(f"  - {card.id}: {card.name}")
+    if args.output:
+        cards[0].save(args.output)
+        print(f"  saved first layer to: {args.output}")
+    return 0
+
+
 def cmd_demo_ogc_coverage(args: argparse.Namespace) -> int:
     examples_dir = _find_examples_dir()
     if examples_dir is None:
@@ -1012,6 +1132,44 @@ def build_parser() -> argparse.ArgumentParser:
     p_ogc_cov.add_argument("--output", help="Save the card to this .yaml/.json file")
     p_ogc_cov.add_argument("--timeout", type=float, default=30.0)
     p_ogc_cov.set_defaults(func=cmd_card_import_ogc_coverage)
+
+    p_ogc_records = card_sub.add_parser(
+        "import-ogc-records",
+        help="Import OGC API - Records (catalogue) as GeoCards (V1.1)",
+    )
+    p_ogc_records.add_argument("url", help="OGC API - Records root URL")
+    p_ogc_records.add_argument("--record", help="Import one record by id")
+    p_ogc_records.add_argument("--collection", help="Records collection id")
+    p_ogc_records.add_argument("--limit", type=int, default=50)
+    p_ogc_records.add_argument("--bbox", type=float, nargs=4, metavar=("W", "S", "E", "N"))
+    p_ogc_records.add_argument("--query", help="Free-text search (q=)")
+    p_ogc_records.add_argument("--output", help="Save the card to this .yaml/.json file")
+    p_ogc_records.add_argument("--timeout", type=float, default=30.0)
+    p_ogc_records.set_defaults(func=cmd_card_import_ogc_records)
+
+    p_ogc_tiles = card_sub.add_parser(
+        "import-ogc-tiles",
+        help="Import OGC API - Tiles / Maps / Styles as GeoCards (V1.1)",
+    )
+    p_ogc_tiles.add_argument("url", help="OGC API root URL")
+    p_ogc_tiles.add_argument("--tileset", help="Import one tileset by id")
+    p_ogc_tiles.add_argument("--style", help="Import one style by id")
+    p_ogc_tiles.add_argument("--collection", help="Parent collection id")
+    p_ogc_tiles.add_argument("--output", help="Save the card to this .yaml/.json file")
+    p_ogc_tiles.add_argument("--timeout", type=float, default=30.0)
+    p_ogc_tiles.set_defaults(func=cmd_card_import_ogc_tiles)
+
+    p_ogc_legacy = card_sub.add_parser(
+        "import-ogc-legacy",
+        help="Import WMS / WMTS layers as GeoCards (V1.1)",
+    )
+    p_ogc_legacy.add_argument("url", help="WMS or WMTS GetCapabilities URL")
+    p_ogc_legacy.add_argument(
+        "--service", choices=["wms", "wmts"], default="wms", help="Service type"
+    )
+    p_ogc_legacy.add_argument("--output", help="Save the card to this .yaml/.json file")
+    p_ogc_legacy.add_argument("--timeout", type=float, default=30.0)
+    p_ogc_legacy.set_defaults(func=cmd_card_import_ogc_legacy)
 
     p_stac_export = card_sub.add_parser(
         "export-stac", help="Export a GeoCard file as a STAC Item (V1.0+)"

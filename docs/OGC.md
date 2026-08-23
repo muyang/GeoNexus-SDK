@@ -76,6 +76,14 @@ geonexus card import-ogc-process https://demo.pygeoapi.io/master --process hello
 geonexus card import-ogc https://demo.pygeoapi.io/master --collection lakes \
     --output lakes.yaml
 geonexus registry register lakes.yaml --url http://127.0.0.1:8790 --node http://127.0.0.1:8787
+
+# V1.1: Records / Tiles / Styles / WMS-WMTS
+geonexus card import-ogc-records https://records.example.org --limit 20 --bbox -74 -15 -44 5
+geonexus card import-ogc-records https://records.example.org --record rec-1 --output rec1.yaml
+geonexus card import-ogc-tiles https://ogc.example.org --tileset amazon-ndvi --output tile.yaml
+geonexus card import-ogc-tiles https://ogc.example.org --style ndvi-colormap --output style.yaml
+geonexus card import-ogc-legacy https://example.org/wms --service wms --output layer.yaml
+geonexus card import-ogc-legacy https://example.org/wmts --service wmts --output tile-layer.yaml
 ```
 
 ## Python API

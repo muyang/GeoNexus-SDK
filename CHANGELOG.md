@@ -76,6 +76,9 @@ project uses Semantic Versioning.
     `list_wmts_layers` / `wmts_layer_to_geocard` (GetTile).
   - `docs/OGC.md` V1.1 section; 18 new tests (records 11 + tiles/styles/WMS
     +7).
+  - CLI: `geonexus card import-ogc-records [--record --collection --bbox
+    --query --limit]`, `import-ogc-tiles [--tileset --style]`,
+    `import-ogc-legacy [--service wms|wmts]`; 3 CLI tests.
 
 ## [1.0.0] - 2026-08-21
 

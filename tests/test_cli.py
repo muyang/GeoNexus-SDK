@@ -70,3 +70,30 @@ def test_cli_web_start_help(capsys) -> None:
     assert "--registry" in out
     assert "--node-api-key" in out
     assert "--cors-origin" in out
+
+
+def test_cli_card_import_ogc_records_help(capsys) -> None:
+    with pytest.raises(SystemExit) as exc_info:
+        main(["card", "import-ogc-records", "--help"])
+    assert exc_info.value.code == 0
+    out = capsys.readouterr().out
+    assert "--record" in out
+    assert "--collection" in out
+
+
+def test_cli_card_import_ogc_tiles_help(capsys) -> None:
+    with pytest.raises(SystemExit) as exc_info:
+        main(["card", "import-ogc-tiles", "--help"])
+    assert exc_info.value.code == 0
+    out = capsys.readouterr().out
+    assert "--tileset" in out
+    assert "--style" in out
+
+
+def test_cli_card_import_ogc_legacy_help(capsys) -> None:
+    with pytest.raises(SystemExit) as exc_info:
+        main(["card", "import-ogc-legacy", "--help"])
+    assert exc_info.value.code == 0
+    out = capsys.readouterr().out
+    assert "--service" in out
+    assert "wms" in out and "wmts" in out
