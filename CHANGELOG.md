@@ -80,6 +80,16 @@ project uses Semantic Versioning.
     --query --limit]`, `import-ogc-tiles [--tileset --style]`,
     `import-ogc-legacy [--service wms|wmts]`; 3 CLI tests.
 
+- **Resource matching (v1.1)** — `geonexus.resource` coordinates compute
+  resources: `ComputeCapability` (what a `type: compute` node provides),
+  `match_resource(model_card, capabilities)` (checks `runtime.cpu` /
+  `runtime.memory` / `runtime.gpu` requirements against nodes, with
+  per-requirement reasons), `resolve_compute_capabilities(registry_url)`
+  (discovers `type: compute` cards), `parse_memory` (`"4Gi"` → GiB).
+  Enables routing a model to a node that satisfies its runtime — the
+  "coordinate data, model and compute" step of the GeoCard workflow.
+  `docs/RESOURCE.md` guide; 16 tests.
+
 ## [1.0.0] - 2026-08-21
 
 ### Added
