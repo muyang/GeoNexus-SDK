@@ -48,9 +48,21 @@ class RegistryClient:
         self._client = client or httpx.Client(base_url=self.base_url, timeout=timeout)
 
     # ------------------------------------------------------------------ #
-    def register(self, card: GeoCard, node_url: str) -> dict[str, Any]:
-        """Register a card owned by ``node_url``."""
-        return self._call("POST", "/cards", json={"card": card.to_dict(), "node_url": node_url})
+    def register(
+        self,
+        card: GeoCard,
+        node_url: str,
+        status: str | None = None,
+    ) -> dict[str, Any]:
+        """Register a card owned by ``node_url``.
+
+        ``status`` (v1.1): omit for the default ``approved`` (immediately
+        discoverable), or pass ``"pending"`` to submit for review.
+        """
+        body: dict[str, Any] = {"card": card.to_dict(), "node_url": node_url}
+        if status is not None:
+            body["status"] = status
+        return self._call("POST", "/cards", json=body)
 
     def unregister(self, card_id: str) -> dict[str, Any]:
         return self._call("DELETE", f"/cards/{card_id}")
@@ -58,9 +70,26 @@ class RegistryClient:
     def get(self, card_id: str) -> dict[str, Any]:
         return self._call("GET", f"/cards/{card_id}")
 
-    def list_cards(self) -> list[dict[str, Any]]:
-        data = self._call("GET", "/cards")
+    def list_cards(self, status: str | None = None) -> list[dict[str, Any]]:
+        """List cards.
+
+        ``status=None`` → approved only (server default); pass ``"pending"``
+        / ``"rejected"`` for a specific review state, or ``"all"`` for every
+        state (admin view).
+        """
+        params = {"status": status} if status is not None else None
+        data = self._call("GET", "/cards", params=params)
         return data.get("cards", [])
+
+    def approve(self, card_id: str, note: str | None = None) -> dict[str, Any]:
+        """Approve a pending card (makes it discoverable)."""
+        body = {"note": note} if note else {}
+        return self._call("POST", f"/cards/{card_id}/approve", json=body)
+
+    def reject(self, card_id: str, note: str | None = None) -> dict[str, Any]:
+        """Reject a pending card (removes it from discovery)."""
+        body = {"note": note} if note else {}
+        return self._call("POST", f"/cards/{card_id}/reject", json=body)
 
     # ------------------------------------------------------------------ #
     # Skills (V0.5)
@@ -122,8 +151,13 @@ class RegistryClient:
         end: str | None = None,
         required_bands: list[str] | None = None,
         required_resolution: float | None = None,
+        status: str | None = None,
     ) -> list[dict[str, Any]]:
-        """Search the registry with contract pre-filtering."""
+        """Search the registry with contract pre-filtering.
+
+        ``status`` filters by review state (v1.1): ``"pending"`` for the
+        review queue, ``"approved"`` (default server-side) for discovery.
+        """
         params: dict[str, Any] = {}
         if capability is not None:
             params["capability"] = capability
@@ -141,6 +175,8 @@ class RegistryClient:
             params["required_bands"] = ",".join(required_bands)
         if required_resolution is not None:
             params["resolution"] = required_resolution
+        if status is not None:
+            params["status"] = status
         data = self._call("GET", "/search", params=params)
         return data.get("results", [])
 

@@ -11,7 +11,14 @@ from typing import Any
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 
-from .models import RegistryEntry, RegistrySearchResult, SkillDescriptor, SkillEntry
+from .models import (
+    REVIEW_STATUSES,
+    STATUS_APPROVED,
+    RegistryEntry,
+    RegistrySearchResult,
+    SkillDescriptor,
+    SkillEntry,
+)
 from .store import (
     RegistryEntryConflict,
     RegistryEntryNotFound,
@@ -94,7 +101,13 @@ class RegistryServer:
     # ------------------------------------------------------------------ #
     # Business API
     # ------------------------------------------------------------------ #
-    def register(self, card: dict[str, Any], node_url: str) -> dict[str, Any]:
+    def register(
+        self,
+        card: dict[str, Any],
+        node_url: str,
+        status: str | None = None,
+        review_note: str | None = None,
+    ) -> dict[str, Any]:
         from ..geocard.model import GeoCard
         from ..geocard.validator import validate_card_schema
 
@@ -102,7 +115,12 @@ class RegistryServer:
         if not report.valid:
             raise HTTPException(status_code=422, detail={"schema_errors": report.errors})
         try:
-            entry = RegistryEntry(card=GeoCard.model_validate(card), node_url=node_url)
+            entry = RegistryEntry(
+                card=GeoCard.model_validate(card),
+                node_url=node_url,
+                status=status or STATUS_APPROVED,
+                review_note=review_note,
+            )
             self.store.register(entry)
         except RegistryEntryConflict as exc:
             raise HTTPException(status_code=409, detail=str(exc)) from exc
@@ -121,9 +139,28 @@ class RegistryServer:
             raise HTTPException(status_code=404, detail=f"Card not registered: {card_id}")
         return entry.to_dict()
 
-    def list(self) -> dict[str, Any]:
-        entries = [e.to_dict() for e in self.store.list_entries()]
+    def list(self, status: str | None = STATUS_APPROVED) -> dict[str, Any]:
+        """List cards. Defaults to approved only (review workflow); pass a
+        specific status (e.g. ``pending``) for the review queue, or the
+        literal string ``"all"`` to include every state (admin)."""
+        if status == "all":
+            status = None
+        entries = [e.to_dict() for e in self.store.list_entries(status=status)]
         return {"count": len(entries), "cards": entries}
+
+    def approve(self, card_id: str, note: str | None = None) -> dict[str, Any]:
+        try:
+            entry = self.store.approve(card_id, note=note)
+        except RegistryEntryNotFound as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        return {"status": "approved", "id": card_id, "entry": entry.to_dict()}
+
+    def reject(self, card_id: str, note: str | None = None) -> dict[str, Any]:
+        try:
+            entry = self.store.reject(card_id, note=note)
+        except RegistryEntryNotFound as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        return {"status": "rejected", "id": card_id, "entry": entry.to_dict()}
 
     def search(self, params: dict[str, Any]) -> dict[str, Any]:
         def _opt(key: str) -> Any | None:
@@ -145,6 +182,14 @@ class RegistryServer:
             else:
                 required_bands = list(raw_bands)
         resolution = _opt("resolution")
+        # status: None -> store's approved-only default; "all" -> every
+        # state; explicit values (pending / approved / rejected) filter.
+        status = _opt("status")
+        status_filter: str | None = STATUS_APPROVED
+        if status == "all":
+            status_filter = None
+        elif status in REVIEW_STATUSES:
+            status_filter = status
         results: list[RegistrySearchResult] = self.store.search(
             capability=_opt("capability"),
             type=_opt("type"),
@@ -156,6 +201,7 @@ class RegistryServer:
             required_bands=required_bands,
             required_resolution=float(resolution) if resolution is not None else None,
             contract_gate=True,
+            status=status_filter,
         )
         return {
             "count": len(results),
@@ -262,12 +308,28 @@ class RegistryServer:
             if not isinstance(body, dict) or "card" not in body:
                 raise HTTPException(status_code=422, detail="Body must contain 'card'")
             node_url = body.get("node_url") or "unknown"
-            result = self.register(body["card"], node_url)
+            # Review workflow (v1.1): register with status=pending to submit
+            # a card for review; approve() later makes it discoverable.
+            status = body.get("status")
+            result = self.register(body["card"], node_url, status=status)
             return JSONResponse(result, status_code=201)
 
         @app.get("/cards")
-        async def list_cards() -> dict[str, Any]:
-            return self.list()
+        async def list_cards(status: str | None = None) -> dict[str, Any]:
+            # None -> server default (approved); "all" -> every state.
+            return self.list(status=status if status is not None else STATUS_APPROVED)
+
+        @app.post("/cards/{card_id}/approve")
+        async def approve_card(request: Request, card_id: str) -> dict[str, Any]:
+            self._require_key(request)
+            body = await request.json() if request.headers.get("content-type", "").startswith("application/json") else {}
+            return self.approve(card_id, note=(body or {}).get("note"))
+
+        @app.post("/cards/{card_id}/reject")
+        async def reject_card(request: Request, card_id: str) -> dict[str, Any]:
+            self._require_key(request)
+            body = await request.json() if request.headers.get("content-type", "").startswith("application/json") else {}
+            return self.reject(card_id, note=(body or {}).get("note"))
 
         @app.get("/cards/{card_id}")
         async def get_card(card_id: str) -> dict[str, Any]:
@@ -288,6 +350,7 @@ class RegistryServer:
             end: str | None = None,
             required_bands: str | None = None,
             resolution: float | None = None,
+            status: str | None = None,
         ) -> dict[str, Any]:
             return self.search(
                 {
@@ -299,6 +362,7 @@ class RegistryServer:
                     "end": end,
                     "required_bands": required_bands,
                     "resolution": resolution,
+                    "status": status,
                 }
             )
 

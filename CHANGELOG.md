@@ -90,6 +90,21 @@ project uses Semantic Versioning.
   "coordinate data, model and compute" step of the GeoCard workflow.
   `docs/RESOURCE.md` guide; 16 tests.
 
+- **Data registration & review workflow (v1.1)** — upload a file → generate
+  a GeoCard → submit for review → approve → discoverable:
+  - `geonexus.metadata`: `inspect_raster` (CRS/bounds/resolution/bands from
+    any rasterio-readable raster), `raster_stats` (nodata-aware band stats),
+    `raster_to_geocard` (auto-builds a GeoCard with spatial/bands/access
+    pointing at the file). 8 tests.
+  - Registry review state machine: `RegistryEntry.status ∈ {pending,
+    approved, rejected}` (default `approved` — existing registrations stay
+    compatible); store `set_status/approve/reject` + `list_entries(status)`;
+    `search`/`list` return only approved by default (`status="all"` or an
+    explicit state for admin/review views); server
+    `GET /cards?status=`, `POST /cards/{id}/approve|reject`;
+    client `register(status=)` / `approve` / `reject` / `list_cards(status=)`.
+    9 tests.
+
 ## [1.0.0] - 2026-08-21
 
 ### Added

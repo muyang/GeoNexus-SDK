@@ -8,7 +8,14 @@ from collections.abc import Iterable
 from pathlib import Path
 
 from ..geocard.validator import ContractResult, ContractValidator
-from .models import RegistryEntry, RegistrySearchResult, SkillEntry
+from .models import (
+    REVIEW_STATUSES,
+    STATUS_APPROVED,
+    STATUS_REJECTED,
+    RegistryEntry,
+    RegistrySearchResult,
+    SkillEntry,
+)
 
 
 class RegistryStoreError(Exception):
@@ -122,10 +129,39 @@ class RegistryStore:
         with self._lock:
             return self._entries.get(card_id)
 
-    def list_entries(self) -> list[RegistryEntry]:
-        """All entries (insertion order)."""
+    def list_entries(self, status: str | None = None) -> list[RegistryEntry]:
+        """All entries (insertion order), optionally filtered by review status."""
         with self._lock:
-            return list(self._entries.values())
+            entries = list(self._entries.values())
+        if status is not None:
+            entries = [e for e in entries if e.status == status]
+        return entries
+
+    def set_status(
+        self, card_id: str, status: str, note: str | None = None
+    ) -> RegistryEntry:
+        """Set a card's review status (pending/approved/rejected).
+
+        Raises :class:`RegistryEntryNotFound` when the card is unknown.
+        """
+        if status not in REVIEW_STATUSES:
+            raise ValueError(f"invalid status {status!r}; expected one of {REVIEW_STATUSES}")
+        with self._lock:
+            entry = self._entries.get(card_id)
+            if entry is None:
+                raise RegistryEntryNotFound(f"Card not registered: {card_id}")
+            updated = entry.model_copy(update={"status": status, "review_note": note})
+            self._entries[card_id] = updated
+            self._save()
+            return updated
+
+    def approve(self, card_id: str, note: str | None = None) -> RegistryEntry:
+        """Approve a pending card (makes it discoverable)."""
+        return self.set_status(card_id, STATUS_APPROVED, note)
+
+    def reject(self, card_id: str, note: str | None = None) -> RegistryEntry:
+        """Reject a pending card (removes it from discovery)."""
+        return self.set_status(card_id, STATUS_REJECTED, note)
 
     def count(self) -> int:
         with self._lock:
@@ -143,8 +179,13 @@ class RegistryStore:
         required_bands: list[str] | None = None,
         required_resolution: float | None = None,
         contract_gate: bool = True,
+        status: str | None = STATUS_APPROVED,
     ) -> list[RegistrySearchResult]:
         """Search cards, optionally gated by contract satisfaction.
+
+        By default only **approved** cards are returned (review workflow,
+        v1.1); pass ``status=None`` to include every state (admin view) or a
+        specific state (``"pending"``) for review queues.
 
         When any contract constraint (bbox/crs/start/end/required_bands/
         required_resolution) is provided and ``contract_gate`` is True, only
@@ -152,6 +193,8 @@ class RegistryStore:
         """
         with self._lock:
             candidates = list(self._entries.values())
+        if status is not None:
+            candidates = [e for e in candidates if e.status == status]
 
         results: list[RegistrySearchResult] = []
         for entry in candidates:

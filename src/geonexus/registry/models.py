@@ -10,19 +10,36 @@ from pydantic import BaseModel, Field
 from ..geocard.model import GeoCard
 from ..geocard.validator import ContractResult
 
+# Registry review states (v1.1).
+STATUS_PENDING = "pending"
+STATUS_APPROVED = "approved"
+STATUS_REJECTED = "rejected"
+REVIEW_STATUSES = (STATUS_PENDING, STATUS_APPROVED, STATUS_REJECTED)
+
 
 class RegistryEntry(BaseModel):
-    """A card registered at a registry, bound to the node that owns it."""
+    """A card registered at a registry, bound to the node that owns it.
+
+    ``status`` is the review state (v1.1): ``pending`` (submitted, awaiting
+    review), ``approved`` (visible in search — the default, so existing
+    registrations stay compatible), or ``rejected`` (with ``review_note``).
+    """
 
     card: GeoCard
     node_url: str = Field(description="Endpoint of the node that owns the asset.")
     registered_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    status: str = Field(default="approved", description="pending | approved | rejected")
+    review_note: str | None = Field(
+        default=None, description="Reviewer note (rejection reason or approval remark)."
+    )
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "card": self.card.to_dict(),
             "node_url": self.node_url,
             "registered_at": self.registered_at,
+            "status": self.status,
+            "review_note": self.review_note,
         }
 
 

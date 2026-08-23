@@ -7,7 +7,16 @@ of the node that owns each asset. Data itself never moves to the registry
 
 from .client import RegistryClient, RegistryClientError
 from .federation import RegistryFederator
-from .models import RegistryEntry, RegistrySearchResult, SkillDescriptor, SkillEntry
+from .models import (
+    REVIEW_STATUSES,
+    STATUS_APPROVED,
+    STATUS_PENDING,
+    STATUS_REJECTED,
+    RegistryEntry,
+    RegistrySearchResult,
+    SkillDescriptor,
+    SkillEntry,
+)
 from .server import RegistryServer
 from .store import RegistryStore
 
@@ -21,4 +30,8 @@ __all__ = [
     "RegistryServer",
     "RegistryStore",
     "RegistryFederator",
+    "STATUS_PENDING",
+    "STATUS_APPROVED",
+    "STATUS_REJECTED",
+    "REVIEW_STATUSES",
 ]
