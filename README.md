@@ -145,6 +145,7 @@ mvp/
 │   ├── geocard/                  # model, builder, loader, validator (contract)
 │   ├── geomcp/                   # protocol, models, server, client
 │   ├── geonode/                  # node, registry, runtime, skill
+│   ├── gaag/                     # 🆕 GAAG contract registry (scan→register→gate)
 │   ├── registry/                 # shared Registry: cards+skills, persistence+auth
 │   ├── federation/               # pushdown execution (V0.3)
 │   ├── agent/                    # GeoAgent: planner + pipeline DAG + LLM translator
@@ -183,7 +184,7 @@ mvp/
 - `docs/STAC.md` — the STAC adapter: read (import) + write (export) sides.
 - `docs/API.md` — Python SDK public API reference.
 - `docs/API_STABILITY.md` — frozen public API + deprecation policy (v1.0).
-- `docs/RELEASE.md` — release process checklist.
+- `docs/GAAG.md` — GAAG contract registry: scan, embed, register, semantic search, contract gating.
 - `docs/QUICKSTART.md` — run the entire demo in less than 10 minutes.
 - `docs/MVP_IMPLEMENTATION.md` — what was built, acceptance checks, limitations.
 - `CHANGELOG.md` — release history.
