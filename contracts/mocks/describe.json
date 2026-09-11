@@ -1,0 +1,126 @@
+{
+  "jsonrpc": "2.0",
+  "id": "mock-002",
+  "result": {
+    "geocards": [
+      {
+        "geocard_version": "1.0",
+        "id": "amazon-ndvi-2015",
+        "type": "data",
+        "name": "Amazon NDVI 2015",
+        "description": "Synthetic red/NIR scene of the Amazon (2015).",
+        "tags": ["synthetic", "amazon", "ndvi"],
+        "spatial": {
+          "bbox": [-73.9, -15.0, -44.0, 5.0],
+          "crs": "EPSG:4326"
+        },
+        "temporal": {
+          "start": "2015-01-01",
+          "end": "2015-12-31"
+        },
+        "capabilities": [{"name": "ndvi", "description": "Red/NIR bands for NDVI computation"}],
+        "access": {
+          "protocol": "file",
+          "endpoint": "/output/2015",
+          "format": "GeoTIFF"
+        },
+        "provenance": {
+          "provider": "synthetic",
+          "source": "amazon-2015",
+          "lineage": "Synthetic 2015 scene"
+        }
+      },
+      {
+        "geocard_version": "1.0",
+        "id": "amazon-ndvi-2025",
+        "type": "data",
+        "name": "Amazon NDVI 2025",
+        "description": "Synthetic red/NIR scene of the Amazon (2025).",
+        "tags": ["synthetic", "amazon", "ndvi"],
+        "spatial": {
+          "bbox": [-73.9, -15.0, -44.0, 5.0],
+          "crs": "EPSG:4326"
+        },
+        "temporal": {
+          "start": "2025-01-01",
+          "end": "2025-12-31"
+        },
+        "capabilities": [{"name": "ndvi", "description": "Red/NIR bands for NDVI computation"}],
+        "access": {
+          "protocol": "file",
+          "endpoint": "/output/2025",
+          "format": "GeoTIFF"
+        },
+        "provenance": {
+          "provider": "synthetic",
+          "source": "amazon-2025",
+          "lineage": "Synthetic 2025 scene"
+        }
+      },
+      {
+        "geocard_version": "1.0",
+        "id": "model-ndvi-change",
+        "type": "model",
+        "name": "NDVI Change-Detection Model",
+        "description": "Computes NDVI difference between two time steps.",
+        "tags": ["model", "change-detection"],
+        "capabilities": [{"name": "change-detection", "description": "NDVI 2025 - 2015"}],
+        "inputs": [
+          {"name": "ndvi_a", "type": "raster", "required": true},
+          {"name": "ndvi_b", "type": "raster", "required": true}
+        ],
+        "outputs": [
+          {"name": "change_raster", "type": "raster"},
+          {"name": "stats", "type": "object"}
+        ],
+        "runtime": {"cpu": 2, "memory": "4Gi", "gpu": "cuda"},
+        "interface": {"type": "geomcp-skill", "version": "1.0"},
+        "provenance": {
+          "provider": "demo",
+          "source": "model-ndvi-change",
+          "lineage": "Demo change-detection model"
+        }
+      }
+    ],
+    "skills": [
+      {
+        "name": "ndvi-analysis",
+        "description": "Compute NDVI from red/NIR rasters.",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "red": {"type": "string"},
+            "nir": {"type": "string"},
+            "output": {"type": "string"}
+          }
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "ndvi_raster": {"type": "string"},
+            "stats": {"type": "object"}
+          }
+        }
+      },
+      {
+        "name": "ndvi-change",
+        "description": "Change-detection model: NDVI 2025 - 2015 (GPU-accelerated).",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "ndvi_a": {"type": "string"},
+            "ndvi_b": {"type": "string"},
+            "output": {"type": "string"}
+          }
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "change_raster": {"type": "string"},
+            "stats": {"type": "object"}
+          }
+        }
+      }
+    ]
+  }
+}

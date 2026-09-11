@@ -1,0 +1,22 @@
+{
+  "jsonrpc": "2.0",
+  "id": "mock-003",
+  "result": {
+    "status": "ok",
+    "skill": "ndvi-analysis",
+    "outputs": {
+      "ndvi_raster": "/output/2015/ndvi.tif",
+      "stats": {
+        "mean": 0.749,
+        "std": 0.121,
+        "min": 0.234,
+        "max": 0.987,
+        "pixels": 25600,
+        "no_data_pixels": 0
+      }
+    },
+    "geocards": ["amazon-ndvi-2015"],
+    "executed_by": "data-node-a",
+    "request_id": "task-001"
+  }
+}

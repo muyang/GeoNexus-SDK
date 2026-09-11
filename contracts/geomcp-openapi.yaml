@@ -1,0 +1,379 @@
+openapi: 3.0.3
+info:
+  title: GeoMCP — Geospatial Interaction Protocol
+  description: |
+    GeoMCP 是 GeoNexus 的地理空间交互协议，基于 JSON-RPC 2.0，传输无关。
+    HTTP 传输绑定：POST /geomcp 分发所有 JSON-RPC 请求。
+    协议版本：1.0.0（冻结方法集，新增通过 geo.capabilities → methods 协商）。
+  version: 1.0.0
+  contact:
+    name: GeoNexus Team
+
+servers:
+  - url: http://127.0.0.1:8787
+    description: GeoMCP 默认地址
+
+paths:
+  /geomcp:
+    post:
+      summary: JSON-RPC 2.0 分发端点
+      description: |
+        所有 GeoMCP 方法通过此端点分发，method 字段区分具体操作。
+        HTTP 200 表示有效的 JSON-RPC（包括错误响应）。
+        格式错误的请求体返回 HTTP 400 + JSON-RPC Parse Error。
+      operationId: dispatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JsonRpcRequest'
+            examples:
+              capabilities:
+                summary: 查询能力
+                value:
+                  jsonrpc: "2.0"
+                  id: "req-001"
+                  method: "geo.capabilities"
+                  params: {}
+              describe:
+                summary: 查询描述
+                value:
+                  jsonrpc: "2.0"
+                  id: "req-002"
+                  method: "geo.describe"
+                  params:
+                    geocards: ["sentinel-2-amazon"]
+                    skills: ["ndvi-analysis"]
+              execute:
+                summary: 执行技能
+                value:
+                  jsonrpc: "2.0"
+                  id: "req-003"
+                  method: "geo.execute"
+                  params:
+                    skill: "ndvi-analysis"
+                    geocards: ["sentinel-2-amazon"]
+                    spatial:
+                      bbox: [-73.9, -15.0, -44.0, 5.0]
+                      crs: "EPSG:4326"
+                      resolution: 10
+                    temporal:
+                      start: "2020-01-01"
+                      end: "2025-01-01"
+                    params:
+                      red: "/data/red.tif"
+                      nir: "/data/nir.tif"
+                    request_id: "task-001"
+              health_rpc:
+                summary: 健康检查（JSON-RPC）
+                value:
+                  jsonrpc: "2.0"
+                  id: "req-004"
+                  method: "geo.health"
+                  params: {}
+      responses:
+        '200':
+          description: 有效的 JSON-RPC 响应（成功或应用错误）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonRpcResponse'
+        '400':
+          description: 格式错误的请求体
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonRpcError'
+
+  /health:
+    get:
+      summary: 健康检查（HTTP GET）
+      description: 纯 HTTP GET 健康检查，返回节点状态和子检查项。
+      operationId: health
+      responses:
+        '200':
+          description: 节点健康状态
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /capabilities:
+    get:
+      summary: 能力查询（HTTP GET）
+      description: 纯 HTTP GET，返回与 geo.capabilities 相同的内容。
+      operationId: capabilities
+      responses:
+        '200':
+          description: 节点能力
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapabilitiesResponse'
+
+components:
+  schemas:
+    # ── JSON-RPC 信封 ──
+
+    JsonRpcRequest:
+      type: object
+      required: [jsonrpc, method, id]
+      properties:
+        jsonrpc:
+          type: string
+          enum: ["2.0"]
+        id:
+          type: string
+          description: 请求 ID，响应中回显
+        method:
+          type: string
+          enum:
+            - geo.capabilities
+            - geo.describe
+            - geo.execute
+            - geo.health
+        params:
+          description: 方法参数，随 method 不同结构不同
+      discriminator:
+        propertyName: method
+
+    JsonRpcResponse:
+      type: object
+      required: [jsonrpc, id]
+      properties:
+        jsonrpc:
+          type: string
+          enum: ["2.0"]
+        id:
+          type: string
+        result:
+          description: 成功结果（与 error 互斥）
+        error:
+          $ref: '#/components/schemas/JsonRpcError'
+
+    JsonRpcError:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: integer
+          description: |
+            错误码：
+            -32700  Parse error
+            -32600  Invalid request
+            -32601  Method not found
+            -32602  Invalid params
+            -32603  Internal error
+            2000    Contract not satisfied
+            2001    Skill not found
+            2002    GeoCard not found
+            2003    Execution failed
+            2004    Invalid argument
+        message:
+          type: string
+        data:
+          description: 附加错误数据（如 reasons、available skills 等）
+
+    # ── geo.capabilities ──
+
+    CapabilitiesResponse:
+      type: object
+      properties:
+        protocol:
+          type: string
+          example: "geomcp"
+        version:
+          type: string
+          example: "1.0.0"
+        node:
+          type: string
+          example: "execution-plane-01"
+        methods:
+          type: array
+          items:
+            type: string
+          example: ["geo.capabilities", "geo.describe", "geo.execute", "geo.health"]
+        tools:
+          type: array
+          items:
+            $ref: '#/components/schemas/ToolDescriptor'
+        resources:
+          type: array
+          items:
+            type: string
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillDescriptor'
+        geocards:
+          type: array
+          items:
+            type: string
+
+    ToolDescriptor:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        input_schema:
+          type: object
+        output_schema:
+          type: object
+
+    SkillDescriptor:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        input_schema:
+          type: object
+        output_schema:
+          type: object
+        geocard_id:
+          type: string
+
+    # ── geo.describe ──
+
+    DescribeParams:
+      type: object
+      properties:
+        geocards:
+          type: array
+          items:
+            type: string
+          description: 要查询的 GeoCard ID 列表，省略表示全部
+        skills:
+          type: array
+          items:
+            type: string
+          description: 要查询的 Skill 名称列表，省略表示全部
+
+    DescribeResult:
+      type: object
+      properties:
+        geocards:
+          type: array
+          items:
+            type: object
+            description: GeoCard 完整字典
+        skills:
+          type: array
+          items:
+            type: object
+            description: Skill 完整字典
+
+    # ── geo.execute ──
+
+    ExecuteParams:
+      type: object
+      required: [skill]
+      properties:
+        skill:
+          type: string
+          description: 技能名称
+        geocards:
+          type: array
+          items:
+            type: string
+          description: 引用的 GeoCard ID 列表
+        spatial:
+          $ref: '#/components/schemas/SpatialContext'
+        temporal:
+          $ref: '#/components/schemas/TemporalContext'
+        params:
+          type: object
+          description: 技能参数
+        request_id:
+          type: string
+          description: 全链路追踪 ID
+
+    SpatialContext:
+      type: object
+      required: [bbox]
+      properties:
+        bbox:
+          type: array
+          minItems: 4
+          maxItems: 6
+          items:
+            type: number
+          description: "[west, south, east, north] (2D) 或 3D 变体"
+        crs:
+          type: string
+          default: "EPSG:4326"
+          description: 坐标参考系
+        resolution:
+          type: number
+          description: 请求的空间分辨率（米）
+
+    TemporalContext:
+      type: object
+      properties:
+        start:
+          type: string
+          description: ISO 8601 开始时间
+        end:
+          type: string
+          description: ISO 8601 结束时间
+        interval:
+          type: string
+          description: 采样间隔，如 "P5D"
+
+    ExecuteResult:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: ["ok"]
+        skill:
+          type: string
+        outputs:
+          type: object
+          description: 技能输出，键值对
+        geocards:
+          type: array
+          items:
+            type: string
+        executed_by:
+          type: string
+          description: 执行节点名
+        request_id:
+          type: string
+
+    # ── geo.health ──
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: ["ok", "degraded", "down"]
+        node:
+          type: string
+        version:
+          type: string
+        protocol:
+          type: string
+        protocol_version:
+          type: string
+        time:
+          type: string
+          format: date-time
+        checks:
+          type: object
+          properties:
+            registry:
+              type: string
+            oge_connectivity:
+              type: string
+            llm_connectivity:
+              type: string
+            skills_loaded:
+              type: integer
+            geocards_registered:
+              type: integer

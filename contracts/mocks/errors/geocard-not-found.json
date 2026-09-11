@@ -1,0 +1,11 @@
+{
+  "jsonrpc": "2.0",
+  "id": "mock-err-2002",
+  "error": {
+    "code": 2002,
+    "message": "GeoCard not found: unknown-card-id",
+    "data": {
+      "available": ["amazon-ndvi-2015", "amazon-ndvi-2025", "model-ndvi-change"]
+    }
+  }
+}

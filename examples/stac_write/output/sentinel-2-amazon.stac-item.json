@@ -1,0 +1,89 @@
+{
+  "type": "Feature",
+  "stac_version": "1.0.0",
+  "id": "sentinel-2-amazon",
+  "properties": {
+    "datetime": "2015-01-01",
+    "start_datetime": "2015-01-01",
+    "end_datetime": "2025-12-31",
+    "title": "Sentinel-2 Amazon",
+    "description": "Synthetic Sentinel-2-like red/NIR imagery covering the Amazon rainforest for the GeoNexus MVP demo. SYNTHETIC DATA - not real satellite imagery.\n",
+    "license": "CC-BY-4.0",
+    "proj:epsg": 4326,
+    "gsd": 10.0,
+    "geonexus:type": "data",
+    "geonexus:geocard_version": "0.1",
+    "geonexus:capabilities": [
+      "ndvi",
+      "change-detection"
+    ]
+  },
+  "assets": {
+    "B04": {
+      "href": "http://127.0.0.1:8787",
+      "type": "GeoTIFF",
+      "eo:bands": [
+        {
+          "name": "B04",
+          "data_type": "uint16",
+          "unit": "dn"
+        }
+      ]
+    },
+    "B08": {
+      "href": "http://127.0.0.1:8787",
+      "type": "GeoTIFF",
+      "eo:bands": [
+        {
+          "name": "B08",
+          "data_type": "uint16",
+          "unit": "dn"
+        }
+      ]
+    }
+  },
+  "collection": "geonexus-demo",
+  "bbox": [
+    -73.9,
+    -15.0,
+    -44.0,
+    5.0
+  ],
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -73.9,
+          -15.0
+        ],
+        [
+          -44.0,
+          -15.0
+        ],
+        [
+          -44.0,
+          5.0
+        ],
+        [
+          -73.9,
+          5.0
+        ],
+        [
+          -73.9,
+          -15.0
+        ]
+      ]
+    ]
+  },
+  "links": [
+    {
+      "rel": "self",
+      "href": "http://127.0.0.1:8787"
+    },
+    {
+      "rel": "collection",
+      "href": "collections/geonexus-demo"
+    }
+  ]
+}

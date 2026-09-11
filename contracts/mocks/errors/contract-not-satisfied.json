@@ -1,0 +1,16 @@
+{
+  "jsonrpc": "2.0",
+  "id": "mock-err-2000",
+  "error": {
+    "code": 2000,
+    "message": "Contract not satisfied",
+    "data": {
+      "reasons": [
+        "CRS mismatch: requested EPSG:3857, card declares EPSG:4326",
+        "bbox intersection: requested bbox [100, 0, 110, 10] does not intersect card bbox [-73.9, -15.0, -44.0, 5.0]"
+      ],
+      "card_id": "amazon-ndvi-2015",
+      "warnings": []
+    }
+  }
+}

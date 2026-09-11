@@ -1,0 +1,23 @@
+{
+  "jsonrpc": "2.0",
+  "id": "mock-004",
+  "result": {
+    "status": "ok",
+    "skill": "ndvi-change",
+    "outputs": {
+      "change_raster": "/output/ndvi_change.tif",
+      "stats": {
+        "mean_change": -0.430,
+        "std_change": 0.087,
+        "gain_area_pct": 12.3,
+        "loss_area_pct": 45.7,
+        "unchanged_pct": 42.0,
+        "total_pixels": 25600,
+        "synthetic": true
+      }
+    },
+    "geocards": ["model-ndvi-change"],
+    "executed_by": "compute-node",
+    "request_id": "task-002"
+  }
+}

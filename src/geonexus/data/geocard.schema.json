@@ -1,0 +1,295 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geonexus.org/schemas/geocard.schema.json",
+  "title": "GeoCard",
+  "description": "Machine-readable identity, capability and contract description for a geospatial asset. A GeoCard is the contract layer of GeoNexus: it describes what an asset is (data, model, skill, agent, workflow, knowledge, compute), where it lives, what it can do, and under which conditions it can be used.",
+  "type": "object",
+  "required": ["geocard_version", "id", "type", "name", "description"],
+  "properties": {
+    "geocard_version": {
+      "type": "string",
+      "enum": ["0.1", "1.0"],
+      "description": "Version of the GeoCard specification this card conforms to. Cards written as '0.1' remain valid; the SDK emits '1.0' by default since the v1.0 release."
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Stable unique identifier of the asset within its registry namespace."
+    },
+    "type": {
+      "type": "string",
+      "enum": ["data", "model", "skill", "agent", "workflow", "knowledge", "compute"],
+      "description": "Kind of geospatial asset described by this card."
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable display name of the asset."
+    },
+    "description": {
+      "type": "string",
+      "description": "Free-text description of the asset."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Optional free-form tags used for discovery."
+    },
+    "spatial": {
+      "type": "object",
+      "description": "Spatial extent and geometry characteristics of the asset.",
+      "properties": {
+        "bbox": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 6,
+          "items": { "type": "number" },
+          "description": "Bounding box as [west, south, east, north] (2D) or [west, south, minz, east, north, maxz] (3D) in the declared CRS."
+        },
+        "crs": {
+          "type": "string",
+          "description": "Coordinate reference system identifier, e.g. 'EPSG:4326' or 'EPSG:3857'."
+        },
+        "resolution": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Best spatial resolution in metres (per pixel / grid cell)."
+        },
+        "geometry": {
+          "type": "string",
+          "description": "Optional GeoJSON geometry (as a JSON string) describing a non-rectangular footprint."
+        }
+      },
+      "additionalProperties": false
+    },
+    "temporal": {
+      "type": "object",
+      "description": "Temporal coverage of the asset.",
+      "properties": {
+        "start": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Start of temporal coverage, ISO 8601."
+        },
+        "end": {
+          "type": "string",
+          "format": "date-time",
+          "description": "End of temporal coverage, ISO 8601."
+        },
+        "interval": {
+          "type": "string",
+          "description": "Revisit / sampling interval, e.g. 'P5D', 'P16D', 'P1Y'."
+        }
+      },
+      "additionalProperties": false
+    },
+    "bands": {
+      "type": "array",
+      "description": "Spectral or thematic bands provided by the asset.",
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Band identifier, e.g. 'B04', 'B08', 'red', 'nir'."
+          },
+          "dtype": {
+            "type": "string",
+            "description": "Numeric data type, e.g. 'uint16', 'float32', 'int8'."
+          },
+          "units": {
+            "type": "string",
+            "description": "Physical units of the band values, e.g. 'dn', 'reflectance', 'm'."
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional description of the band."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "description": "Declared inputs (for skills, models, workflows, compute).",
+      "items": {
+        "type": "object",
+        "required": ["name", "type"],
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string", "description": "e.g. 'raster', 'vector', 'number', 'string', 'array'." },
+          "description": { "type": "string" },
+          "required": { "type": "boolean", "default": false }
+        },
+        "additionalProperties": false
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "description": "Declared outputs produced by the asset.",
+      "items": {
+        "type": "object",
+        "required": ["name", "type"],
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string" },
+          "description": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "description": "Capabilities the asset provides, e.g. ['ndvi', 'classification', 'change-detection'].",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "access": {
+      "type": "object",
+      "description": "How to reach the asset or its service endpoint.",
+      "properties": {
+        "protocol": {
+          "type": "string",
+          "description": "Access protocol, e.g. 'geomcp', 'https', 's3', 'stac', 'ogcapi'."
+        },
+        "endpoint": {
+          "type": "string",
+          "description": "URL or endpoint identifier of the asset."
+        },
+        "auth": {
+          "type": "string",
+          "description": "Authentication scheme, e.g. 'none', 'apikey', 'oauth2'."
+        },
+        "format": {
+          "type": "string",
+          "description": "Data format hint, e.g. 'GeoTIFF', 'COG', 'Zarr', 'GeoJSON'."
+        }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Where the asset came from.",
+      "properties": {
+        "provider": { "type": "string" },
+        "source": { "type": "string" },
+        "lineage": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "license": {
+      "description": "License of the asset. Either an SPDX identifier string or an object with name and url.",
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "url": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "compliance": {
+      "type": "object",
+      "description": "Sovereignty and compliance constraints on the asset.",
+      "properties": {
+        "sovereignty": {
+          "type": "string",
+          "description": "Jurisdiction / sovereign zone that governs the asset, e.g. 'BR', 'EU', 'local-node'."
+        },
+        "restrictions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Usage restrictions, e.g. ['no-commercial-use']."
+        },
+        "sensitivity": {
+          "type": "string",
+          "enum": ["public", "restricted", "sensitive", "secret"],
+          "description": "Sensitivity classification of the asset."
+        }
+      },
+      "additionalProperties": false
+    },
+    "trust": {
+      "type": "object",
+      "description": "Trust metadata attached to the asset.",
+      "properties": {
+        "verified": {
+          "type": "boolean",
+          "description": "Whether the asset has been verified by the node or registry."
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Trust score in [0, 1]. MVP: informational only, not scientifically validated."
+        }
+      },
+      "additionalProperties": false
+    },
+    "runtime": {
+      "type": "object",
+      "description": "Runtime requirements for compute-type assets.",
+      "properties": {
+        "cpu": {
+          "description": "Number of CPU cores required (integer) or cores string, e.g. '2'.",
+          "oneOf": [
+            { "type": "integer", "minimum": 1 },
+            { "type": "string" }
+          ]
+        },
+        "memory": {
+          "type": "string",
+          "description": "Memory required, e.g. '4Gi', '8GB'."
+        },
+        "gpu": {
+          "type": "string",
+          "description": "GPU requirement, e.g. 'none', '1xT4'."
+        }
+      },
+      "additionalProperties": false
+    },
+    "interface": {
+      "type": "object",
+      "description": "Interface versioning information for skills / models / workflows.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Interface kind, e.g. 'geomcp-skill', 'python-callable'."
+        },
+        "version": {
+          "type": "string",
+          "description": "Interface version, e.g. '1.0'."
+        }
+      },
+      "additionalProperties": false
+    },
+    "rendering": {
+      "type": "object",
+      "description": "Visualisation hints for the asset.",
+      "properties": {
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "colormap": { "type": "string" },
+        "opacity": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true,
+  "description": "Note: additionalProperties is true at the top level to allow forward-compatible extension fields; known sections are validated strictly."
+}

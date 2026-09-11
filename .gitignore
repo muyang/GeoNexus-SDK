@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+.DS_Store
+*.db
+*.db-shm
+*.db-wal
+.pytest_cache/
+.ipynb_checkpoints/

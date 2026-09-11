@@ -1,0 +1,15 @@
+{
+  "jsonrpc": "2.0",
+  "id": "mock-err-2003",
+  "error": {
+    "code": 2003,
+    "message": "Execution failed: raster file not found",
+    "data": {
+      "skill": "ndvi-analysis",
+      "step": "load_red_band",
+      "detail": "FileNotFoundError: /data/missing.tif does not exist",
+      "geocards": ["amazon-ndvi-2015"],
+      "request_id": "task-003"
+    }
+  }
+}

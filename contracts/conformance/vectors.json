@@ -1,0 +1,255 @@
+{
+  "description": "GeoMCP 一致性测试向量 — 传输无关，两方 CI 各自独立验证",
+  "protocol_version": "1.0.0",
+  "vectors": [
+    {
+      "id": "V001-capabilities-success",
+      "description": "geo.capabilities 返回标准能力结构",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "vec-001",
+        "method": "geo.capabilities",
+        "params": {}
+      },
+      "expect": {
+        "jsonrpc": "2.0",
+        "hasResult": true,
+        "resultSchema": {
+          "required": ["protocol", "version", "node", "methods"],
+          "protocol": "geomcp",
+          "version": "1.0.0"
+        }
+      }
+    },
+    {
+      "id": "V002-health-rpc",
+      "description": "geo.health 返回 ok 状态",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "vec-002",
+        "method": "geo.health",
+        "params": {}
+      },
+      "expect": {
+        "jsonrpc": "2.0",
+        "hasResult": true,
+        "resultSchema": {
+          "required": ["status", "node", "version"],
+          "status": "ok"
+        }
+      }
+    },
+    {
+      "id": "V003-health-get",
+      "description": "GET /health 返回 ok",
+      "httpMethod": "GET",
+      "httpPath": "/health",
+      "expect": {
+        "status": 200,
+        "bodySchema": {
+          "required": ["status"]
+        }
+      }
+    },
+    {
+      "id": "V004-describe-specific",
+      "description": "geo.describe 查询指定卡片和技能",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "vec-004",
+        "method": "geo.describe",
+        "params": {
+          "geocards": ["amazon-ndvi-2015"],
+          "skills": ["ndvi-analysis"]
+        }
+      },
+      "expect": {
+        "jsonrpc": "2.0",
+        "hasResult": true,
+        "resultSchema": {
+          "required": ["geocards", "skills"]
+        }
+      }
+    },
+    {
+      "id": "V005-execute-success",
+      "description": "geo.execute 成功执行返回结果",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "vec-005",
+        "method": "geo.execute",
+        "params": {
+          "skill": "ndvi-analysis",
+          "geocards": ["amazon-ndvi-2015"],
+          "spatial": {
+            "bbox": [-73.9, -15.0, -44.0, 5.0],
+            "crs": "EPSG:4326"
+          },
+          "temporal": {
+            "start": "2015-01-01",
+            "end": "2015-12-31"
+          },
+          "params": {
+            "red": "red.tif",
+            "nir": "nir.tif"
+          },
+          "request_id": "vec-005"
+        }
+      },
+      "expect": {
+        "jsonrpc": "2.0",
+        "hasResult": true,
+        "resultSchema": {
+          "required": ["status", "skill", "outputs"],
+          "status": "ok"
+        }
+      }
+    },
+    {
+      "id": "V006-execute-bbox-outside-contract",
+      "description": "geo.execute 请求 bbox 超出卡片范围 → error 2000",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "vec-006",
+        "method": "geo.execute",
+        "params": {
+          "skill": "ndvi-analysis",
+          "geocards": ["amazon-ndvi-2015"],
+          "spatial": {
+            "bbox": [100, 0, 110, 10],
+            "crs": "EPSG:4326"
+          },
+          "params": {
+            "red": "red.tif",
+            "nir": "nir.tif"
+          }
+        }
+      },
+      "expect": {
+        "jsonrpc": "2.0",
+        "hasError": true,
+        "errorCode": 2000
+      }
+    },
+    {
+      "id": "V007-execute-unknown-skill",
+      "description": "geo.execute 未知技能 → error 2001",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "vec-007",
+        "method": "geo.execute",
+        "params": {
+          "skill": "nonexistent-skill",
+          "geocards": ["amazon-ndvi-2015"]
+        }
+      },
+      "expect": {
+        "jsonrpc": "2.0",
+        "hasError": true,
+        "errorCode": 2001
+      }
+    },
+    {
+      "id": "V008-execute-missing-required-param",
+      "description": "geo.execute 缺少必需参数 → error 2004",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "vec-008",
+        "method": "geo.execute",
+        "params": {
+          "skill": "ndvi-analysis",
+          "geocards": ["amazon-ndvi-2015"],
+          "params": {
+            "nir": "nir.tif"
+          }
+        }
+      },
+      "expect": {
+        "jsonrpc": "2.0",
+        "hasError": true,
+        "errorCode": 2004
+      }
+    },
+    {
+      "id": "V009-unknown-method",
+      "description": "未知方法 → error -32601",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "vec-009",
+        "method": "geo.unknown",
+        "params": {}
+      },
+      "expect": {
+        "jsonrpc": "2.0",
+        "hasError": true,
+        "errorCode": -32601
+      }
+    },
+    {
+      "id": "V010-missing-jsonrpc",
+      "description": "缺少 jsonrpc 字段 → error -32600",
+      "request": {
+        "id": "vec-010",
+        "method": "geo.health",
+        "params": {}
+      },
+      "expect": {
+        "jsonrpc": "2.0",
+        "hasError": true,
+        "errorCode": -32600
+      }
+    },
+    {
+      "id": "V011-id-echo",
+      "description": "响应 id 必须回显请求 id",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "vec-011-custom-id",
+        "method": "geo.health",
+        "params": {}
+      },
+      "expect": {
+        "id": "vec-011-custom-id"
+      }
+    },
+    {
+      "id": "V012-geocard-not-found",
+      "description": "geo.describe 查询不存在的卡片 → error 2002",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "vec-012",
+        "method": "geo.describe",
+        "params": {
+          "geocards": ["nonexistent-card"]
+        }
+      },
+      "expect": {
+        "jsonrpc": "2.0",
+        "hasError": true,
+        "errorCode": 2002
+      }
+    },
+    {
+      "id": "V013-execution-failed",
+      "description": "geo.execute 执行异常 → error 2003",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "vec-013",
+        "method": "geo.execute",
+        "params": {
+          "skill": "ndvi-analysis",
+          "geocards": ["amazon-ndvi-2015"],
+          "params": {
+            "red": "/data/missing.tif",
+            "nir": "/data/nir.tif"
+          }
+        }
+      },
+      "expect": {
+        "jsonrpc": "2.0",
+        "hasError": true,
+        "errorCode": 2003
+      }
+    }
+  ]
+}

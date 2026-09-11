@@ -1,0 +1,11 @@
+{
+  "jsonrpc": "2.0",
+  "id": "mock-err-2001",
+  "error": {
+    "code": 2001,
+    "message": "Skill not found: unknown-skill",
+    "data": {
+      "available": ["ndvi-analysis", "ndvi-change", "terrain-slope"]
+    }
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "jsonrpc": "2.0",
+  "id": "mock-001",
+  "result": {
+    "protocol": "geomcp",
+    "version": "1.0.0",
+    "node": "execution-plane-mock",
+    "methods": [
+      "geo.capabilities",
+      "geo.describe",
+      "geo.execute",
+      "geo.health"
+    ],
+    "tools": [
+      {
+        "name": "ndvi_analysis",
+        "description": "Compute NDVI from red/NIR rasters",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "red": {"type": "string"},
+            "nir": {"type": "string"},
+            "output": {"type": "string"}
+          }
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "ndvi_raster": {"type": "string"},
+            "stats": {"type": "object"}
+          }
+        }
+      }
+    ],
+    "resources": [],
+    "skills": [
+      {
+        "name": "ndvi-analysis",
+        "description": "Compute NDVI from red/NIR rasters",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "red": {"type": "string"},
+            "nir": {"type": "string"},
+            "output": {"type": "string"}
+          }
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "ndvi_raster": {"type": "string"},
+            "stats": {"type": "object"}
+          }
+        },
+        "geocard_id": "ndvi-analysis-skill"
+      },
+      {
+        "name": "ndvi-change",
+        "description": "Change-detection model: NDVI difference between two time steps (GPU-accelerated)",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "ndvi_a": {"type": "string"},
+            "ndvi_b": {"type": "string"},
+            "output": {"type": "string"}
+          }
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "change_raster": {"type": "string"},
+            "stats": {"type": "object"}
+          }
+        },
+        "geocard_id": "model-ndvi-change"
+      },
+      {
+        "name": "terrain-slope",
+        "description": "Compute terrain slope from DEM (via OGE Coverage.terrSlope)",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "coverage": {"type": "string", "description": "DEM coverage reference"},
+            "outputName": {"type": "string", "description": "Output raster name"}
+          }
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "slope_raster": {"type": "string", "description": "Slope raster path"},
+            "process_id": {"type": "string", "description": "OGE process ID"}
+          }
+        },
+        "geocard_id": "oge-operator:coverage-terrslope"
+      },
+      {
+        "name": "terrain-aspect",
+        "description": "Compute terrain aspect from DEM (via OGE Coverage.terrAspect)",
+        "input_schema": {
+          "type": "object",
+          "required": ["coverage"],
+          "properties": {
+            "coverage": {"type": "string", "description": "DEM coverage reference"},
+            "outputName": {"type": "string", "description": "Output raster name"}
+          }
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "aspect_raster": {"type": "string", "description": "Aspect raster path"},
+            "process_id": {"type": "string", "description": "OGE process ID"}
+          }
+        },
+        "geocard_id": "oge-operator:coverage-terraspect"
+      },
+      {
+        "name": "terrain-hillshade",
+        "description": "Compute hillshade from DEM (via OGE Coverage.terrHillshade)",
+        "input_schema": {
+          "type": "object",
+          "required": ["coverage"],
+          "properties": {
+            "coverage": {"type": "string", "description": "DEM coverage reference"},
+            "outputName": {"type": "string", "description": "Output raster name"}
+          }
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "hillshade_raster": {"type": "string", "description": "Hillshade raster path"},
+            "process_id": {"type": "string", "description": "OGE process ID"}
+          }
+        },
+        "geocard_id": "oge-operator:coverage-terrhillshade"
+      },
+      {
+        "name": "oge-ndvi",
+        "description": "Compute NDVI via OGE platform (via OGE Coverage.ndvi)",
+        "input_schema": {
+          "type": "object",
+          "required": ["coverage"],
+          "properties": {
+            "coverage": {"type": "string", "description": "Red/NIR coverage reference"},
+            "outputName": {"type": "string", "description": "Output raster name"}
+          }
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "ndvi_raster": {"type": "string", "description": "NDVI raster path"},
+            "process_id": {"type": "string", "description": "OGE process ID"}
+          }
+        },
+        "geocard_id": "oge-operator:coverage-ndvi"
+      }
+    ],
+    "geocards": [
+      "amazon-ndvi-2015",
+      "amazon-ndvi-2025",
+      "model-ndvi-change",
+      "compute-node-gpu",
+      "compute-node-cpu",
+      "oge-operator:coverage-terrslope",
+      "oge-operator:coverage-terraspect",
+      "oge-operator:coverage-terrhillshade",
+      "oge-operator:coverage-ndvi"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "jsonrpc": "2.0",
+  "id": "mock-err-2004",
+  "error": {
+    "code": 2004,
+    "message": "Invalid argument: missing required skill input 'red'",
+    "data": {
+      "skill": "ndvi-analysis",
+      "missing": ["red"],
+      "required": ["red", "nir"],
+      "provided": ["nir"]
+    }
+  }
+}

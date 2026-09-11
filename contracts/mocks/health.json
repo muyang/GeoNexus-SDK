@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "node": "execution-plane-mock",
+  "version": "1.0.0",
+  "protocol": "geomcp",
+  "protocol_version": "1.0.0",
+  "time": "2026-09-01T10:00:00Z",
+  "checks": {
+    "registry": "ok",
+    "oge_connectivity": "ok",
+    "llm_connectivity": "ok",
+    "skills_loaded": 3,
+    "geocards_registered": 6
+  }
+}

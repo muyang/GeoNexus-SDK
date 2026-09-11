@@ -1,0 +1,49 @@
+{
+  "demo": "amazon-ndvi",
+  "synthetic": true,
+  "geocard": "sentinel-2-amazon",
+  "skill": "ndvi-analysis",
+  "outputs": {
+    "ndvi_2015": "/Users/mac/Repos/GeoNexus/mvp/examples/amazon_ndvi/output/ndvi_2015.tif",
+    "ndvi_2025": "/Users/mac/Repos/GeoNexus/mvp/examples/amazon_ndvi/output/ndvi_2025.tif",
+    "ndvi_change": "/Users/mac/Repos/GeoNexus/mvp/examples/amazon_ndvi/output/ndvi_change.tif"
+  },
+  "stats_2015": {
+    "count": 345600,
+    "mean": 0.7492518424987793,
+    "median": 0.7501605749130249,
+    "std": 0.0346667617559433,
+    "min": 0.36000001430511475,
+    "max": 0.8971428275108337,
+    "p5": 0.6998134851455688,
+    "p95": 0.7997087836265564,
+    "vegetation_fraction": 1.0,
+    "synthetic": true
+  },
+  "stats_2025": {
+    "count": 345600,
+    "mean": 0.31971824169158936,
+    "median": 0.39978331327438354,
+    "std": 0.14540863037109375,
+    "min": 0.0,
+    "max": 0.5621104836463928,
+    "p5": 0.08656495809555054,
+    "p95": 0.46358683705329895,
+    "vegetation_fraction": 0.6672193287037037,
+    "synthetic": true
+  },
+  "change": {
+    "count": 345600,
+    "mean": -0.42953360080718994,
+    "median": -0.35819804668426514,
+    "std": 0.14817392826080322,
+    "min": -0.8411314487457275,
+    "max": -0.13756728172302246,
+    "p5": -0.6763008236885071,
+    "p95": -0.2684784531593323,
+    "vegetation_fraction": 0.0,
+    "synthetic": true,
+    "mean_change": -0.42953360080718994
+  },
+  "protocol": "geomcp-http"
+}
