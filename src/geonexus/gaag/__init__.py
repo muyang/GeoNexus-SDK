@@ -11,8 +11,21 @@ GAAG 合约注册中心（参考 AutoGIS GAAG 架构）为每个地理空间资�
 - :mod:`geonexus.gaag.registry` — 注册中心 + 语义检索 + 合约门控
 """
 
-from .contract import GAAGContract, GAAGError, GAAGContractSpec
-from .embed import cosine_similarity, embed_card, embed_text, FeatureEmbedder
+from .contract import GAAGContract, GAAGContractSpec, GAAGError
+from .contract_types import (
+    CONTRACT_SCHEMAS,
+    ContractCheckResult,
+    ContractSchema,
+    contract_coverage,
+    detect_asset_type,
+    scan_pointcloud,
+    scan_statistical,
+    scan_temporal,
+    scan_text,
+    scan_volume3d,
+    validate_contract,
+)
+from .embed import FeatureEmbedder, cosine_similarity, embed_card, embed_text
 from .registry import ContractGate, ContractGateResult, GAAGRegistry
 from .scanner import (
     RasterScanner,
@@ -38,4 +51,16 @@ __all__ = [
     "embed_text",
     "cosine_similarity",
     "FeatureEmbedder",
+    # 合约类型扩展
+    "CONTRACT_SCHEMAS",
+    "ContractSchema",
+    "ContractCheckResult",
+    "detect_asset_type",
+    "validate_contract",
+    "contract_coverage",
+    "scan_temporal",
+    "scan_volume3d",
+    "scan_pointcloud",
+    "scan_statistical",
+    "scan_text",
 ]

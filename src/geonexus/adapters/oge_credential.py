@@ -13,9 +13,9 @@ from __future__ import annotations
 
 import logging
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
-from .oge_client import OgeClient, OgeTokenResponse, OgeAppKeyResponse
+from .oge_client import OgeAppKeyResponse, OgeClient, OgeTokenResponse
 
 logger = logging.getLogger(__name__)
 

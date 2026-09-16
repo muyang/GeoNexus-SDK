@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
+
 import pytest
 
 from geonexus.web.auth import (
@@ -9,6 +11,14 @@ from geonexus.web.auth import (
     JWTConfig,
     create_token,
     decode_token,
+)
+
+# RS256 support lives behind the optional ``cryptography`` dependency. Skip
+# those tests when it is unavailable (for example on an interpreter that has no
+# prebuilt wheel for the platform) instead of reporting a spurious failure.
+requires_cryptography = pytest.mark.skipif(
+    find_spec("cryptography") is None,
+    reason="RS256 requires the optional 'cryptography' dependency",
 )
 
 SECRET = "test-secret-that-is-long-enough-0123456789abcdef"
@@ -100,6 +110,7 @@ class TestHS256:
             decode_token(other, token)
 
 
+@requires_cryptography
 class TestRS256:
     def test_roundtrip(self) -> None:
         cfg = _rs256()

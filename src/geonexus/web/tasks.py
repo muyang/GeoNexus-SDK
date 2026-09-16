@@ -16,6 +16,7 @@ a shared store (Redis / Postgres) can be plugged in by subclassing.
 
 from __future__ import annotations
 
+import contextlib
 import threading
 import time
 import uuid
@@ -86,6 +87,14 @@ class TaskManager:
         max_workers: Thread pool size (default: CPU count, capped at 8).
         persist: Optional ``callable(task_dict)`` invoked on every state
             change, for pluggable persistence (JSONL / Redis / …).
+
+    Guarantees for ``persist``: every state transition of a task is reported
+    exactly once (a snapshot is taken inside the same critical section that
+    performs the transition, so a fast task cannot skip ``queued``). Calls are
+    made outside ``_lock``, so a callback may call back into the manager.
+    Ordering across concurrent transitions of the *same* task is not
+    guaranteed; callbacks that need strict order should sort on
+    ``created_at``/``started_at``/``finished_at``.
     """
 
     def __init__(
@@ -129,7 +138,10 @@ class TaskManager:
                 self._run, tid, fn, (tid, *args) if inject else args, kwargs
             )
             self._futures[tid] = future
-        self._notify(tid)
+            # Snapshot QUEUED while still holding the lock: the worker cannot
+            # have started yet, so this transition can never be missed.
+            snapshot = self._snapshot(tid)
+        self._persist_snapshot(snapshot)
         return tid
 
     def _run(self, tid: str, fn: Callable[..., Any], args: tuple, kwargs: dict) -> Any:
@@ -137,7 +149,8 @@ class TaskManager:
         with self._lock:
             task.status = RUNNING
             task.started_at = time.time()
-        self._notify(tid)
+            snapshot = self._snapshot(tid)
+        self._persist_snapshot(snapshot)
         try:
             result = fn(*args, **kwargs)
         except Exception as exc:  # noqa: BLE001 - surface any failure to the API
@@ -145,7 +158,8 @@ class TaskManager:
                 task.status = FAILED
                 task.finished_at = time.time()
                 task.error = str(exc)
-            self._notify(tid)
+                snapshot = self._snapshot(tid)
+            self._persist_snapshot(snapshot)
             return None
         with self._lock:
             if task.cancelled:
@@ -155,7 +169,8 @@ class TaskManager:
                 task.status = DONE
                 task.result = result
             task.finished_at = time.time()
-        self._notify(tid)
+            snapshot = self._snapshot(tid)
+        self._persist_snapshot(snapshot)
         return result
 
     # ------------------------------------------------------------------ #
@@ -202,8 +217,12 @@ class TaskManager:
             if task.status == QUEUED:
                 task.status = CANCELLED
                 task.finished_at = time.time()
-            self._notify(task_id)
-            return task.to_dict()
+            snapshot = self._snapshot(task_id)
+            result = task.to_dict()
+        # Persist outside the lock so a callback that touches the manager
+        # cannot deadlock, and so no user code runs under `_lock`.
+        self._persist_snapshot(snapshot)
+        return result
 
     def should_cancel(self, task_id: str) -> bool:
         """Cooperatation hook for running callables."""
@@ -220,7 +239,8 @@ class TaskManager:
             task.progress = max(0.0, min(1.0, progress))
             if message:
                 task.message = message
-        self._notify(task_id)
+            snapshot = self._snapshot(task_id)
+        self._persist_snapshot(snapshot)
 
     def wait(self, task_id: str, timeout: float | None = None) -> dict[str, Any]:
         """Block until the task reaches a terminal state."""
@@ -234,15 +254,27 @@ class TaskManager:
     # ------------------------------------------------------------------ #
     # Internal
     # ------------------------------------------------------------------ #
-    def _notify(self, task_id: str) -> None:
+    def _snapshot(self, task_id: str) -> dict[str, Any]:
+        """Build the persistence payload for ``task_id``.
+
+        Caller must hold ``_lock``. Taking the snapshot inside the same
+        critical section as the state change is what guarantees every
+        transition is reported: a fast task can otherwise advance to a later
+        state before a caller that re-reads the state gets to look at it.
+        """
+        task = self._tasks[task_id]
+        data = task.to_dict()
+        if task.status in (DONE, CANCELLED):
+            data["result"] = task.result
+        return data
+
+    def _persist_snapshot(self, data: dict[str, Any]) -> None:
+        """Hand a snapshot to the persist callback; never raises."""
         if self._persist is None:
             return
-        try:
-            with self._lock:
-                data = self.get(task_id, include_result=True)
+        # Persistence must never break the task it is reporting on.
+        with contextlib.suppress(Exception):
             self._persist(data)
-        except Exception:  # noqa: BLE001 - persistence must never break the task
-            pass
 
     def close(self) -> None:
         """Shut the worker pool down (waits for running tasks)."""

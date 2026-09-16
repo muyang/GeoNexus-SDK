@@ -100,7 +100,20 @@ def _patch_mcp(monkeypatch: pytest.MonkeyPatch, session: FakeSession) -> None:
             return await session.call_tool(name, arguments)
 
     monkeypatch.setattr(mod, "ClientSession", FakeClientSession)
-    mod._require_sdk()  # ensure the guard passes (SDK installed in env anyway)
+
+    # The stdio() classmethod also needs StdioServerParameters; without the
+    # official SDK installed that symbol is None, so patch a stand-in too.
+    if getattr(mod, "StdioServerParameters", None) is None:
+
+        class FakeStdioParams:
+            def __init__(self, command: str = "", args: Any = None, env: Any = None) -> None:
+                self.command = command
+                self.args = args or []
+                self.env = env
+
+        monkeypatch.setattr(mod, "StdioServerParameters", FakeStdioParams)
+
+    mod._require_sdk()  # ensure the guard passes with the fake session
     return session
 
 

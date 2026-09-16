@@ -15,7 +15,7 @@ import logging
 import sqlite3
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from ..geocard import ContractValidator, GeoCard
 from .contract import GAAGContract, GAAGError
@@ -29,31 +29,56 @@ logger = logging.getLogger(__name__)
 # Registry
 # --------------------------------------------------------------------------- #
 class GAAGRegistry:
-    """In-memory (optionally SQLite-persisted) GAAG contract registry.
+    """GAAG contract registry — 内存/SQLite/pgvector 可插拔后端。
 
     Supports the ``register → search → gate`` lifecycle of the GAAG design.
+
+    Args:
+        persist_path: 可选 SQLite 文件路径（内存注册时持久化）。
+        backend: ``"memory"`` (默认) | ``"pgvector"``。
     """
 
-    def __init__(self, persist_path: str | None = None) -> None:
+    def __init__(
+        self,
+        persist_path: str | None = None,
+        backend: str = "memory",
+    ) -> None:
         self._contracts: dict[str, GAAGContract] = {}
         self._persist_path = persist_path
-        if persist_path:
+        self._backend = backend
+        self._pgvector = None
+        if backend == "pgvector":
+            self._init_pgvector()
+        elif persist_path:
             _ensure_sqlite(persist_path)
             self._load_from_sqlite()
 
+    def _init_pgvector(self) -> None:
+        try:
+            from .pgvector_store import PgVectorStore
+            self._pgvector = PgVectorStore.from_env()
+            if self._pgvector is None:
+                logger.warning("POSTGIS_DSN not set, falling back to memory store")
+                self._backend = "memory"
+            else:
+                logger.info("GAAG using pgvector backend (dim=%d)", 64)
+        except Exception as exc:
+            logger.warning("pgvector init failed, falling back to memory: %s", exc)
+            self._backend = "memory"
+            self._pgvector = None
+
     # -- registration ------------------------------------------------------- #
     def register(self, contract: GAAGContract) -> GAAGContract:
+        if self._pgvector:
+            return self._pgvector.register(contract)
         if contract.contract_id in self._contracts:
             raise GAAGError(f"Contract already registered: {contract.contract_id}")
         self._contracts[contract.contract_id] = contract
         if self._persist_path:
             self._persist_one(contract)
-        logger.info(
-            "GAAG registered %s (type=%s, emb=%s)",
-            contract.contract_id,
-            contract.asset_type,
-            "yes" if contract.semantic_embedding else "no",
-        )
+        logger.info("GAAG registered %s (type=%s, emb=%s)",
+                    contract.contract_id, contract.asset_type,
+                    "yes" if contract.semantic_embedding else "no")
         return contract
 
     def register_asset(
@@ -76,6 +101,8 @@ class GAAGRegistry:
         return self.register(contract)
 
     def remove(self, contract_id: str) -> None:
+        if self._pgvector:
+            return self._pgvector.remove(contract_id)
         self._contracts.pop(contract_id, None)
         if self._persist_path:
             _sqlite(self._persist_path).execute(
@@ -84,19 +111,23 @@ class GAAGRegistry:
 
     # -- query -------------------------------------------------------------- #
     def get(self, contract_id: str) -> GAAGContract | None:
+        if self._pgvector:
+            return self._pgvector.get(contract_id)
         return self._contracts.get(contract_id)
 
     def list(self, asset_type: str | None = None) -> list[GAAGContract]:
+        if self._pgvector:
+            return self._pgvector.list(asset_type)
         contracts = list(self._contracts.values())
         if asset_type:
             contracts = [c for c in contracts if c.asset_type == asset_type]
         return contracts
 
-    def search_semantic(self, query_text: str, k: int = 5) -> list[tuple[GAAGContract, float]]:
-        """Semantic top-k retrieval by cosine similarity of embeddings.
-
-        Contracts without an embedding sort last (score 0.0).
-        """
+    def search_semantic(
+        self, query_text: str, k: int = 5, bbox: list[float] | None = None
+    ) -> list[tuple[GAAGContract, float]]:
+        if self._pgvector:
+            return self._pgvector.search_semantic(query_text, k=k, bbox=bbox)
         from .embed import embed_text
 
         qvec = embed_text(query_text)
@@ -104,11 +135,20 @@ class GAAGRegistry:
         for contract in self._contracts.values():
             emb = contract.semantic_embedding
             score = cosine_similarity(qvec, emb) if emb else 0.0
+            # Simple bbox filter (memory)
+            if bbox and contract.scanned_meta.get("bbox"):
+                cb = contract.scanned_meta["bbox"]
+                if len(cb) >= 4 and (
+                    cb[2] < bbox[0] or cb[0] > bbox[2] or cb[3] < bbox[1] or cb[1] > bbox[3]
+                ):
+                    continue
             scored.append((contract, score))
         scored.sort(key=lambda item: item[1], reverse=True)
         return scored[:k]
 
     def count(self) -> int:
+        if self._pgvector:
+            return self._pgvector.count()
         return len(self._contracts)
 
     # -- persistence -------------------------------------------------------- #

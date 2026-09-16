@@ -13,18 +13,19 @@ from __future__ import annotations
 
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any
 
 from .oge_client import (
+    OgeAuthError,
     OgeClient,
     OgeClientError,
-    OgeAuthError,
-    OgeExecutionError,
     OgeExecuteResponse,
+    OgeExecutionError,
     OgeProcessStatus,
 )
-from .oge_credential import OgeCredentialManager, OgeCredential
+from .oge_credential import OgeCredential, OgeCredentialManager
 
 logger = logging.getLogger(__name__)
 
@@ -148,7 +149,7 @@ class OgeExecutor:
 
         # 3. 轮询状态
         try:
-            status = self._get_poller().poll_until_done(
+            self._get_poller().poll_until_done(
                 process_id, tk=tk, timeout=self.poll_timeout,
             )
         except TimeoutError as exc:

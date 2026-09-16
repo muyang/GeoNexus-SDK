@@ -13,7 +13,6 @@ import hashlib
 import logging
 import os
 import re
-from typing import Any
 
 from ..geocard import GeoCard
 
@@ -85,7 +84,8 @@ def cosine_similarity(a: list[float], b: list[float]) -> float:
     """Cosine similarity between two vectors (used by the semantic gate)."""
     if not a or not b or len(a) != len(b):
         return 0.0
-    dot = sum(x * y for x, y in zip(a, b))
+    # 长度已在上面校验；strict= 需 Python 3.10+，此处保持 3.9 兼容
+    dot = sum(x * y for x, y in zip(a, b))  # noqa: B905
     na = sum(x * x for x in a) ** 0.5 or 1.0
     nb = sum(y * y for y in b) ** 0.5 or 1.0
     return dot / (na * nb)

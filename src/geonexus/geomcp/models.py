@@ -49,6 +49,20 @@ class ExecuteParams(BaseModel):
         default=None, description="Optional caller-provided correlation id."
     )
 
+    # ── GeoMCP V2 增强字段 ──
+    contract_binding: str | None = Field(
+        default=None,
+        description="V2: 绑定的 GAAG 合约 ID，执行前通过 ContractGate 双验证",
+    )
+    pushdown_spec: dict[str, Any] | None = Field(
+        default=None,
+        description="V2: 计算下推规格 {'strategy':'local'|'migrate'|'auto'}",
+    )
+    federated_sources: list[str] | None = Field(
+        default=None,
+        description="V2: 联邦数据源引用列表（跨注册中心 URI）",
+    )
+
 
 class DescribeParams(BaseModel):
     """Parameters of ``geo.describe``."""

@@ -15,7 +15,7 @@ from typing import Any
 
 from ..geocard.builder import GeoCardBuilder
 from ..geocard.model import Band
-from .contract import GAAGContract, GAAGContractSpec, _now
+from .contract import GAAGContract, _now
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +88,7 @@ def scan_vector(path: str | Path) -> dict[str, Any]:
     except ImportError:
         raise GAAGUnsupportedError(
             f"fiona required to scan {suffix} files; install 'fiona' or use GeoJSON"
-        )
+        ) from None
 
 
 def _scan_geojson(path: Path) -> dict[str, Any]:
@@ -158,19 +158,34 @@ def scan_asset_to_contract(
     """Scan a geospatial asset file into a full GAAGContract.
 
     This is the ``scan → metadata → register`` step of the GAAG pipeline.
-    The caller may supply an ``embedding`` computed from the description
-    (see :mod:`geonexus.gaag.embed`).
+    Supports all 7 contract types (raster/vector/temporal/volume3d/
+    pointcloud/statistical/text). The caller may supply an ``embedding``
+    computed from the description (see :mod:`geonexus.gaag.embed`).
     """
     path = Path(path)
-    asset_type = _detect_asset_type(path)
+
+    # 扩展类型优先（7 类），未命中再回退到引擎内置的 raster/vector 探测
+    from .contract_types import CONTRACT_SCHEMAS, SCANNERS, detect_asset_type, validate_contract
+
+    asset_type = detect_asset_type(path)
+    if asset_type == "other":
+        asset_type = _detect_asset_type(path)
     logger.info("GAAG scan: %s (type=%s)", path, asset_type)
 
-    if asset_type == "raster":
+    if asset_type in SCANNERS:
+        meta = SCANNERS[asset_type](path)
+    elif asset_type == "raster":
         meta = scan_raster(path)
     elif asset_type == "vector":
         meta = scan_vector(path)
     else:
         raise GAAGUnsupportedError(f"Unsupported asset type for scan: {path}")
+
+    # 合约字段完整性校验（注册入口把关）
+    if asset_type in CONTRACT_SCHEMAS:
+        check = validate_contract(asset_type, meta)
+        if not check.satisfied:
+            logger.warning("GAAG contract incomplete for %s: %s", path, check.missing_fields)
 
     cid = contract_id or f"contract.{path.stem}"
     card = (
@@ -184,11 +199,21 @@ def scan_asset_to_contract(
         .spatial(bbox=meta.get("bbox"), crs=meta.get("crs"), resolution=meta.get("resolution"))
         .build()
     )
+    # 栅格波段定义
     if asset_type == "raster":
         for band in meta.get("bands", []):
             card.bands.append(
                 Band(name=band["name"], dtype=band.get("dtype"), description=f"Band {band['index']}")
             )
+    # 时序范围
+    if asset_type == "temporal" and meta.get("time_start"):
+        from ..geocard.model import TemporalSection
+
+        card.temporal = TemporalSection(
+            start=meta["time_start"],
+            end=meta.get("time_end"),
+            interval=meta.get("time_interval"),
+        )
 
     provenance = f"scanned:{path.name}"
     return GAAGContract(

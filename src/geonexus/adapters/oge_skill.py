@@ -12,14 +12,15 @@ OGE 算子的执行在 Python 执行面完成，对调用方透明。
 from __future__ import annotations
 
 import logging
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from geonexus.geonode import Skill
 
-from .oge_credential import OgeCredential, OgeCredentialManager
-from .oge_executor import OgeExecutor
-from .oge_protocol import OgeProtocolMapper, oge_ref_to_geocard_id
 from .oge_client import OgeClient
+from .oge_credential import OgeCredential
+from .oge_executor import OgeExecutor
+from .oge_protocol import OgeProtocolMapper
 
 logger = logging.getLogger(__name__)
 

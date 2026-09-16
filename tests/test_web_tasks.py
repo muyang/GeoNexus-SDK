@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import threading
 import time
 
 import pytest
@@ -72,17 +73,36 @@ class TestTaskManager:
             tm.get("nope")
 
     def test_progress_updates(self) -> None:
+        events: list[dict] = []
+
         def worker(task_id: str) -> str:
             tm.update_progress(task_id, 0.5, "halfway")
             time.sleep(0.05)
             tm.update_progress(task_id, 1.0, "done step")
             return "ok"
 
-        with TaskManager() as tm:
+        # max_workers=1 plus a gate task holds `worker` in QUEUED until we have
+        # observed that state, so the assertion cannot race the worker pool.
+        gate = threading.Event()
+        with TaskManager(max_workers=1, persist=events.append) as tm:
+            blocking = tm.submit(lambda: gate.wait(10))
             tid = tm.submit(worker, message="start")
             assert tm.get(tid)["status"] == QUEUED
-            tm.wait(tid, timeout=10)
-            assert tm.get(tid)["status"] == DONE
+            gate.set()
+            tm.wait(blocking, timeout=10)
+            state = tm.wait(tid, timeout=10)
+
+        assert state["status"] == DONE
+        assert state["result"] == "ok"
+        assert state["progress"] == 1.0
+        assert state["message"] == "done step"
+
+        # Every transition is reported, including the intermediate progress
+        # update. Ordering is not asserted: it is not guaranteed across threads.
+        seen = [e for e in events if e["id"] == tid]
+        assert any(e["status"] == QUEUED for e in seen)
+        assert any(e["progress"] == 0.5 for e in seen)
+        assert any(e["status"] == DONE for e in seen)
 
     def test_should_cancel_cooperation(self) -> None:
         def worker(task_id: str) -> str:

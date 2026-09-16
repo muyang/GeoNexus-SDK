@@ -11,14 +11,13 @@ from rasterio.transform import from_bounds
 
 from geonexus.gaag import (
     ContractGate,
-    GAAGContract,
     GAAGError,
     GAAGRegistry,
+    cosine_similarity,
     embed_card,
     scan_asset_to_contract,
     scan_raster,
     scan_vector,
-    cosine_similarity,
 )
 
 # --------------------------------------------------------------------------- #

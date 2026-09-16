@@ -17,11 +17,9 @@ keys (``X-API-Key``) and forwards them on GeoMCP calls, so browser clients
 only ever hold a JWT, never node keys.
 """
 
-from __future__ import annotations
-
 import time
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Optional
 
 import jwt
 from fastapi import HTTPException, Request, status
@@ -61,12 +59,12 @@ class JWTConfig:
         ttl_seconds: Token lifetime; ``exp`` = ``iat`` + ttl.
     """
 
-    secret: str | None = None
-    private_key: str | None = None
-    public_key: str | None = None
-    algorithm: str | None = None
-    issuer: str | None = None
-    audience: str | None = None
+    secret: Optional[str] = None
+    private_key: Optional[str] = None
+    public_key: Optional[str] = None
+    algorithm: Optional[str] = None
+    issuer: Optional[str] = None
+    audience: Optional[str] = None
     ttl_seconds: int = DEFAULT_TTL
 
     def __post_init__(self) -> None:
@@ -97,9 +95,9 @@ def _signing_key(config: JWTConfig) -> str:
 def create_token(
     config: JWTConfig,
     subject: str,
-    roles: list[str] | None = None,
-    extra_claims: dict[str, Any] | None = None,
-    ttl_seconds: int | None = None,
+    roles: Optional[list[str]] = None,
+    extra_claims: Optional[dict[str, Any]] = None,
+    ttl_seconds: Optional[int] = None,
 ) -> str:
     """Issue a signed JWT for ``subject``.
 
@@ -186,7 +184,7 @@ class APIKeyAuth:
     ``X-API-Key`` convention so the same key material works everywhere.
     """
 
-    def __init__(self, api_keys: set[str] | None = None) -> None:
+    def __init__(self, api_keys: Optional[set[str]] = None) -> None:
         self.api_keys = set(api_keys or ())
 
     def __call__(self, request: Request) -> None:
@@ -200,6 +198,6 @@ class APIKeyAuth:
             )
 
 
-def require_api_key(api_keys: set[str] | None) -> APIKeyAuth:
+def require_api_key(api_keys: Optional[set[str]]) -> APIKeyAuth:
     """Return an :class:`APIKeyAuth` dependency for the given key set."""
     return APIKeyAuth(api_keys)

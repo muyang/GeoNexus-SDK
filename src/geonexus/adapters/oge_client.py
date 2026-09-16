@@ -13,7 +13,6 @@ OGE（Open Earth Engine）计算中心提供标准 REST API。本客户端封装
 from __future__ import annotations
 
 import logging
-import time
 from dataclasses import dataclass
 from typing import Any
 
