@@ -77,6 +77,16 @@ exclude = [".venv", "output", "build", "dist"]
 select = ["E", "F", "I", "B", "UP", "SIM"]
 ignore = ["E501", "SIM108", "B008"]  # B008: FastAPI Depends() in defaults is idiomatic
 
+[tool.ruff.lint.per-file-ignores]
+# web/auth.py — BearerAuth/APIKeyAuth are consumed as *class-instance* FastAPI
+# dependencies. FastAPI resolves their `__call__` signature via
+# `getattr(instance, "__globals__", {})`, which is empty for instances, so a
+# string annotation like "Request" cannot be resolved on Python < 3.10 and the
+# whole app fails to build. The module therefore must NOT use
+# `from __future__ import annotations`, which in turn forbids PEP 604 unions —
+# hence UP045 must stay off for this file only.
+"src/geonexus/web/auth.py" = ["UP045"]
+
 [tool.mypy]
 python_version = "3.12"
 check_untyped_defs = true
