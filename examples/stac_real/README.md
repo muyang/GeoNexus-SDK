@@ -25,7 +25,7 @@ it never claims synthetic data is real.
 ## Run it
 
 ```bash
-cd /Users/mac/Repos/GeoNexus/mvp
+cd /path/to/GeoNexus-SDK
 .venv/bin/geonexus demo stac-real            # needs network access
 # or with a specific item:
 .venv/bin/geonexus demo stac-real --item https://.../items/S2B_...

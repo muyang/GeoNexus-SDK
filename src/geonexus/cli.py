@@ -216,7 +216,7 @@ def cmd_demo(args: argparse.Namespace) -> int:
     if examples_dir is None:
         print(
             "ERROR: could not locate the bundled examples (amazon_ndvi). "
-            "Run from the GeoNexus mvp repository or set GEONEXUS_EXAMPLES_DIR.",
+            "Run from the GeoNexus core directory or set GEONEXUS_EXAMPLES_DIR.",
             file=sys.stderr,
         )
         return 1
@@ -550,7 +550,7 @@ def cmd_demo_federated(args: argparse.Namespace) -> int:
     if examples_dir is None:
         print(
             "ERROR: could not locate the bundled examples. "
-            "Run from the GeoNexus mvp repository or set GEONEXUS_EXAMPLES_DIR.",
+            "Run from the GeoNexus core directory or set GEONEXUS_EXAMPLES_DIR.",
             file=sys.stderr,
         )
         return 1
@@ -570,7 +570,7 @@ def cmd_demo_stac_real(args: argparse.Namespace) -> int:
     if examples_dir is None:
         print(
             "ERROR: could not locate the bundled examples. "
-            "Run from the GeoNexus mvp repository or set GEONEXUS_EXAMPLES_DIR.",
+            "Run from the GeoNexus core directory or set GEONEXUS_EXAMPLES_DIR.",
             file=sys.stderr,
         )
         return 1
@@ -751,7 +751,7 @@ def cmd_demo_agent(args: argparse.Namespace) -> int:
     if examples_dir is None:
         print(
             "ERROR: could not locate the bundled examples. "
-            "Run from the GeoNexus mvp repository or set GEONEXUS_EXAMPLES_DIR.",
+            "Run from the GeoNexus core directory or set GEONEXUS_EXAMPLES_DIR.",
             file=sys.stderr,
         )
         return 1
@@ -771,7 +771,7 @@ def cmd_demo_ogc_process(args: argparse.Namespace) -> int:
     if examples_dir is None:
         print(
             "ERROR: could not locate the bundled examples. "
-            "Run from the GeoNexus mvp repository or set GEONEXUS_EXAMPLES_DIR.",
+            "Run from the GeoNexus core directory or set GEONEXUS_EXAMPLES_DIR.",
             file=sys.stderr,
         )
         return 1
@@ -923,7 +923,7 @@ def cmd_demo_ogc_coverage(args: argparse.Namespace) -> int:
     if examples_dir is None:
         print(
             "ERROR: could not locate the bundled examples. "
-            "Run from the GeoNexus mvp repository or set GEONEXUS_EXAMPLES_DIR.",
+            "Run from the GeoNexus core directory or set GEONEXUS_EXAMPLES_DIR.",
             file=sys.stderr,
         )
         return 1
@@ -939,7 +939,7 @@ def cmd_demo_ogc_pipeline(args: argparse.Namespace) -> int:
     if examples_dir is None:
         print(
             "ERROR: could not locate the bundled examples. "
-            "Run from the GeoNexus mvp repository or set GEONEXUS_EXAMPLES_DIR.",
+            "Run from the GeoNexus core directory or set GEONEXUS_EXAMPLES_DIR.",
             file=sys.stderr,
         )
         return 1
@@ -955,7 +955,7 @@ def cmd_demo_federation_deep(args: argparse.Namespace) -> int:
     if examples_dir is None:
         print(
             "ERROR: could not locate the bundled examples. "
-            "Run from the GeoNexus mvp repository or set GEONEXUS_EXAMPLES_DIR.",
+            "Run from the GeoNexus core directory or set GEONEXUS_EXAMPLES_DIR.",
             file=sys.stderr,
         )
         return 1
@@ -1020,7 +1020,7 @@ def cmd_demo_ggihs(args: argparse.Namespace) -> int:
     if examples_dir is None:
         print(
             "ERROR: could not locate the bundled examples. "
-            "Run from the GeoNexus mvp repository or set GEONEXUS_EXAMPLES_DIR.",
+            "Run from the GeoNexus core directory or set GEONEXUS_EXAMPLES_DIR.",
             file=sys.stderr,
         )
         return 1
@@ -1062,7 +1062,7 @@ def cmd_demo_stac_write(args: argparse.Namespace) -> int:
     if examples_dir is None:
         print(
             "ERROR: could not locate the bundled examples. "
-            "Run from the GeoNexus mvp repository or set GEONEXUS_EXAMPLES_DIR.",
+            "Run from the GeoNexus core directory or set GEONEXUS_EXAMPLES_DIR.",
             file=sys.stderr,
         )
         return 1

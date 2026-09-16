@@ -28,7 +28,7 @@ intersect the GeoCard's spatial extent is refused by the node.
 ## Run it
 
 ```bash
-cd /Users/mac/Repos/GeoNexus/mvp
+cd /path/to/GeoNexus-SDK
 .venv/bin/geonexus demo amazon-ndvi
 ```
 

@@ -46,7 +46,7 @@ Claude Desktop `claude_desktop_config.json`:
 {
   "mcpServers": {
     "geonexus": {
-      "command": "/Users/mac/Repos/GeoNexus/mvp/.venv/bin/geonexus",
+      "command": "/path/to/GeoNexus-SDK/.venv/bin/geonexus",
       "args": ["mcp", "run"]
     }
   }

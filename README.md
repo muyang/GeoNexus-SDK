@@ -78,7 +78,7 @@ pip install "geonexus-sdk[mcp]"   # + Model Context Protocol bridge support
 ### Install from source (development)
 
 ```bash
-cd /Users/mac/Repos/GeoNexus/mvp
+cd /path/to/GeoNexus-SDK
 python3.12 -m venv .venv
 .venv/bin/pip install -e ".[dev]"
 
@@ -139,7 +139,7 @@ starting a live node and calling it with `curl`.
 ## Repository layout
 
 ```
-mvp/
+GeoNexus-SDK/
 ├── schemas/geocard.schema.json   # Official GeoCard JSON Schema (draft 2020-12)
 ├── src/geonexus/
 │   ├── geocard/                  # model, builder, loader, validator (contract)

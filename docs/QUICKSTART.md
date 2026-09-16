@@ -6,7 +6,7 @@ and tested with Python 3.12) and `git`.
 ## 1. Create the environment (≈2 min)
 
 ```bash
-cd /Users/mac/Repos/GeoNexus/mvp
+cd /path/to/GeoNexus-SDK
 python3.12 -m venv .venv                 # or: python3.11 -m venv .venv
 .venv/bin/pip install --upgrade pip
 .venv/bin/pip install -e ".[dev]"

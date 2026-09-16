@@ -23,7 +23,7 @@ def _run_from_package_root():
 
     Some tests reference bundled fixtures via relative paths (for example
     ``examples/amazon_ndvi/geocard.yaml``). CI supplies that working directory
-    via ``working-directory: mvp``; doing it here as well means running
+    via ``working-directory: core``; doing it here as well means running
     ``pytest`` from the repository root gives the same result instead of
     spurious "file not found" failures.
     """
