@@ -163,6 +163,7 @@ class GeoNode:
         self,
         registry_url: str,
         endpoint: str | None = None,
+        api_key: str | None = None,
     ) -> GeoNode:
         """Register all of this node's GeoCards and GeoSkills at a registry.
 
@@ -171,6 +172,11 @@ class GeoNode:
             endpoint: The URL clients should use to reach this node.
                 Defaults to ``http://{host}:{port}``; pass the actual port
                 explicitly when the node runs on an ephemeral port.
+            api_key: ``X-API-Key`` for a registry started with ``--api-key``.
+                Registering is a write, and the registry enforces the key on
+                writes — without this, advertising against an authenticated
+                registry fails with 401. Note this must be the *registry's*
+                key, which is not necessarily the node's own key.
 
         Cards and skills are descriptions only — the registry never receives
         data or code.
@@ -178,7 +184,7 @@ class GeoNode:
         from ..registry import RegistryClient, RegistryClientError
 
         endpoint = endpoint or f"http://{self.host}:{self.port}"
-        with RegistryClient(registry_url) as registry:
+        with RegistryClient(registry_url, api_key=api_key) as registry:
             for card in self.geocard_registry.list_cards():
                 try:
                     registry.register(card, node_url=endpoint)

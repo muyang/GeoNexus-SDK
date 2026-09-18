@@ -7,7 +7,7 @@ from test_registry import _start_server
 from geonexus.federation import FederatedExecutionError, FederatedGeoMCPClient
 from geonexus.geocard import GeoCardBuilder
 from geonexus.geonode import GeoNode
-from geonexus.registry import RegistryServer
+from geonexus.registry import RegistryClientError, RegistryServer
 
 
 def _card(card_id: str):
@@ -121,5 +121,37 @@ def test_federated_requires_geocards() -> None:
                 raise AssertionError("expected failure")
             except FederatedExecutionError as exc:
                 assert "geocard" in exc.message
+    finally:
+        reg.stop()
+
+
+def test_advertise_against_authenticated_registry() -> None:
+    """`advertise()` 必须能把 registry 的 API key 传下去。
+
+    注册是写操作，registry 用 `--api-key` 启动时会在写接口上强制校验。
+    之前 `advertise()` 不接受 api_key，于是对着带鉴权的 registry 广告必然
+    401，并且会把调用方（ExecutionPlane 的启动流程）整个打断。
+    """
+    registry = RegistryServer(name="auth-registry", api_keys={"reg-key"})
+    reg = _start_server(registry.create_app(), 0)
+    reg_url = f"http://127.0.0.1:{reg.port}"
+
+    node = GeoNode(name="auth-node", port=0)
+    node.register_geocard(_card("auth-asset"))
+    node.register_skill(name="echo", handler=_echo_skill_handler,
+                        input_schema={"required": []})
+
+    try:
+        # 不带 key：写被拒
+        try:
+            node.advertise(reg_url, endpoint="http://127.0.0.1:9999")
+            raise AssertionError("expected 401 without api_key")
+        except RegistryClientError as exc:
+            assert exc.code == 401, exc
+
+        # 带对 key：注册成功
+        node.advertise(reg_url, endpoint="http://127.0.0.1:9999", api_key="reg-key")
+        assert registry.store.count() == 1
+        assert {e.skill.name for e in registry.store.list_skills()} == {"echo"}
     finally:
         reg.stop()
