@@ -70,6 +70,21 @@ def test_cli_web_start_help(capsys) -> None:
     assert "--registry" in out
     assert "--node-api-key" in out
     assert "--cors-origin" in out
+    assert "--user" in out
+
+
+def test_split_users_parses_and_rejects() -> None:
+    """``--user`` 是本地唯一能登上 Web 层的入口，解析必须严格且容忍密码里的 =。"""
+    from geonexus.cli import _split_users
+
+    assert _split_users(None) == []
+    assert _split_users(["admin=admin"]) == [("admin", "admin")]
+    assert _split_users(["d=p@ss=word"]) == [("d", "p@ss=word")]
+    assert _split_users(["a=1", "b=2"]) == [("a", "1"), ("b", "2")]
+
+    for bad in (["admin"], ["=x"], ["x="]):
+        with pytest.raises(SystemExit):
+            _split_users(bad)
 
 
 def test_cli_card_import_ogc_records_help(capsys) -> None:

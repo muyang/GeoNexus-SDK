@@ -990,16 +990,25 @@ def cmd_web_start(args: argparse.Namespace) -> int:
     from .web import JWTConfig, WebConfig, run_web
 
     jwt = JWTConfig(secret=args.jwt_secret)
+    users = dict(_split_users(args.user))
     config = WebConfig(
         registry_url=args.registry,
         jwt=jwt,
         default_node_url=args.node,
         node_api_keys=dict(_split_node_keys(args.node_api_key)),
+        users=users,
     )
     print(
         f"Starting GeoNexus Web BFF on {args.host}:{args.port} "
         f"(registry={args.registry}, node={args.node or 'none'}) ..."
     )
+    if not users:
+        # 说清楚为什么：登录接口没有可用凭据，所有需要 JWT 的路由都进不去。
+        print(
+            "WARNING: no --user given, so /api/auth/login cannot succeed and "
+            "every JWT-protected route is unreachable. Add e.g. --user admin=admin.",
+            file=sys.stderr,
+        )
     run_web(config, host=args.host, port=args.port, cors_origins=args.cors_origin)
     return 0
 
@@ -1012,6 +1021,26 @@ def _split_node_keys(pairs: list[str] | None) -> list[tuple[str, str]]:
             raise SystemExit(f"ERROR: --node-api-key expects URL=KEY, got {pair!r}")
         url, key = pair.split("=", 1)
         result.append((url, key))
+    return result
+
+
+def _split_users(pairs: list[str] | None) -> list[tuple[str, str]]:
+    """Parse ``username=password`` pairs for the Web layer's demo login.
+
+    ``WebConfig.users`` has no default, so without this the login endpoint can
+    only answer "Invalid credentials" and every authenticated route is
+    unreachable in a local run.
+    """
+    result: list[tuple[str, str]] = []
+    for pair in pairs or []:
+        if "=" not in pair:
+            raise SystemExit(f"ERROR: --user expects USERNAME=PASSWORD, got {pair!r}")
+        username, password = pair.split("=", 1)
+        if not username or not password:
+            raise SystemExit(
+                f"ERROR: --user needs a non-empty username and password, got {pair!r}"
+            )
+        result.append((username, password))
     return result
 
 
@@ -1414,6 +1443,16 @@ def build_parser() -> argparse.ArgumentParser:
         action="append",
         default=None,
         help="Node credential as URL=KEY (repeatable)",
+    )
+    p_web_start.add_argument(
+        "--user",
+        action="append",
+        default=None,
+        help=(
+            "Demo login credential as USERNAME=PASSWORD (repeatable). "
+            "Without it /api/auth/login always fails and JWT-protected routes "
+            "are unreachable."
+        ),
     )
     p_web_start.add_argument(
         "--cors-origin",
