@@ -12,6 +12,7 @@
 
 from __future__ import annotations
 
+import builtins
 import json
 import os
 import threading
@@ -107,7 +108,7 @@ class TaskStore:
         owner: str | None = None,
         tenant: str | None = None,
         limit: int = 100,
-    ) -> list[GeoTask]:
+    ) -> builtins.list[GeoTask]:
         wanted = set(states) if states is not None else None
         with self._lock:
             out = [
@@ -277,7 +278,9 @@ class TaskStore:
     def _on_event(self, task_id: str, payload: dict[str, Any]) -> None:
         """持久化钩子（:class:`JsonTaskStore` 覆写）。"""
 
-    def events_since(self, task_id: str, since: int = 0) -> tuple[list[dict[str, Any]], int]:
+    def events_since(
+        self, task_id: str, since: int = 0
+    ) -> tuple[builtins.list[dict[str, Any]], int]:
         """取 ``seq > since`` 的事件，返回 ``(events, latest_seq)``。
 
         历史被裁掉时抛 :class:`EventHistoryGone`——**不允许静默从头开始**。
@@ -289,7 +292,7 @@ class TaskStore:
                 raise EventHistoryGone(task_id, since, history[0]["seq"])
             return [e for e in history if e["seq"] > since], latest
 
-    def subscribe(self, task_id: str, since: int = 0) -> list[dict[str, Any]]:
+    def subscribe(self, task_id: str, since: int = 0) -> builtins.list[dict[str, Any]]:
         """便捷方法：只要事件不要 latest。"""
         return self.events_since(task_id, since)[0]
 

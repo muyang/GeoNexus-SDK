@@ -409,45 +409,45 @@ class GeoMCPServer:
         else:
             cards = list(self._cards.values())
         if params.geocards is not None:
-            wanted = set(params.geocards)
-            cards = [c for c in cards if c.id in wanted]
-            missing = sorted(wanted - {c.id for c in cards})
-            if missing:
+            wanted_cards = set(params.geocards)
+            cards = [c for c in cards if c.id in wanted_cards]
+            missing_cards: list[str] = sorted(wanted_cards - {c.id for c in cards})
+            if missing_cards:
                 raise GeoMCPProtocolError(
                     GEOCARD_NOT_FOUND,
-                    f"GeoCard(s) not found: {missing}",
-                    {"missing": missing},
+                    f"GeoCard(s) not found: {missing_cards}",
+                    {"missing": missing_cards},
                 )
         if self.skill_registry is not None:
             skills = self.skill_registry.list_skills()
         else:
             skills = []
         if params.skills is not None:
-            wanted = set(params.skills)
-            skills = [s for s in skills if s.name in wanted]
-            missing = sorted(wanted - {s.name for s in skills})
-            if missing:
+            wanted_skills = set(params.skills)
+            skills = [s for s in skills if s.name in wanted_skills]
+            missing_skills: list[str] = sorted(wanted_skills - {s.name for s in skills})
+            if missing_skills:
                 raise GeoMCPProtocolError(
                     SKILL_NOT_FOUND,
-                    f"Skill(s) not found: {missing}",
-                    {"missing": missing},
+                    f"Skill(s) not found: {missing_skills}",
+                    {"missing": missing_skills},
                 )
         recipes = self._recipe_entries()
         if params.recipes is not None:
-            wanted = list(params.recipes)
+            wanted_recipes = list(params.recipes)
             selected: list[Any] = []
-            missing = []
-            for address in wanted:
+            missing_recipes: list[str] = []
+            for address in wanted_recipes:
                 found = self._resolve_recipe(address)
                 if found is None:
-                    missing.append(address)
+                    missing_recipes.append(address)
                 else:
                     selected.append(found)
-            if missing:
+            if missing_recipes:
                 raise GeoMCPProtocolError(
                     RECIPE_NOT_FOUND,
-                    f"Recipe(s) not found: {missing}",
-                    {"missing": missing},
+                    f"Recipe(s) not found: {missing_recipes}",
+                    {"missing": missing_recipes},
                 )
             recipes = selected
         return {
@@ -643,21 +643,21 @@ class GeoMCPServer:
             spatial = params.spatial
             temporal = params.temporal
             for card in resolved_cards:
-                result = self.contract_validator.check(
+                check = self.contract_validator.check(
                     card,
                     bbox=spatial.bbox if spatial else None,
                     crs=spatial.crs if spatial else None,
                     start=temporal.start if temporal else None,
                     end=temporal.end if temporal else None,
                 )
-                if not result.satisfied:
+                if not check.satisfied:
                     raise GeoMCPProtocolError(
                         CONTRACT_NOT_SATISFIED,
                         f"GeoCard '{card.id}' does not satisfy the request contract",
                         {
                             "geocard": card.id,
-                            "reasons": result.reasons,
-                            "warnings": result.warnings,
+                            "reasons": check.reasons,
+                            "warnings": check.warnings,
                         },
                     )
 
@@ -683,6 +683,7 @@ class GeoMCPServer:
         #    The delegation marker is internal and must not reach handlers.
         clean_params = params.model_copy(deep=True)
         clean_params.params.pop(DELEGATE_MARKER, None)
+        result: dict[str, Any]
         if self.engine is not None:
             result = self.engine.execute(clean_params)
         else:
@@ -763,7 +764,8 @@ class GeoMCPServer:
 
     def _delegate_to_owner(self, params: ExecuteParams,
                            resolved_cards: list[GeoCard],
-                           known_owners: dict[str, str] | None = None) -> dict[str, Any]:
+                           known_owners: dict[str, str] | None = None
+                           ) -> tuple[dict[str, Any], str]:
         """push 决策落地：解析属主节点并委托（复用一跳委托语义）。"""
         if not self.registry_url:
             raise GeoMCPProtocolError(

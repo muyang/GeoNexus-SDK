@@ -152,7 +152,8 @@ class ModelBackend:
         if not outcome.model_id:
             outcome.model_id = getattr(card, "id", None)
         with self._lock:
-            self._last[outcome.request_id or getattr(card, "id", "")] = outcome
+            key = outcome.request_id or getattr(card, "id", None) or ""
+            self._last[key] = outcome
         return outcome
 
     def provider_names(self) -> list[str]:

@@ -116,7 +116,16 @@ no_implicit_optional = true
 exclude = ["examples/"]
 
 [[tool.mypy.overrides]]
-module = ["rasterio", "rasterio.*"]
+# 第三方可选依赖：运行时有 try/except 或 extras 保护，这里不要求类型存根。
+# 未列出的模块仍会报错，避免把"没装 stub"和"代码真有问题"混为一谈。
+module = [
+    "rasterio", "rasterio.*",
+    "yaml",
+    "jsonschema", "jsonschema.*",
+    "psycopg2", "psycopg2.*",
+    "fiona",
+    "neo4j", "neo4j.*",
+]
 ignore_missing_imports = true
 
 [tool.coverage.run]

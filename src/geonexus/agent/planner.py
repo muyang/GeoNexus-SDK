@@ -603,7 +603,7 @@ class PlanExecutor:
                 )
             step.result = result
             step.status = "done"
-        except self.step_error_types as exc:  # type: ignore[misc]
+        except self.step_error_types as exc:
             logger.warning("Plan step %d failed: %s", step.step_id, exc)
             step.status = "failed"
             step.error = str(exc)

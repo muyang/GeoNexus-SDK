@@ -24,9 +24,7 @@ from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
-
-from .geocard import GeoCard
+from typing import TYPE_CHECKING, Any, Protocol
 
 if TYPE_CHECKING:
     from .registry import RegistryClient
@@ -135,8 +133,19 @@ def _gpu_satisfies(required: Any, provided: Any) -> bool:
     )
 
 
+class _RuntimeHolder(Protocol):
+    """``match_resource`` 真正依赖的最小契约：一个 id 和一份可选的 runtime 声明。
+
+    真实调用方传 :class:`GeoCard`；CAFE 路由传轻量 shim。用 Protocol 把这条
+    隐式约定写明，别让它只是"碰巧能跑"。
+    """
+
+    id: str
+    runtime: Any
+
+
 def match_resource(
-    model_card: GeoCard,
+    model_card: _RuntimeHolder,
     capabilities: list[ComputeCapability],
     *,
     strict: bool = False,

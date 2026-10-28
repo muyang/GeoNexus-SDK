@@ -143,7 +143,7 @@ class LocalBackend:
     def submit(self, task: GeoTask, ctx: ExecutionContext) -> Handle:
         handler = self._handler_for(task)
         if handler is None:
-            future = Future()
+            future: Future[Any] = Future()
             future.set_result(
                 TaskOutcome.failure(
                     "invalid_spec",

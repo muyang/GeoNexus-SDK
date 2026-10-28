@@ -8,7 +8,12 @@ from __future__ import annotations
 
 import inspect
 
-from geonexus.geocard.contracts import ContractReport, ContractRequest, ResultManifest, validate_contract
+from geonexus.geocard.contracts import (
+    ContractReport,
+    ContractRequest,
+    ResultManifest,
+    validate_contract,
+)
 from geonexus.mcp_adapter import create_mcp_server
 from geonexus.registration import RegistrationError, make_draft, safe_url, validate_profile
 from geonexus.registry.server import RegistryServer

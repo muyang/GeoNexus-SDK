@@ -134,4 +134,4 @@ class DataAgent:
 
 
 # 简洁别名
-discover = DataAgent  # type: ignore[assignment]
+discover = DataAgent

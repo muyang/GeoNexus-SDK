@@ -72,7 +72,9 @@ def discover_plugin_entry_points() -> list[Any]:
     eps = im.entry_points()
     if hasattr(eps, "select"):
         return list(eps.select(group=PLUGIN_ENTRY_POINT_GROUP))
-    return list(eps.get(PLUGIN_ENTRY_POINT_GROUP, []))
+    # Python < 3.10：entry_points() 返回 dict 形状，按组名取
+    legacy: dict[str, Any] = eps  # type: ignore[assignment]
+    return list(legacy.get(PLUGIN_ENTRY_POINT_GROUP, []))
 
 
 def load_plugins(node: GeoNode, entry_points: list[Any] | None = None) -> list[dict[str, Any]]:

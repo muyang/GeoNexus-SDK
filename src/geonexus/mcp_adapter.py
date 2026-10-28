@@ -10,9 +10,9 @@ Transport for the MVP: **stdio** (``geonexus mcp run``).
 
 from __future__ import annotations
 
-import json
 import importlib
 import inspect
+import json
 import logging
 import os
 from typing import Any

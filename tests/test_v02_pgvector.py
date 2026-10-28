@@ -124,7 +124,6 @@ class TestRegistryBackend:
     @patch("geonexus.gaag.pgvector_store.psycopg2")
     def test_pgvector_backend_initializes(self, mock_psycopg2, monkeypatch):
         """With POSTGIS_DSN set → pgvector backend active."""
-        import os
 
         monkeypatch.setenv("POSTGIS_DSN", "postgresql://mock/mock")
         mock_conn = MagicMock()

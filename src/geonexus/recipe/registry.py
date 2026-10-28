@@ -11,6 +11,7 @@
 
 from __future__ import annotations
 
+import builtins
 import json
 import os
 import threading
@@ -411,10 +412,10 @@ class RecipeRegistry:
         out.sort(key=lambda e: (e.recipe.slug, version_key(e.recipe.version)))
         return out[:limit] if limit else out
 
-    def list(self, *, status: str | None = None) -> list[RecipeEntry]:
+    def list(self, *, status: str | None = None) -> builtins.list[RecipeEntry]:
         return self.search(status=status)
 
-    def versions(self, namespace: str, name: str) -> list[RecipeEntry]:
+    def versions(self, namespace: str, name: str) -> builtins.list[RecipeEntry]:
         """同一个配方的所有版本，从旧到新 —— 版本列表页要用。"""
         found = [
             e

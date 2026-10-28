@@ -27,6 +27,17 @@ from ..registry import RegistryClient, RegistryClientError
 logger = logging.getLogger(__name__)
 
 
+def _pushdown_request(*, request_id: Any | None = None, **payload: Any) -> PushdownRequest:
+    """构造下推请求；没给 ``request_id`` 时交给 dataclass 自己的默认工厂。
+
+    早前直接读 ``__dataclass_fields__[...].default_factory()``：那是私有 API，
+    默认工厂一旦改成 ``dataclasses.MISSING`` 或在无缺省字段上取值就会运行期 TypeError。
+    """
+    if request_id:
+        payload["task_id"] = request_id
+    return PushdownRequest(**payload)
+
+
 class FederatedExecutionError(Exception):
     """Raised when a federated request cannot be satisfied."""
 
@@ -183,14 +194,13 @@ class FederatedGeoMCPClient:
         node_url = entry["node_url"]
         result = self._dispatch(
             node_url,
-            PushdownRequest(
+            _pushdown_request(
                 skill=skill,
-                params=dict(params or {}),
+                params=params,
                 spatial=spatial,
                 temporal=temporal,
                 # request_id 落到任务的 id 上：远端用它关联自己的事件流
-                task_id=request_id
-                or PushdownRequest.__dataclass_fields__["task_id"].default_factory(),
+                request_id=request_id,
             ),
         )
         return result
@@ -230,14 +240,13 @@ class FederatedGeoMCPClient:
         for node_url, node_cards in nodes.items():
             result = self._dispatch(
                 node_url,
-                PushdownRequest(
+                _pushdown_request(
                     skill=skill,
-                    params=dict(params or {}),
+                    params=params,
                     geocards=list(node_cards),
                     spatial=spatial,
                     temporal=temporal,
-                    task_id=request_id
-                    or PushdownRequest.__dataclass_fields__["task_id"].default_factory(),
+                    request_id=request_id,
                 ),
             )
             results.append({"node": node_url, "cards": node_cards, "result": result})

@@ -182,7 +182,8 @@ class OgeExecutor:
                 process_id=process_id,
                 operator_name=operator_name,
                 status="failed",
-                error_message=str(exc.message),
+                # OgeClientError 没有 .message 属性；取 str(exc)，否则失败路径再抛 AttributeError
+                error_message=str(exc),
                 elapsed_seconds=time.time() - start,
             )
             self._audit(result, request_id)

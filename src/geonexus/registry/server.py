@@ -22,7 +22,8 @@ from .models import (
     SkillEntry,
 )
 from .store import (
-    PluginEntryConflict, PluginEntryNotFound,
+    PluginEntryConflict,
+    PluginEntryNotFound,
     RegistryEntryConflict,
     RegistryEntryNotFound,
     RegistryStore,

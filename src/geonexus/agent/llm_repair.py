@@ -70,13 +70,14 @@ class LLMRepair:
 
         Returns the original code if LLM unavailable or call fails.
         """
-        if not self.available:
+        client = self._client
+        if client is None:
             return code  # caller falls back to deterministic repair
 
         prompt = CODE_REPAIR_PROMPT.format(code=code, error=error)[:8000]
 
         try:
-            response = self._client.post(
+            response = client.post(
                 "/chat/completions",
                 json={
                     "model": self.config.model,

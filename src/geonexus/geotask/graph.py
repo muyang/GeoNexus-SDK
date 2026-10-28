@@ -321,6 +321,11 @@ class TaskGraph:
                 self._move(tid, TaskState.FAILED, error=self._errors[tid])
             queue.extend(self.dependents_of(tid))
 
+    def _error_view(self, task_id: str) -> dict[str, Any] | None:
+        """任务错误的可序列化视图；没有错误就是 ``None``。"""
+        error = self.error_of(task_id)
+        return error.to_dict() if error is not None else None
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "order": self.topological_order(),
@@ -331,7 +336,8 @@ class TaskGraph:
                     "state": self._tasks[tid].state.value,
                     "depends_on": list(self._tasks[tid].depends_on),
                     "kind": self._tasks[tid].kind.value,
-                    "error": (self.error_of(tid).to_dict() if self.error_of(tid) else None),
+                    # 只取一次：两次调用之间状态可变，第二次可能返回 None
+                    "error": self._error_view(tid),
                 }
                 for tid in self._order
             ],

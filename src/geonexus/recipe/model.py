@@ -336,10 +336,10 @@ class Recipe(BaseModel):
                 problems.append(f"duplicate output name: {out.name}")
             seen_outputs.add(out.name)
             step_id, output = out.parts()
-            step = by_id.get(step_id)
-            if step is None:
+            source_step = by_id.get(step_id)
+            if source_step is None:
                 problems.append(f"output '{out.name}' comes from unknown step '{step_id}'")
-            elif step.outputs and output not in step.outputs:
+            elif source_step.outputs and output not in source_step.outputs:
                 problems.append(
                     f"output '{out.name}': step '{step_id}' does not declare output '{output}'"
                 )
@@ -456,7 +456,9 @@ class Recipe(BaseModel):
 
         return yaml.safe_dump(self.to_dict(), allow_unicode=True, sort_keys=False)
 
-    def validate(self) -> Recipe:
+    # pydantic 的 BaseModel.validate 是已弃用的类方法；这里是实例方法，语义不同，
+    # 保留该名字（多处调用方依赖）并显式声明覆盖，避免被当成同签名实现。
+    def validate(self) -> Recipe:  # type: ignore[override]
         """重新跑一遍全部校验，失败抛 :class:`RecipeValidationError`。"""
         try:
             return Recipe.model_validate(self.to_dict())

@@ -228,8 +228,10 @@ class OgeClient:
         data = resp.json().get("data", {})
         process_id = data.get("processId", "")
         if not process_id:
+            # 第二个位置参数是 process_id，不是 HTTP 状态码——此前错位把状态码当成进程号。
             raise OgeExecutionError(
-                "Execute operator failed: no processId in response", resp.status_code
+                "Execute operator failed: no processId in response",
+                status_code=resp.status_code,
             )
         return OgeExecuteResponse(process_id=process_id)
 

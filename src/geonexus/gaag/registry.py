@@ -10,14 +10,18 @@
 
 from __future__ import annotations
 
+import builtins
 import json
 import logging
 import sqlite3
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from ..geocard import ContractValidator, GeoCard
+
+if TYPE_CHECKING:  # 仅类型检查期导入，避免 pgvector 可选依赖变成硬依赖
+    from .pgvector_store import PgVectorStore
 from .contract import GAAGContract, GAAGError
 from .embed import cosine_similarity
 from .scanner import scan_asset_to_contract
@@ -44,9 +48,9 @@ class GAAGRegistry:
         backend: str = "memory",
     ) -> None:
         self._contracts: dict[str, GAAGContract] = {}
-        self._persist_path = persist_path
+        self._persist_path: str | None = persist_path
         self._backend = backend
-        self._pgvector = None
+        self._pgvector: PgVectorStore | None = None
         if backend == "pgvector":
             self._init_pgvector()
         elif persist_path:
@@ -119,7 +123,7 @@ class GAAGRegistry:
             return self._pgvector.get(contract_id)
         return self._contracts.get(contract_id)
 
-    def list(self, asset_type: str | None = None) -> list[GAAGContract]:
+    def list(self, asset_type: str | None = None) -> builtins.list[GAAGContract]:
         if self._pgvector:
             return self._pgvector.list(asset_type)
         contracts = list(self._contracts.values())
@@ -128,8 +132,8 @@ class GAAGRegistry:
         return contracts
 
     def search_semantic(
-        self, query_text: str, k: int = 5, bbox: list[float] | None = None
-    ) -> list[tuple[GAAGContract, float]]:
+        self, query_text: str, k: int = 5, bbox: builtins.list[float] | None = None
+    ) -> builtins.list[tuple[GAAGContract, float]]:
         if self._pgvector:
             return self._pgvector.search_semantic(query_text, k=k, bbox=bbox)
         from .embed import embed_text
@@ -156,8 +160,15 @@ class GAAGRegistry:
         return len(self._contracts)
 
     # -- persistence -------------------------------------------------------- #
+    def _require_persist_path(self) -> str:
+        """持久化路径的唯一出口：没配路径就是调用方 bug，直接报错而不是落到 ``None``。"""
+        if self._persist_path is None:
+            raise RuntimeError("GAAGRegistry 未配置 persist_path，无法持久化")
+        return self._persist_path
+
     def _persist_one(self, contract: GAAGContract) -> None:
-        conn = _sqlite(self._persist_path)
+        path = self._require_persist_path()
+        conn = _sqlite(path)
         conn.execute(
             """
             INSERT OR REPLACE INTO gaag_contracts
@@ -179,7 +190,7 @@ class GAAGRegistry:
 
     def _load_from_sqlite(self) -> None:
         rows = (
-            _sqlite(self._persist_path)
+            _sqlite(self._require_persist_path())
             .execute(
                 "SELECT contract_id, asset_type, card_json, scanned_meta_json, "
                 "embedding_json, provenance, registered_at FROM gaag_contracts"
