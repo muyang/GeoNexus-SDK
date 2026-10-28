@@ -448,9 +448,12 @@ def cmd_market(args: argparse.Namespace) -> int:
             if cmd == "publish":
                 digest = sha256_file(args.file) if args.file else None
                 plugin = {
-                    "name": args.name, "version": args.version,
-                    "plane": args.plane, "install_ref": args.install_ref,
-                    "sha256": digest, "description": args.description or "",
+                    "name": args.name,
+                    "version": args.version,
+                    "plane": args.plane,
+                    "install_ref": args.install_ref,
+                    "sha256": digest,
+                    "description": args.description or "",
                     "tags": [t for t in (args.tags or "").split(",") if t],
                 }
                 out = client.publish_plugin(plugin)
@@ -458,8 +461,10 @@ def cmd_market(args: argparse.Namespace) -> int:
                 if args.json:
                     print(_json.dumps(out, ensure_ascii=False, indent=2))
                 else:
-                    print(f"已发布 {entry.get('name')}@{entry.get('version')} "
-                          f"（status={entry.get('status')}，待审；approve 后才可安装）")
+                    print(
+                        f"已发布 {entry.get('name')}@{entry.get('version')} "
+                        f"（status={entry.get('status')}，待审；approve 后才可安装）"
+                    )
                     if digest:
                         print(f"  sha256: {digest}")
                 return 0
@@ -472,8 +477,10 @@ def cmd_market(args: argparse.Namespace) -> int:
                     if not items:
                         print("（没有匹配的条目）")
                     for e in items:
-                        print(f"  {e['name']}@{e['version']}  [{e['status']}]  "
-                              f"{e.get('plane')}  {e.get('description', '')[:60]}")
+                        print(
+                            f"  {e['name']}@{e['version']}  [{e['status']}]  "
+                            f"{e.get('plane')}  {e.get('description', '')[:60]}"
+                        )
                         print(f"      ref={e['install_ref']}  sha256={e.get('sha256') or '-'}")
                 return 0
             if cmd == "install":
@@ -481,8 +488,9 @@ def cmd_market(args: argparse.Namespace) -> int:
                 if version:
                     entry = client.get_plugin(name, version)
                 else:
-                    approved = [e for e in client.list_plugins(status="approved")
-                                if e["name"] == name]
+                    approved = [
+                        e for e in client.list_plugins(status="approved") if e["name"] == name
+                    ]
                     if not approved:
                         print(f"市场里没有已批准的 {name}（search --status all 看看是否在审）")
                         return 1
@@ -492,14 +500,19 @@ def cmd_market(args: argparse.Namespace) -> int:
                     print(_json.dumps(out, ensure_ascii=False, indent=2))
                 else:
                     print(f"已安装 {out['installed']} → {out['target']}")
-                    print(f"  sha256 校验：{out['sha256_verified'] or '无（pip 引荐，无法预验证）'}")
+                    print(
+                        f"  sha256 校验：{out['sha256_verified'] or '无（pip 引荐，无法预验证）'}"
+                    )
                     print("  重启节点后生效（entry-points 在启动时发现）")
                 return 0
             if cmd == "uninstall":
                 out = uninstall_plugin(args.package, target=args.target)
-                print(_json.dumps(out, ensure_ascii=False) if args.json
-                      else f"已卸载 {out['uninstalled']}（{out['target']}）"
-                           + (f" 移除：{out.get('removed')}" if out.get('removed') else ""))
+                print(
+                    _json.dumps(out, ensure_ascii=False)
+                    if args.json
+                    else f"已卸载 {out['uninstalled']}（{out['target']}）"
+                    + (f" 移除：{out.get('removed')}" if out.get("removed") else "")
+                )
                 return 0
         return 1
     except MarketError as exc:
@@ -537,8 +550,7 @@ def cmd_register(args: argparse.Namespace) -> int:
                 overrides[key] = hint
     card, warnings = build_card(probe, overrides)
     problems = validate_card(card)
-    payload = {"probe": probe.as_dict(), "card": card,
-               "warnings": warnings, "problems": problems}
+    payload = {"probe": probe.as_dict(), "card": card, "warnings": warnings, "problems": problems}
     if args.json:
         pass  # 单一 JSON 文档：submit 结果稍后并进同一次输出（BFF 要能 parse）
     else:
@@ -555,9 +567,15 @@ def cmd_register(args: argparse.Namespace) -> int:
     if problems:
         return 1
     result = submit(
-        card, to=args.to, registry_url=args.registry_url, platform_url=args.platform_url,
-        token=args.token, login=tuple(args.login.split(":", 1)) if args.login else None,
-        status=args.status, node_url=args.node_url)
+        card,
+        to=args.to,
+        registry_url=args.registry_url,
+        platform_url=args.platform_url,
+        token=args.token,
+        login=tuple(args.login.split(":", 1)) if args.login else None,
+        status=args.status,
+        node_url=args.node_url,
+    )
     if not args.json:
         if result.get("submitted"):
             print(f"已提交到 {result['to']}（status={args.status}）：{result.get('card_id')}")
@@ -585,9 +603,7 @@ def cmd_node_start(args: argparse.Namespace) -> int:
         from .recipe import RecipeRegistry
 
         recipe_registry = RecipeRegistry(args.recipes)
-        print(
-            f"Loaded {len(recipe_registry)} recipe(s) from {args.recipes}; geo.plan enabled"
-        )
+        print(f"Loaded {len(recipe_registry)} recipe(s) from {args.recipes}; geo.plan enabled")
     node = GeoNode(
         name=args.name,
         host=args.host,
@@ -1846,7 +1862,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_rec_search = recipe_sub.add_parser("search", help="Search a recipe catalogue")
     p_rec_search.add_argument("query", nargs="?", default="", help="Free-text query")
     p_rec_search.add_argument("--catalogue", help="Local JSON catalogue path")
-    p_rec_search.add_argument("--url", help="Running registry base URL (alternative to --catalogue)")
+    p_rec_search.add_argument(
+        "--url", help="Running registry base URL (alternative to --catalogue)"
+    )
     p_rec_search.add_argument("--api-key", help="X-API-Key, when the registry requires one")
     p_rec_search.add_argument(
         "--status", help="Filter by review status (local catalogue mode; default: all)"
@@ -1864,7 +1882,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_rec_fork = recipe_sub.add_parser(
         "fork", help="Fork a recipe: new address, your parameters, source untouched"
     )
-    p_rec_fork.add_argument("address", help="Source address, e.g. recipe://ns/name (version optional)")
+    p_rec_fork.add_argument(
+        "address", help="Source address, e.g. recipe://ns/name (version optional)"
+    )
     p_rec_fork.add_argument("--catalogue", help="Local JSON catalogue path")
     p_rec_fork.add_argument("--url", help="Running registry base URL (alternative to --catalogue)")
     p_rec_fork.add_argument("--api-key", help="X-API-Key, when the registry requires one")
@@ -1873,15 +1893,23 @@ def build_parser() -> argparse.ArgumentParser:
     p_rec_fork.add_argument("--version", help="Version of the fork (default: 1.0.0)")
     p_rec_fork.add_argument("--title", help="Human-readable name of the fork")
     p_rec_fork.add_argument(
-        "--set", action="append", default=None, metavar="NAME=VALUE",
+        "--set",
+        action="append",
+        default=None,
+        metavar="NAME=VALUE",
         help="Change a reusable parameter's default (repeatable)",
     )
     p_rec_fork.add_argument(
-        "--fix", action="append", default=None, metavar="NAME=VALUE",
+        "--fix",
+        action="append",
+        default=None,
+        metavar="NAME=VALUE",
         help="Pin a parameter as fixed (repeatable)",
     )
     p_rec_fork.add_argument("--output", help="Write the fork to this .yaml/.json file")
-    p_rec_fork.add_argument("--no-register", action="store_true", help="Do not add it to the catalogue")
+    p_rec_fork.add_argument(
+        "--no-register", action="store_true", help="Do not add it to the catalogue"
+    )
     p_rec_fork.add_argument(
         "--allow-unapproved", action="store_true", help="Fork from a recipe that is not approved"
     )
@@ -1928,10 +1956,16 @@ def build_parser() -> argparse.ArgumentParser:
     p_pub.add_argument("--registry-url", default="http://127.0.0.1:8790")
     p_pub.add_argument("--name", required=True)
     p_pub.add_argument("--version", required=True)
-    p_pub.add_argument("--install-ref", required=True,
-                       help="wheel/sdist URL (sha256 required) or pip requirement string")
-    p_pub.add_argument("--file", default=None,
-                       help="local wheel/sdist to hash for sha256 (recommended for URL refs)")
+    p_pub.add_argument(
+        "--install-ref",
+        required=True,
+        help="wheel/sdist URL (sha256 required) or pip requirement string",
+    )
+    p_pub.add_argument(
+        "--file",
+        default=None,
+        help="local wheel/sdist to hash for sha256 (recommended for URL refs)",
+    )
     p_pub.add_argument("--plane", choices=["server", "client"], default="server")
     p_pub.add_argument("--description", default="")
     p_pub.add_argument("--tags", default="")
@@ -1940,8 +1974,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_pub.set_defaults(func=cmd_market, market_command="publish")
     p_se = market_sub.add_parser("search", help="Search/list market entries")
     p_se.add_argument("query", nargs="?", default="")
-    p_se.add_argument("--status", choices=["approved", "pending", "rejected", "all"],
-                      default="approved")
+    p_se.add_argument(
+        "--status", choices=["approved", "pending", "rejected", "all"], default="approved"
+    )
     p_se.add_argument("--registry-url", default="http://127.0.0.1:8790")
     p_se.add_argument("--api-key", default=None)
     p_se.add_argument("--json", action="store_true")
@@ -1961,17 +1996,29 @@ def build_parser() -> argparse.ArgumentParser:
 
     reg = sub.add_parser("register", help="Lightweight third-party asset registration wizard")
     reg.add_argument("target", help="URL or local path of the asset to register")
-    reg.add_argument("--to", choices=["dry", "registry", "platform"], default="dry",
-                     help="where to submit (default: dry-run, nothing is published)")
+    reg.add_argument(
+        "--to",
+        choices=["dry", "registry", "platform"],
+        default="dry",
+        help="where to submit (default: dry-run, nothing is published)",
+    )
     reg.add_argument("--registry-url", default="http://127.0.0.1:8790")
     reg.add_argument("--platform-url", default="http://127.0.0.1:3302")
     reg.add_argument("--token", default=None, help="platform bearer token")
     reg.add_argument("--login", default=None, help="platform login as user:password")
-    reg.add_argument("--status", choices=["pending", "approved"], default="pending",
-                     help="review status on submit (default pending: registration is not publication)")
+    reg.add_argument(
+        "--status",
+        choices=["pending", "approved"],
+        default="pending",
+        help="review status on submit (default pending: registration is not publication)",
+    )
     reg.add_argument("--node-url", default=None, help="node that serves the asset, if any")
-    reg.add_argument("--set", action="append", default=None,
-                     help="override field as key=value (name/license/sensitivity/provider/id/...)")
+    reg.add_argument(
+        "--set",
+        action="append",
+        default=None,
+        help="override field as key=value (name/license/sensitivity/provider/id/...)",
+    )
     reg.add_argument("-i", "--interactive", action="store_true", help="ask the human judgements")
     reg.add_argument("--json", action="store_true", help="machine-readable output")
     reg.set_defaults(func=cmd_register)

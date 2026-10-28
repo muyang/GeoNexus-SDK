@@ -267,10 +267,14 @@ class RecipeRegistry:
             self._save()
             return entry
 
-    def approve(self, recipe_id: str, *, by: str | None = None, note: str | None = None) -> RecipeEntry:
+    def approve(
+        self, recipe_id: str, *, by: str | None = None, note: str | None = None
+    ) -> RecipeEntry:
         return self._review(recipe_id, STATUS_APPROVED, by=by, note=note)
 
-    def reject(self, recipe_id: str, *, by: str | None = None, note: str | None = None) -> RecipeEntry:
+    def reject(
+        self, recipe_id: str, *, by: str | None = None, note: str | None = None
+    ) -> RecipeEntry:
         return self._review(recipe_id, STATUS_REJECTED, by=by, note=note)
 
     def _entry_for_review(self, address: str) -> RecipeEntry:
@@ -312,9 +316,7 @@ class RecipeRegistry:
             entry = self._entry_for_review(recipe_id)
             entry.status = status
             entry.review_note = note
-            entry.review_history.append(
-                {"action": status, "by": by, "at": _now(), "note": note}
-            )
+            entry.review_history.append({"action": status, "by": by, "at": _now(), "note": note})
             self._save()
             return entry
 
@@ -356,7 +358,8 @@ class RecipeRegistry:
         candidates = [
             e
             for e in self._entries.values()
-            if e.recipe.namespace == namespace and e.recipe.slug == name
+            if e.recipe.namespace == namespace
+            and e.recipe.slug == name
             and (not approved_only or e.status == STATUS_APPROVED)
         ]
         if not candidates:
@@ -481,22 +484,24 @@ class RecipeRegistry:
         known = {p.name for p in source.params}
         unknown = sorted((set(overrides) | set(pins)) - known)
         if unknown:
-            raise RecipeError(
-                f"cannot fork {source.id}: unknown parameter(s) {', '.join(unknown)}"
-            )
+            raise RecipeError(f"cannot fork {source.id}: unknown parameter(s) {', '.join(unknown)}")
 
         for spec in data.get("params", []):
             # 注入的默认值必须过一遍类型契约：``--set year=2021`` 从命令行来的是
             # 字符串，直接写进配方会让"整数参数"的默认值变成 "2021"。
             if spec["name"] in overrides:
                 spec["default"] = coerce_param_value(
-                    spec["name"], spec.get("type", "string"), overrides[spec["name"]],
+                    spec["name"],
+                    spec.get("type", "string"),
+                    overrides[spec["name"]],
                     list(spec.get("enum") or []),
                 )
             if spec["name"] in pins:
                 spec["scope"] = "fixed"
                 spec["default"] = coerce_param_value(
-                    spec["name"], spec.get("type", "string"), pins[spec["name"]],
+                    spec["name"],
+                    spec.get("type", "string"),
+                    pins[spec["name"]],
                     list(spec.get("enum") or []),
                 )
 

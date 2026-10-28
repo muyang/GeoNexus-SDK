@@ -21,7 +21,11 @@ from geonexus.registry.server import RegistryServer
 
 def test_geocard_contracts():
     request = ContractRequest(
-        bbox=[-73.9, -15, -44, 5], crs="EPSG:4326", start="2015-01-01", end="2025-12-31", required_bands=["red"]
+        bbox=[-73.9, -15, -44, 5],
+        crs="EPSG:4326",
+        start="2015-01-01",
+        end="2025-12-31",
+        required_bands=["red"],
     )
     assert request.bbox == [-73.9, -15, -44, 5]
     assert callable(validate_contract)

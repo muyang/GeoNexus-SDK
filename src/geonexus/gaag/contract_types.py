@@ -109,16 +109,23 @@ CONTRACT_SCHEMAS: dict[str, ContractSchema] = {
     "report": ContractSchema(
         asset_type="report",
         required_fields=[
-            "format",            # 产物形态（html/pdf/docx…）
-            "checksum",          # 这份结论的指纹：改了就能被发现
-            "source_run",        # 哪一次运行产生的
-            "recipe",            # 哪一份可执行方案
-            "params",            # 这一次实际取了什么参数
-            "data_snapshot",     # 数据版本快照
+            "format",  # 产物形态（html/pdf/docx…）
+            "checksum",  # 这份结论的指纹：改了就能被发现
+            "source_run",  # 哪一次运行产生的
+            "recipe",  # 哪一份可执行方案
+            "params",  # 这一次实际取了什么参数
+            "data_snapshot",  # 数据版本快照
         ],
         optional_fields=[
-            "media_type", "file_size", "title", "sections", "word_count",
-            "produced_at", "recipe_version", "deliverables", "deliverable_ref",
+            "media_type",
+            "file_size",
+            "title",
+            "sections",
+            "word_count",
+            "produced_at",
+            "recipe_version",
+            "deliverables",
+            "deliverable_ref",
         ],
         extensions=[".html", ".htm", ".pdf", ".docx"],
         description="知识产品（报告）：产物指纹 + 来源四件套（run/recipe/params/snapshot）",

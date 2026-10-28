@@ -20,7 +20,9 @@ from geonexus.geonode import GeoNode
 def _card():
     return (
         GeoCardBuilder(
-            id="gaag-asset", type="data", name="ndvi analysis vegetation",
+            id="gaag-asset",
+            type="data",
+            name="ndvi analysis vegetation",
             description="NDVI analysis vegetation product.",
         )
         .spatial(bbox=[120.0, 30.0, 121.0, 31.0], crs="EPSG:4326")
@@ -30,16 +32,20 @@ def _card():
 
 def _registry(contract_id="gaag.ndvi", text="ndvi analysis vegetation"):
     reg = GAAGRegistry()
-    reg.register(GAAGContract(
-        contract_id=contract_id, asset_type="raster", card=_card(),
-        semantic_embedding=embed_text(text), provenance="test",
-    ))
+    reg.register(
+        GAAGContract(
+            contract_id=contract_id,
+            asset_type="raster",
+            card=_card(),
+            semantic_embedding=embed_text(text),
+            provenance="test",
+        )
+    )
     return reg
 
 
 def _node(tmp_path, gaag_registry=None):
-    node = GeoNode(name="v2-node", port=0, workdir=str(tmp_path),
-                   gaag_registry=gaag_registry)
+    node = GeoNode(name="v2-node", port=0, workdir=str(tmp_path), gaag_registry=gaag_registry)
     node.register_skill(
         name="ndvi-analysis",
         handler=lambda params, context: {"ndvi_mean": 0.42},
@@ -57,8 +63,11 @@ def _exec(node, **kw):
 
 def test_matching_binding_passes_both_checks(tmp_path):
     node = _node(tmp_path, _registry())
-    out = _exec(node, contract_binding="gaag.ndvi",
-                spatial={"bbox": [120.2, 30.2, 120.8, 30.8], "crs": "EPSG:4326"})
+    out = _exec(
+        node,
+        contract_binding="gaag.ndvi",
+        spatial={"bbox": [120.2, 30.2, 120.8, 30.8], "crs": "EPSG:4326"},
+    )
     assert out["status"] == "ok"
     assert out["outputs"] == {"ndvi_mean": 0.42}
 
@@ -66,8 +75,11 @@ def test_matching_binding_passes_both_checks(tmp_path):
 def test_semantic_mismatch_is_rejected(tmp_path):
     node = _node(tmp_path, _registry(text="quarterly finance report of unrelated holdings"))
     with pytest.raises(Exception) as exc:
-        _exec(node, contract_binding="gaag.ndvi",
-              spatial={"bbox": [120.2, 30.2, 120.8, 30.8], "crs": "EPSG:4326"})
+        _exec(
+            node,
+            contract_binding="gaag.ndvi",
+            spatial={"bbox": [120.2, 30.2, 120.8, 30.8], "crs": "EPSG:4326"},
+        )
     err = exc.value
     assert err.code == CONTRACT_BINDING_REJECTED
     assert err.data["semantic_ok"] is False
@@ -77,8 +89,11 @@ def test_contract_inconsistency_is_rejected(tmp_path):
     """语义对得上也不行：请求范围超出合约卡片 extent → 合约一致性不过。"""
     node = _node(tmp_path, _registry())
     with pytest.raises(Exception) as exc:
-        _exec(node, contract_binding="gaag.ndvi",
-              spatial={"bbox": [100.0, 10.0, 105.0, 15.0], "crs": "EPSG:4326"})
+        _exec(
+            node,
+            contract_binding="gaag.ndvi",
+            spatial={"bbox": [100.0, 10.0, 105.0, 15.0], "crs": "EPSG:4326"},
+        )
     assert exc.value.code == CONTRACT_BINDING_REJECTED
     assert exc.value.data["contract_ok"] is False
 
@@ -103,6 +118,12 @@ def test_binding_without_registry_is_rejected(tmp_path):
 def test_capabilities_advertise_v2(tmp_path):
     # v2 广告是协商面：每加一个 V2 特性就在这里钉住它的形状
     assert _node(tmp_path, _registry()).server.capabilities()["v2"] == {
-        "contract_binding": True, "pushdown": True, "federation": True}
+        "contract_binding": True,
+        "pushdown": True,
+        "federation": True,
+    }
     assert _node(tmp_path, None).server.capabilities()["v2"] == {
-        "contract_binding": False, "pushdown": True, "federation": True}
+        "contract_binding": False,
+        "pushdown": True,
+        "federation": True,
+    }

@@ -26,8 +26,8 @@ PAPER_THRESHOLD_OTHERS = 1.0
 #: 原文正文点名的三处专家例外（PC1 < 10 仍入选）
 PAPER_EXPERT_EXCEPTIONS = {"Tolbo Lake": 9.4, "Terkhiin Tsagaan Lake": 6.0, "Buir Lake": 8.0}
 #: 原文的候选 → 评估 → 入选漏斗
-PAPER_CANDIDATE_SITES = 467          # Jaensch(36) 列出的 10 国候选地点数（"至少 467"）
-PAPER_ASSESSED_MIN = 270             # 做了较完整数据整理与评估的地点（"至少 270"）
+PAPER_CANDIDATE_SITES = 467  # Jaensch(36) 列出的 10 国候选地点数（"至少 467"）
+PAPER_ASSESSED_MIN = 270  # 做了较完整数据整理与评估的地点（"至少 270"）
 PAPER_PRIORITY_SITES = 147
 #: HDI 档（原文 Table 4，2021/22）
 HDI_TIERS = {"Very high": 0.800, "High": 0.700, "Medium": 0.550}
@@ -103,11 +103,17 @@ def chi_square_2x2(table: list[list[float]]) -> dict[str, float]:
     if not n or not row1 or not row2 or not col1 or not col2:
         return {"chi2": 0.0, "df": 1}
     expected = [[row1 * col1 / n, row1 * col2 / n], [row2 * col1 / n, row2 * col2 / n]]
-    chi2 = sum((table[i][j] - expected[i][j]) ** 2 / expected[i][j]
-               for i in range(2) for j in range(2))
-    return {"chi2": round(chi2, 2), "df": 1,
-            "expected": [[round(expected[0][0], 1), round(expected[0][1], 1)],
-                         [round(expected[1][0], 1), round(expected[1][1], 1)]]}
+    chi2 = sum(
+        (table[i][j] - expected[i][j]) ** 2 / expected[i][j] for i in range(2) for j in range(2)
+    )
+    return {
+        "chi2": round(chi2, 2),
+        "df": 1,
+        "expected": [
+            [round(expected[0][0], 1), round(expected[0][1], 1)],
+            [round(expected[1][0], 1), round(expected[1][1], 1)],
+        ],
+    }
 
 
 # --------------------------------------------------------------------------- #
@@ -115,14 +121,18 @@ def chi_square_2x2(table: list[list[float]]) -> dict[str, float]:
 # --------------------------------------------------------------------------- #
 #: 原文 Table 2：与候鸟有关的四条 Ramsar 标准
 RAMSAR_CRITERIA = [
-    {"code": 2, "text": "支持易危、濒危或极危物种或受威胁的生态群落",
-     "used_by": "EAAFP、BirdLife（IBA）"},
-    {"code": 4, "text": "在生命周期关键阶段支持动植物物种，或在不利条件下提供庇护",
-     "used_by": "—"},
-    {"code": 5, "text": "定期支持 20000 只及以上水鸟",
-     "used_by": "EAAFP"},
-    {"code": 6, "text": "定期支持某一水鸟种群 1% 及以上的个体",
-     "used_by": "EAAFP、BirdLife（IBA）"},
+    {
+        "code": 2,
+        "text": "支持易危、濒危或极危物种或受威胁的生态群落",
+        "used_by": "EAAFP、BirdLife（IBA）",
+    },
+    {"code": 4, "text": "在生命周期关键阶段支持动植物物种，或在不利条件下提供庇护", "used_by": "—"},
+    {"code": 5, "text": "定期支持 20000 只及以上水鸟", "used_by": "EAAFP"},
+    {
+        "code": 6,
+        "text": "定期支持某一水鸟种群 1% 及以上的个体",
+        "used_by": "EAAFP、BirdLife（IBA）",
+    },
 ]
 
 
@@ -130,32 +140,61 @@ def framework_review_handler(params: dict[str, Any], context: Any) -> dict[str, 
     """比较三套国际框架，并给出各自的站点数（原文 Table 1 + Table 2）。"""
     data_dir = _resolve(params.get("data_dir") or "data/rfi", context)
     rows = _read_csv(data_dir / "framework_designations.csv")
-    total = {k: sum(int(r[k]) for r in rows) for k in ("ramsar", "flyway_network", "wetland_iba_kba")}
+    total = {
+        k: sum(int(r[k]) for r in rows) for k in ("ramsar", "flyway_network", "wetland_iba_kba")
+    }
     out_dir = _workdir(context) / "framework"
-    table_path = _write_csv(out_dir / "framework_comparison.csv",
-                            [dict(country=r["country"], ramsar=r["ramsar"],
-                                  flyway_network=r["flyway_network"], wetland_iba_kba=r["wetland_iba_kba"],
-                                  priority_sites=int(next(
-                                      (x["priority_sites"] for x in _read_csv(data_dir / "country_summary.csv")
-                                       if x["country"] == r["country"]), 0)))
-                             for r in rows],
-                            ["country", "ramsar", "flyway_network", "wetland_iba_kba", "priority_sites"])
-    json_path = _write_json(out_dir / "framework_comparison.json", {
-        "frameworks": [
-            {"name": "拉姆萨尔公约（Ramsar Convention on Wetlands of International Importance）",
-             "sites_in_10_countries": total["ramsar"], "role": "政府间公约，9 条标准中 4 条与水鸟相关"},
-            {"name": "EAAFP 迁飞区网络（Flyway Site Network）",
-             "sites_in_10_countries": total["flyway_network"], "role": "半正式网络，政府提名"},
-            {"name": "BirdLife 重要鸟区 / 关键生物多样性区（IBA / KBA）",
-             "sites_in_10_countries": total["wetland_iba_kba"], "role": "民间主导，基于可度量标准"},
+    table_path = _write_csv(
+        out_dir / "framework_comparison.csv",
+        [
+            dict(
+                country=r["country"],
+                ramsar=r["ramsar"],
+                flyway_network=r["flyway_network"],
+                wetland_iba_kba=r["wetland_iba_kba"],
+                priority_sites=int(
+                    next(
+                        (
+                            x["priority_sites"]
+                            for x in _read_csv(data_dir / "country_summary.csv")
+                            if x["country"] == r["country"]
+                        ),
+                        0,
+                    )
+                ),
+            )
+            for r in rows
         ],
-        "ramsar_criteria_relevant_to_waterbirds": RAMSAR_CRITERIA,
-        "criteria_used_by_eaafp": [2, 5, 6],
-        "criteria_used_by_birdlife": [2, 6],
-        "by_country": rows,
-        "totals": total,
-        "note": "三套框架的候选站点在原文里都被纳入比较，但并非全部满足 RFI 优先站点标准（原文 Table 1 脚注）。",
-    })
+        ["country", "ramsar", "flyway_network", "wetland_iba_kba", "priority_sites"],
+    )
+    json_path = _write_json(
+        out_dir / "framework_comparison.json",
+        {
+            "frameworks": [
+                {
+                    "name": "拉姆萨尔公约（Ramsar Convention on Wetlands of International Importance）",
+                    "sites_in_10_countries": total["ramsar"],
+                    "role": "政府间公约，9 条标准中 4 条与水鸟相关",
+                },
+                {
+                    "name": "EAAFP 迁飞区网络（Flyway Site Network）",
+                    "sites_in_10_countries": total["flyway_network"],
+                    "role": "半正式网络，政府提名",
+                },
+                {
+                    "name": "BirdLife 重要鸟区 / 关键生物多样性区（IBA / KBA）",
+                    "sites_in_10_countries": total["wetland_iba_kba"],
+                    "role": "民间主导，基于可度量标准",
+                },
+            ],
+            "ramsar_criteria_relevant_to_waterbirds": RAMSAR_CRITERIA,
+            "criteria_used_by_eaafp": [2, 5, 6],
+            "criteria_used_by_birdlife": [2, 6],
+            "by_country": rows,
+            "totals": total,
+            "note": "三套框架的候选站点在原文里都被纳入比较，但并非全部满足 RFI 优先站点标准（原文 Table 1 脚注）。",
+        },
+    )
     return {"framework_table": table_path, "framework_json": json_path, "totals": total}
 
 
@@ -200,15 +239,22 @@ def site_data_handler(params: dict[str, Any], context: Any) -> dict[str, Any]:
         "species_rows": len(species),
         "species_over_10pct": sum(1 for s in species if s["over_10pct"] == "True"),
         "species_over_50pct": sum(1 for s in species if s["over_50pct"] == "True"),
-        "threatened_species": sorted({s["scientific"] for s in species
-                                      if s["iucn"] in ("CR", "EN", "VU")}),
+        "threatened_species": sorted(
+            {s["scientific"] for s in species if s["iucn"] in ("CR", "EN", "VU")}
+        ),
     }
     out_dir = _workdir(context) / "site-data"
     table_path = _write_csv(out_dir / "sites_normalised.csv", sites, list(sites[0].keys()))
-    json_path = _write_json(out_dir / "funnel.json", {"funnel": funnel, "problems": problems,
-                                                      "validated": not problems})
-    return {"sites_table": table_path, "funnel_json": json_path, "validated": not problems,
-            "problems": problems, "funnel": funnel}
+    json_path = _write_json(
+        out_dir / "funnel.json", {"funnel": funnel, "problems": problems, "validated": not problems}
+    )
+    return {
+        "sites_table": table_path,
+        "funnel_json": json_path,
+        "validated": not problems,
+        "problems": problems,
+        "funnel": funnel,
+    }
 
 
 # --------------------------------------------------------------------------- #
@@ -223,9 +269,17 @@ def pc1_select_handler(params: dict[str, Any], context: Any) -> dict[str, Any]:
     data_dir = _resolve(params.get("data_dir") or "data/rfi", context)
     thr_prc_mn = float(params.get("threshold_prc_mongolia", PAPER_THRESHOLD_PRC_MONGOLIA))
     thr_others = float(params.get("threshold_others", PAPER_THRESHOLD_OTHERS))
-    use_exceptions = str(params.get("include_expert_exceptions", True)).lower() not in ("false", "0", "no")
-    keep_published = str(params.get("include_published_sites", True)).lower() not in ("false", "0", "no")
-    counts_file = params.get("counts")          # 受限的逐笔计数（可选导入）
+    use_exceptions = str(params.get("include_expert_exceptions", True)).lower() not in (
+        "false",
+        "0",
+        "no",
+    )
+    keep_published = str(params.get("include_published_sites", True)).lower() not in (
+        "false",
+        "0",
+        "no",
+    )
+    counts_file = params.get("counts")  # 受限的逐笔计数（可选导入）
 
     sites = _read_csv(data_dir / "sites.csv")
     rows, selected, rejected, exceptions_used, discrepancies = [], [], [], [], []
@@ -248,16 +302,16 @@ def pc1_select_handler(params: dict[str, Any], context: Any) -> dict[str, Any]:
             # 这是原文两份公开材料之间的不一致，本案例**两个数都报**，不替作者做选择。
             decision = True
             reason = f"按阈值应落选（PC1 {pc1} < {threshold}），但原文已列为优先站点"
-            discrepancies.append({"site": s["name"], "country": country, "pc1": pc1,
-                                  "threshold": threshold})
+            discrepancies.append(
+                {"site": s["name"], "country": country, "pc1": pc1, "threshold": threshold}
+            )
         else:
             decision, reason = False, f"PC1 {pc1} < 阈值 {threshold}"
         rows.append({**s, "applied_threshold": threshold, "selected": decision, "reason": reason})
         (selected if decision else rejected).append(s["name"])
 
     out_dir = _workdir(context) / "pc1"
-    table_path = _write_csv(out_dir / "priority_selection.csv", rows,
-                            list(rows[0].keys()))
+    table_path = _write_csv(out_dir / "priority_selection.csv", rows, list(rows[0].keys()))
     payload = {
         "rule": {
             "metric": "PC1 = Σ(nᵢ/Nᵢ)×100，仅累加达到 1% 阈值（CSR1 score > 1.0）的种群",
@@ -275,23 +329,32 @@ def pc1_select_handler(params: dict[str, Any], context: Any) -> dict[str, Any]:
         "rule_only_selected_count": len(selected) - len(discrepancies),
         "reproduces_147": len(selected) == PAPER_PRIORITY_SITES,
         "counts_imported": bool(counts_file),
-        "note": ("PC1 的原始计算需要逐笔计数与 CSR1 阈值明细（受限数据，未公开）；"
-                 "本步复核的是取舍规则与最终 147 处的一致性，不是从计数重算 PC1。"
-                 + (f" 按公开分值严格执行区域校准阈值得 {len(selected) - len(discrepancies)} 处，"
-                    f"原文名单为 {PAPER_PRIORITY_SITES} 处；低于阈值仍在名单内的有 "
-                    f"{len(discrepancies)} 处，原文未说明原因，本案例两个数都保留。"
-                    if discrepancies else "")
-                 if not counts_file else
-                 "已导入受限计数数据集，走完整的 count → CSR1 score → PC1 → 取舍链路。"),
+        "note": (
+            "PC1 的原始计算需要逐笔计数与 CSR1 阈值明细（受限数据，未公开）；"
+            "本步复核的是取舍规则与最终 147 处的一致性，不是从计数重算 PC1。"
+            + (
+                f" 按公开分值严格执行区域校准阈值得 {len(selected) - len(discrepancies)} 处，"
+                f"原文名单为 {PAPER_PRIORITY_SITES} 处；低于阈值仍在名单内的有 "
+                f"{len(discrepancies)} 处，原文未说明原因，本案例两个数都保留。"
+                if discrepancies
+                else ""
+            )
+            if not counts_file
+            else "已导入受限计数数据集，走完整的 count → CSR1 score → PC1 → 取舍链路。"
+        ),
     }
     if counts_file:
         payload["counts_summary"] = _summarise_counts(_resolve(counts_file, context))
     json_path = _write_json(out_dir / "priority_selection.json", payload)
-    return {"selection_table": table_path, "selection_json": json_path,
-            "selected_count": len(selected), "reproduces_147": payload["reproduces_147"],
-            "rule_only_selected_count": payload["rule_only_selected_count"],
-            "threshold_discrepancies": discrepancies,
-            "exceptions_used": exceptions_used}
+    return {
+        "selection_table": table_path,
+        "selection_json": json_path,
+        "selected_count": len(selected),
+        "reproduces_147": payload["reproduces_147"],
+        "rule_only_selected_count": payload["rule_only_selected_count"],
+        "threshold_discrepancies": discrepancies,
+        "exceptions_used": exceptions_used,
+    }
 
 
 def _summarise_counts(path: Path) -> dict[str, Any]:
@@ -305,10 +368,27 @@ def _summarise_counts(path: Path) -> dict[str, Any]:
         name = r.get("Scientific name") or r.get("species") or ""
         if name:
             species.add(name)
-    return {"rows": len(rows), "sites": len(sites), "species": len(species),
-            "expected_fields": ["Seq", "Reference", "English name", "Scientific name", "IUCN",
-                                "Country: Province", "Locality name", "Site name", "Count",
-                                "Selected count", "Date", "Primary Source", "CSR1", "CSR1 Score"]}
+    return {
+        "rows": len(rows),
+        "sites": len(sites),
+        "species": len(species),
+        "expected_fields": [
+            "Seq",
+            "Reference",
+            "English name",
+            "Scientific name",
+            "IUCN",
+            "Country: Province",
+            "Locality name",
+            "Site name",
+            "Count",
+            "Selected count",
+            "Date",
+            "Primary Source",
+            "CSR1",
+            "CSR1 Score",
+        ],
+    }
 
 
 # --------------------------------------------------------------------------- #
@@ -331,51 +411,101 @@ def characterise_handler(params: dict[str, Any], context: Any) -> dict[str, Any]
         hdi_counts[c["hdi_tier"]] += int(c["priority_sites"])
 
     # 2×2：沿海/内陆 × 受保护/未保护（用补充材料的粗体标记；正文 Table 4 只有国别合计）
-    table_2x2 = [[sum(1 for s in sites if s["wetland_type"] == "coastal"
-                      and s["overlaps_protected_bold"] == "True"),
-                  sum(1 for s in sites if s["wetland_type"] == "coastal"
-                      and s["overlaps_protected_bold"] != "True")],
-                 [sum(1 for s in sites if s["wetland_type"] == "inland"
-                      and s["overlaps_protected_bold"] == "True"),
-                  sum(1 for s in sites if s["wetland_type"] == "inland"
-                      and s["overlaps_protected_bold"] != "True")]]
+    table_2x2 = [
+        [
+            sum(
+                1
+                for s in sites
+                if s["wetland_type"] == "coastal" and s["overlaps_protected_bold"] == "True"
+            ),
+            sum(
+                1
+                for s in sites
+                if s["wetland_type"] == "coastal" and s["overlaps_protected_bold"] != "True"
+            ),
+        ],
+        [
+            sum(
+                1
+                for s in sites
+                if s["wetland_type"] == "inland" and s["overlaps_protected_bold"] == "True"
+            ),
+            sum(
+                1
+                for s in sites
+                if s["wetland_type"] == "inland" and s["overlaps_protected_bold"] != "True"
+            ),
+        ],
+    ]
 
     stats = {
-        "coastal_vs_inland": {**chi_square_gof([coastal, inland]), "observed": [coastal, inland],
-                              "paper": {"chi2": 8.33, "df": 1, "p": "<0.004"}},
-        "protection_status": {**chi_square_gof([paper_protected, paper_unprotected]),
-                              "observed": [paper_protected, paper_unprotected],
-                              "paper": {"chi2": 32.39, "df": 1, "p": "<0.001"}},
-        "hdi_tiers": {**chi_square_gof([hdi_counts["Very high"], hdi_counts["High"],
-                                        hdi_counts["Medium"]]),
-                      "observed": [hdi_counts["Very high"], hdi_counts["High"], hdi_counts["Medium"]],
-                      "paper": {"chi2": 72.53, "df": 2, "p": "<0.001"}},
-        "wetland_type_x_protection": {**chi_square_2x2(table_2x2), "observed": table_2x2,
-                                      "paper": {"chi2": 6.46, "df": 1},
-                                      "note": "原文用正文 Table 4 的口径；这里用补充材料粗体标记，"
-                                              "因此只作为方向性对照（原文：未保护中沿海偏多、内陆偏少）"},
+        "coastal_vs_inland": {
+            **chi_square_gof([coastal, inland]),
+            "observed": [coastal, inland],
+            "paper": {"chi2": 8.33, "df": 1, "p": "<0.004"},
+        },
+        "protection_status": {
+            **chi_square_gof([paper_protected, paper_unprotected]),
+            "observed": [paper_protected, paper_unprotected],
+            "paper": {"chi2": 32.39, "df": 1, "p": "<0.001"},
+        },
+        "hdi_tiers": {
+            **chi_square_gof([hdi_counts["Very high"], hdi_counts["High"], hdi_counts["Medium"]]),
+            "observed": [hdi_counts["Very high"], hdi_counts["High"], hdi_counts["Medium"]],
+            "paper": {"chi2": 72.53, "df": 2, "p": "<0.001"},
+        },
+        "wetland_type_x_protection": {
+            **chi_square_2x2(table_2x2),
+            "observed": table_2x2,
+            "paper": {"chi2": 6.46, "df": 1},
+            "note": "原文用正文 Table 4 的口径；这里用补充材料粗体标记，"
+            "因此只作为方向性对照（原文：未保护中沿海偏多、内陆偏少）",
+        },
     }
     report_rows = []
     for c in countries:
-        report_rows.append({
-            "country": c["country"], "priority_sites": c["priority_sites"],
-            "coastal": c["coastal"], "inland": c["inland"],
-            "protected_or_partial": c["protected_or_partial"], "unprotected": c["unprotected"],
-            "hdi_tier": c["hdi_tier"],
-            "bold_overlaps": sum(1 for s in sites if s["country"] == c["country"]
-                                 and s["overlaps_protected_bold"] == "True"),
-        })
+        report_rows.append(
+            {
+                "country": c["country"],
+                "priority_sites": c["priority_sites"],
+                "coastal": c["coastal"],
+                "inland": c["inland"],
+                "protected_or_partial": c["protected_or_partial"],
+                "unprotected": c["unprotected"],
+                "hdi_tier": c["hdi_tier"],
+                "bold_overlaps": sum(
+                    1
+                    for s in sites
+                    if s["country"] == c["country"] and s["overlaps_protected_bold"] == "True"
+                ),
+            }
+        )
     out_dir = _workdir(context) / "characterise"
-    table_path = _write_csv(out_dir / "country_characteristics.csv", report_rows,
-                            ["country", "priority_sites", "coastal", "inland",
-                             "protected_or_partial", "unprotected", "hdi_tier", "bold_overlaps"])
+    table_path = _write_csv(
+        out_dir / "country_characteristics.csv",
+        report_rows,
+        [
+            "country",
+            "priority_sites",
+            "coastal",
+            "inland",
+            "protected_or_partial",
+            "unprotected",
+            "hdi_tier",
+            "bold_overlaps",
+        ],
+    )
     payload = {
-        "totals": {"sites": len(sites), "coastal": coastal, "inland": inland,
-                   "coastal_pct": round(coastal / len(sites) * 100, 1),
-                   "paper_protected_or_partial": paper_protected,
-                   "paper_unprotected": paper_unprotected,
-                   "bold_overlaps_in_supplement": bold_protected,
-                   "protection_source_difference": bold_protected - paper_protected},
+        "totals": {
+            "sites": len(sites),
+            "coastal": coastal,
+            "inland": inland,
+            "coastal_pct": round(coastal / len(sites) * 100, 1),
+            "paper_protected_or_partial": paper_protected,
+            "paper_unprotected": paper_unprotected,
+            "bold_overlaps_in_supplement": bold_protected,
+            "protection_source_difference": bold_protected - paper_protected,
+        },
         "hdi_counts": hdi_counts,
         "statistics": stats,
         "by_country": report_rows,
@@ -383,10 +513,15 @@ def characterise_handler(params: dict[str, Any], context: Any) -> dict[str, Any]
             f"正文 Table 4 记 {paper_protected} 处受保护或部分受保护、{paper_unprotected} 处未受保护；"
             f"补充材料 Table 3 的粗体标记（脚注：粗体=与保护地重叠）为 {bold_protected} 处，"
             f"两者相差 {bold_protected - paper_protected} 处。原文没有解释差异来源，"
-            "本案例两个数字都保留，不做人工对齐。"),
+            "本案例两个数字都保留，不做人工对齐。"
+        ),
     }
     json_path = _write_json(out_dir / "characterisation.json", payload)
-    return {"country_table": table_path, "characterisation_json": json_path, "totals": payload["totals"]}
+    return {
+        "country_table": table_path,
+        "characterisation_json": json_path,
+        "totals": payload["totals"],
+    }
 
 
 # --------------------------------------------------------------------------- #
@@ -405,8 +540,12 @@ def rfi_report_handler(params: dict[str, Any], context: Any) -> dict[str, Any]:
     selection = params.get("selection") or {}
     characterisation = params.get("characterisation") or {}
     # 上游产物是"路径"（str 或 Path）时读回来；已经是 dict 时直接用
-    for key, holder in (("framework", framework), ("funnel", funnel),
-                        ("selection", selection), ("characterisation", characterisation)):
+    for key, holder in (
+        ("framework", framework),
+        ("funnel", funnel),
+        ("selection", selection),
+        ("characterisation", characterisation),
+    ):
         if isinstance(holder, (str, Path)) and str(holder):
             payload = json.loads(_resolve(holder, context).read_text(encoding="utf-8"))
             if key == "framework":
@@ -445,9 +584,16 @@ def rfi_report_handler(params: dict[str, Any], context: Any) -> dict[str, Any]:
             species_by_country.setdefault(s["country"], []).append(s["english"] or s["scientific"])
     country_species = _table(
         ["国家", "优先站点", "达到 1% 且受威胁的物种数", "代表物种（受威胁等级）"],
-        [[c["country"], c["priority_sites"], len(set(species_by_country.get(c["country"], []))),
-          "、".join(sorted(set(species_by_country.get(c["country"], [])))[:6])]
-         for c in countries])
+        [
+            [
+                c["country"],
+                c["priority_sites"],
+                len(set(species_by_country.get(c["country"], []))),
+                "、".join(sorted(set(species_by_country.get(c["country"], [])))[:6]),
+            ]
+            for c in countries
+        ],
+    )
 
     html = f"""<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8">
@@ -472,7 +618,7 @@ def rfi_report_handler(params: dict[str, Any], context: Any) -> dict[str, Any]:
  ul {{ padding-left: 20px; }}
 </style></head><body>
 <h1>东亚—澳大利亚迁飞区 · 优先湿地评估</h1>
-<p class="meta">按 {source.get('citation', '原论文')}（DOI {source.get('doi', '—')}）的
+<p class="meta">按 {source.get("citation", "原论文")}（DOI {source.get("doi", "—")}）的
  五步流程复现 · 报告由 GeoNexus 案例引擎生成</p>
 
 <div class="notice">
@@ -483,29 +629,43 @@ def rfi_report_handler(params: dict[str, Any], context: Any) -> dict[str, Any]:
 
 <h2>一、识别结果</h2>
 <div class="kpis">
-  <div class="kpi"><b>{f.get('priority_sites', 147)}</b><span>优先湿地（10 国）</span></div>
-  <div class="kpi"><b>{f.get('coastal', 91)}</b><span>沿海湿地（{totals.get('coastal_pct', 61.9)}%）</span></div>
-  <div class="kpi"><b>{f.get('inland', 56)}</b><span>内陆湿地</span></div>
-  <div class="kpi"><b>{totals.get('paper_protected_or_partial', 108)}</b><span>受保护或部分受保护</span></div>
-  <div class="kpi"><b>{len(f.get('threatened_species', []))}</b>
+  <div class="kpi"><b>{f.get("priority_sites", 147)}</b><span>优先湿地（10 国）</span></div>
+  <div class="kpi"><b>{f.get("coastal", 91)}</b><span>沿海湿地（{
+        totals.get("coastal_pct", 61.9)
+    }%）</span></div>
+  <div class="kpi"><b>{f.get("inland", 56)}</b><span>内陆湿地</span></div>
+  <div class="kpi"><b>{
+        totals.get("paper_protected_or_partial", 108)
+    }</b><span>受保护或部分受保护</span></div>
+  <div class="kpi"><b>{len(f.get("threatened_species", []))}</b>
     <span>受威胁物种（≥1% 名单中，CR/EN/VU）</span></div>
 </div>
 <p class="meta">口径说明：原文称这 147 处共代表<b>至少 34 种</b>全球受威胁迁徙水鸟（含未达到 1% 的物种）；
- 这里统计的是补充材料"某站点达到 1%"记录里 IUCN 为 CR/EN/VU 的种数（{len(f.get('threatened_species', []))} 种），
+ 这里统计的是补充材料"某站点达到 1%"记录里 IUCN 为 CR/EN/VU 的种数（{
+        len(f.get("threatened_species", []))
+    } 种），
  两者口径不同，因此数字不同。</p>
-<p>识别漏斗：候选 <b>{f.get('candidate_sites')}</b> 处 → 完整评估 <b>≥{f.get('assessed_sites_min')}</b> 处
- （补充材料列出的各国评估数为 {f.get('assessed_sites_listed')}）→ 优先湿地 <b>{f.get('priority_sites')}</b> 处。</p>
+<p>识别漏斗：候选 <b>{f.get("candidate_sites")}</b> 处 → 完整评估 <b>≥{
+        f.get("assessed_sites_min")
+    }</b> 处
+ （补充材料列出的各国评估数为 {f.get("assessed_sites_listed")}）→ 优先湿地 <b>{
+        f.get("priority_sites")
+    }</b> 处。</p>
 
 <h2>二、方法（原文五步）</h2>
 <ol>
-  <li><b>比较现有保护框架</b>：拉姆萨尔公约（10 国共 {framework.get('totals', {}).get('ramsar', 148)} 处）、
-      EAAFP 迁飞区网络（{framework.get('totals', {}).get('flyway_network', 49)} 处）、
-      BirdLife IBA/KBA（{framework.get('totals', {}).get('wetland_iba_kba', 465)} 处）；
+  <li><b>比较现有保护框架</b>：拉姆萨尔公约（10 国共 {
+        framework.get("totals", {}).get("ramsar", 148)
+    } 处）、
+      EAAFP 迁飞区网络（{framework.get("totals", {}).get("flyway_network", 49)} 处）、
+      BirdLife IBA/KBA（{framework.get("totals", {}).get("wetland_iba_kba", 465)} 处）；
       水鸟相关标准为 Ramsar 第 2、4、5、6 条，EAAFP 用 2/5/6，BirdLife 用 2/6。</li>
   <li><b>汇集水鸟与站点数据</b>：亚洲水鸟普查、国家监测项目、科学论文、调查报告、eBird 与各国专家资料。</li>
   <li><b>用统一阈值计算 PC1</b>：<code>PC1 = Σ(nᵢ/Nᵢ)×100</code>，只累加 <code>CSR1 score = count / CSR1 阈值 &gt; 1.0</code>
-      的种群（1% 规则＝Ramsar 第 6 条）；入选阈值为中国与蒙古 <b>{selection.get('rule', {}).get('threshold_prc_mongolia', 10)}</b>、
-      其余八国 <b>{selection.get('rule', {}).get('threshold_others', 1)}</b>，
+      的种群（1% 规则＝Ramsar 第 6 条）；入选阈值为中国与蒙古 <b>{
+        selection.get("rule", {}).get("threshold_prc_mongolia", 10)
+    }</b>、
+      其余八国 <b>{selection.get("rule", {}).get("threshold_others", 1)}</b>，
       另有 3 处蒙古站点经专家判断入选（Tolbo 9.4 / Terkhiin Tsagaan 6.0 / Buir 8.0）。</li>
   <li><b>与各国专家核定边界</b>：使站点既是生态单元、也能作为现实管理单元（依据 IBA 与 AWC 的计数点映射指南）。</li>
   <li><b>刻画站点</b>：沿海/内陆、保护状态、所在国 HDI 档，并用 χ² 检验分布是否偏离均匀。</li>
@@ -513,13 +673,20 @@ def rfi_report_handler(params: dict[str, Any], context: Any) -> dict[str, Any]:
 
 <h2>二·补、取舍规则的一致性检查</h2>
 <p>按公开的逐站点分值严格执行原文的区域校准阈值（中国与蒙古 ≥10、其余八国 ≥1，并纳入 3 处蒙古专家例外），
- 得到 <b>{selection.get('rule_only_selected_count', '—')}</b> 处；原文名单为
- <b>{selection.get('published_priority_count', 147)}</b> 处，本案例按"公开结果为准"保留全部
- {selection.get('selected_count', '—')} 处。</p>
-{_table(["站点", "国家", "公开 PC1", "适用阈值", "说明"],
-        [[d["site"], d["country"], d["pc1"], d["threshold"], "低于阈值但原文已列为优先站点"]
-         for d in selection.get("threshold_discrepancies", [])])
- if selection.get("threshold_discrepancies") else ""}
+ 得到 <b>{selection.get("rule_only_selected_count", "—")}</b> 处；原文名单为
+ <b>{selection.get("published_priority_count", 147)}</b> 处，本案例按"公开结果为准"保留全部
+ {selection.get("selected_count", "—")} 处。</p>
+{
+        _table(
+            ["站点", "国家", "公开 PC1", "适用阈值", "说明"],
+            [
+                [d["site"], d["country"], d["pc1"], d["threshold"], "低于阈值但原文已列为优先站点"]
+                for d in selection.get("threshold_discrepancies", [])
+            ],
+        )
+        if selection.get("threshold_discrepancies")
+        else ""
+    }
 <p class="meta">这类差异来自原文两份公开材料（正文阈值说明与补充材料站点表）之间，本报告不做人工对齐。</p>
 
 <h2>二·补、区域背景（原文引用的两项损失估计）</h2>
@@ -530,41 +697,96 @@ def rfi_report_handler(params: dict[str, Any], context: Any) -> dict[str, Any]:
  这些背景数字说明为什么"面积"不是判据 —— 关键在于哪些节点一旦失去就难以替代。</p>
 
 <h2>三、国别分布（原文 Table 4）</h2>
-{_table(["国家", "优先站点", "沿海", "内陆", "受保护/部分保护", "未保护", "HDI 档", "补充材料粗体标记"],
-        [[c["country"], c["priority_sites"], c["coastal"], c["inland"], c["protected_or_partial"],
-          c["unprotected"], c["hdi_tier"], c["bold_overlaps"]] for c in by_country])}
+{
+        _table(
+            [
+                "国家",
+                "优先站点",
+                "沿海",
+                "内陆",
+                "受保护/部分保护",
+                "未保护",
+                "HDI 档",
+                "补充材料粗体标记",
+            ],
+            [
+                [
+                    c["country"],
+                    c["priority_sites"],
+                    c["coastal"],
+                    c["inland"],
+                    c["protected_or_partial"],
+                    c["unprotected"],
+                    c["hdi_tier"],
+                    c["bold_overlaps"],
+                ]
+                for c in by_country
+            ],
+        )
+    }
 
 <h2>四、各框架的候选站点（原文 Table 1）</h2>
-{_table(["国家", "拉姆萨尔", "EAAFP 迁飞区网络", "湿地 IBA/KBA", "最终优先站点"],
-        [[r["country"], r["ramsar"], r["flyway_network"], r["wetland_iba_kba"],
-          (priority_by_country.get(r["country"]) or "—")]
-         for r in framework_rows])}
+{
+        _table(
+            ["国家", "拉姆萨尔", "EAAFP 迁飞区网络", "湿地 IBA/KBA", "最终优先站点"],
+            [
+                [
+                    r["country"],
+                    r["ramsar"],
+                    r["flyway_network"],
+                    r["wetland_iba_kba"],
+                    (priority_by_country.get(r["country"]) or "—"),
+                ]
+                for r in framework_rows
+            ],
+        )
+    }
 
 <h2>五、物种：哪些种群依赖这些湿地</h2>
 {country_species}
-<p>补充材料共记录 <b>{f.get('species_rows')}</b> 条"某站点达到 1% 的物种"记录，其中
- <b>{f.get('species_over_10pct')}</b> 条超过该种群 10%、<b>{f.get('species_over_50pct')}</b> 条超过 50%
+<p>补充材料共记录 <b>{f.get("species_rows")}</b> 条"某站点达到 1% 的物种"记录，其中
+ <b>{f.get("species_over_10pct")}</b> 条超过该种群 10%、<b>{
+        f.get("species_over_50pct")
+    }</b> 条超过 50%
  （原文以 * 与 ** 标注）。</p>
 
 <h2>六、刻画与统计检验（复算原文 χ²）</h2>
-{_table(["检验", "观测量", "我们的复算 χ²", "原文报告", "结论"],
-        [["沿海 vs 内陆", f"{stats.get('coastal_vs_inland', {}).get('observed')}",
-          stats.get("coastal_vs_inland", {}).get("chi2"),
-          f"χ²={stats.get('coastal_vs_inland', {}).get('paper', {}).get('chi2')} (df=1, P<0.004)",
-          "沿海显著偏多"],
-         ["保护 vs 未保护", f"{stats.get('protection_status', {}).get('observed')}",
-          stats.get("protection_status", {}).get("chi2"),
-          f"χ²={stats.get('protection_status', {}).get('paper', {}).get('chi2')} (df=1, P<0.001)",
-          "受保护显著偏多"],
-         ["HDI 三档", f"{stats.get('hdi_tiers', {}).get('observed')}",
-          stats.get("hdi_tiers", {}).get("chi2"),
-          f"χ²={stats.get('hdi_tiers', {}).get('paper', {}).get('chi2')} (df=2, P<0.001)",
-          "集中在高/极高人类发展档"],
-         ["湿地类型 × 保护状态", f"{stats.get('wetland_type_x_protection', {}).get('observed')}",
-          stats.get("wetland_type_x_protection", {}).get("chi2"),
-          f"χ²={stats.get('wetland_type_x_protection', {}).get('paper', {}).get('chi2')} (df=1)",
-          "未保护中沿海偏多、内陆偏少"]])}
-<p class="meta">{stats.get('wetland_type_x_protection', {}).get('note', '')}</p>
+{
+        _table(
+            ["检验", "观测量", "我们的复算 χ²", "原文报告", "结论"],
+            [
+                [
+                    "沿海 vs 内陆",
+                    f"{stats.get('coastal_vs_inland', {}).get('observed')}",
+                    stats.get("coastal_vs_inland", {}).get("chi2"),
+                    f"χ²={stats.get('coastal_vs_inland', {}).get('paper', {}).get('chi2')} (df=1, P<0.004)",
+                    "沿海显著偏多",
+                ],
+                [
+                    "保护 vs 未保护",
+                    f"{stats.get('protection_status', {}).get('observed')}",
+                    stats.get("protection_status", {}).get("chi2"),
+                    f"χ²={stats.get('protection_status', {}).get('paper', {}).get('chi2')} (df=1, P<0.001)",
+                    "受保护显著偏多",
+                ],
+                [
+                    "HDI 三档",
+                    f"{stats.get('hdi_tiers', {}).get('observed')}",
+                    stats.get("hdi_tiers", {}).get("chi2"),
+                    f"χ²={stats.get('hdi_tiers', {}).get('paper', {}).get('chi2')} (df=2, P<0.001)",
+                    "集中在高/极高人类发展档",
+                ],
+                [
+                    "湿地类型 × 保护状态",
+                    f"{stats.get('wetland_type_x_protection', {}).get('observed')}",
+                    stats.get("wetland_type_x_protection", {}).get("chi2"),
+                    f"χ²={stats.get('wetland_type_x_protection', {}).get('paper', {}).get('chi2')} (df=1)",
+                    "未保护中沿海偏多、内陆偏少",
+                ],
+            ],
+        )
+    }
+<p class="meta">{stats.get("wetland_type_x_protection", {}).get("note", "")}</p>
 
 <h2>七、局限（原文自己列出的，必须一起交付）</h2>
 <ul>
@@ -589,10 +811,12 @@ def rfi_report_handler(params: dict[str, Any], context: Any) -> dict[str, Any]:
  <b>不公开</b>，可向作者申请。因此：本站点级结果（名称、中心坐标、PC1 分值、达到 1% 的物种、
  框架标记、粗体保护地标记）来自公开的补充材料 Table 3；<b>PC1 的原始计算不在本报告中重做</b>，
  只复核取舍规则与统计量。</p>
-<p>保护状态的<b>口径差异</b>：正文 Table 4 记 {totals.get('paper_protected_or_partial')} 处受保护或部分受保护、
- {totals.get('paper_unprotected')} 处未受保护；补充材料 Table 3 的粗体标记为
- {totals.get('bold_overlaps_in_supplement')} 处。两者相差
- {totals.get('protection_source_difference')} 处，原文未解释差异来源，本报告两个数字都保留。</p>
+<p>保护状态的<b>口径差异</b>：正文 Table 4 记 {
+        totals.get("paper_protected_or_partial")
+    } 处受保护或部分受保护、
+ {totals.get("paper_unprotected")} 处未受保护；补充材料 Table 3 的粗体标记为
+ {totals.get("bold_overlaps_in_supplement")} 处。两者相差
+ {totals.get("protection_source_difference")} 处，原文未解释差异来源，本报告两个数字都保留。</p>
 <p class="meta">数据来源：Crosby, M., Wee, S. Q. W., Yong, D. L. et al. <i>Identifying priority wetland sites
  in the East Asian–Australasian Flyway for migratory bird conservation.</i> Scientific Reports 16, 1916 (2026).
  DOI 10.1038/s41598-025-31727-2（CC-BY 4.0）。</p>

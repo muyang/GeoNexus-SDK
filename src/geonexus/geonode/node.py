@@ -86,7 +86,7 @@ def load_plugins(node: GeoNode, entry_points: list[Any] | None = None) -> list[d
     状态进 ``node.plugin_status`` 与 health 面，运维一眼能看到谁没装上。
     """
     status: list[dict[str, Any]] = []
-    for ep in (entry_points if entry_points is not None else discover_plugin_entry_points()):
+    for ep in entry_points if entry_points is not None else discover_plugin_entry_points():
         name = getattr(ep, "name", "unknown")
         version = ""
         try:

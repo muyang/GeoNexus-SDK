@@ -20,8 +20,12 @@ from geonexus.registry.store import PluginEntryConflict, RegistryStore
 
 
 def _entry(**kw):
-    base = {"name": "geonexus-plugin-demo", "version": "0.1.0",
-            "install_ref": "pip:geonexus-plugin-demo", "description": "demo"}
+    base = {
+        "name": "geonexus-plugin-demo",
+        "version": "0.1.0",
+        "install_ref": "pip:geonexus-plugin-demo",
+        "description": "demo",
+    }
     base.update(kw)
     return PluginEntry(**base)
 
@@ -33,7 +37,7 @@ def test_publish_is_pending_and_list_defaults_approved(tmp_path):
     store = RegistryStore(persist_path=tmp_path / "reg.json")
     store.register_plugin(_entry())
     assert store.get_plugin("geonexus-plugin-demo", "0.1.0").status == "pending"
-    assert store.list_plugins() == []                      # 默认只看 approved
+    assert store.list_plugins() == []  # 默认只看 approved
     assert len(store.list_plugins(status="pending")) == 1
     store.review_plugin("geonexus-plugin-demo", "0.1.0", approve=True, note="验收")
     assert [e.address for e in store.list_plugins()] == ["geonexus-plugin-demo@0.1.0"]
@@ -44,7 +48,7 @@ def test_duplicate_address_conflicts_but_versions_coexist(tmp_path):
     store.register_plugin(_entry())
     with pytest.raises(PluginEntryConflict):
         store.register_plugin(_entry())
-    store.register_plugin(_entry(version="0.2.0"))         # 新版本是另一条记录
+    store.register_plugin(_entry(version="0.2.0"))  # 新版本是另一条记录
     assert len(store.list_plugins(status="pending")) == 2
 
 
@@ -84,10 +88,11 @@ def test_http_publish_approve_flow(registry):
 
     reg, url = registry
     with RegistryClient(url) as client:
-        out = client.publish_plugin({"name": "p", "version": "1.0",
-                                     "install_ref": "pip:p", "sha256": None})
+        out = client.publish_plugin(
+            {"name": "p", "version": "1.0", "install_ref": "pip:p", "sha256": None}
+        )
         assert out["entry"]["status"] == "pending"
-        assert client.list_plugins() == []                 # 未批准不可见
+        assert client.list_plugins() == []  # 未批准不可见
         client.approve_plugin("p", "1.0", note="ok", by="admin")
         assert [e["name"] for e in client.list_plugins()] == ["p"]
         assert client.get_plugin("p", "1.0")["status"] == "approved"
@@ -99,8 +104,7 @@ def test_http_url_ref_without_sha256_rejected(registry):
     _, url = registry
     with RegistryClient(url) as client:
         with pytest.raises(RegistryClientError) as exc:
-            client.publish_plugin({"name": "p", "version": "1.0",
-                                   "install_ref": "http://x/y.whl"})
+            client.publish_plugin({"name": "p", "version": "1.0", "install_ref": "http://x/y.whl"})
         assert exc.value.code == 422
 
 
@@ -135,15 +139,19 @@ def _serve(payload: bytes):
 
 def test_install_refuses_unapproved():
     with pytest.raises(MarketError, match="approved"):
-        install_plugin({"name": "p", "version": "1", "status": "pending",
-                        "install_ref": "pip:p"})
+        install_plugin({"name": "p", "version": "1", "status": "pending", "install_ref": "pip:p"})
 
 
 def test_install_aborts_on_sha256_mismatch_before_pip():
     httpd, url = _serve(b"NOT A WHEEL AT ALL")
     try:
-        entry = {"name": "p", "version": "1", "status": "approved",
-                 "install_ref": url, "sha256": "0" * 64}
+        entry = {
+            "name": "p",
+            "version": "1",
+            "status": "approved",
+            "install_ref": url,
+            "sha256": "0" * 64,
+        }
         with pytest.raises(MarketError, match="sha256"):
             install_plugin(entry)
     finally:
@@ -154,8 +162,7 @@ def test_install_url_ref_without_sha256_refused():
     httpd, url = _serve(b"x")
     try:
         with pytest.raises(MarketError, match="sha256"):
-            install_plugin({"name": "p", "version": "1", "status": "approved",
-                            "install_ref": url})
+            install_plugin({"name": "p", "version": "1", "status": "approved", "install_ref": url})
     finally:
         httpd.shutdown()
 
@@ -164,10 +171,15 @@ def test_install_bad_wheel_surfaces_pip_error():
     payload = b"garbage-not-a-wheel"
     httpd, url = _serve(payload)
     try:
-        entry = {"name": "p", "version": "1", "status": "approved",
-                 "install_ref": url, "sha256": hashlib.sha256(payload).hexdigest()}
+        entry = {
+            "name": "p",
+            "version": "1",
+            "status": "approved",
+            "install_ref": url,
+            "sha256": hashlib.sha256(payload).hexdigest(),
+        }
         with pytest.raises(MarketError, match="pip"):
-            install_plugin(entry)          # 校验和过了，但包是坏的 → pip 报错被包起来
+            install_plugin(entry)  # 校验和过了，但包是坏的 → pip 报错被包起来
     finally:
         httpd.shutdown()
 
@@ -178,7 +190,10 @@ def test_uninstall_target_removes_dist_info_and_package(tmp_path):
     (target / "geonexus_plugin_demo").mkdir(parents=True)
     (target / "unrelated").mkdir(parents=True)
     out = uninstall_plugin("geonexus-plugin-demo", target=str(target))
-    assert sorted(out["removed"]) == ["geonexus_plugin_demo", "geonexus_plugin_demo-0.1.0.dist-info"]
+    assert sorted(out["removed"]) == [
+        "geonexus_plugin_demo",
+        "geonexus_plugin_demo-0.1.0.dist-info",
+    ]
     assert (target / "unrelated").exists()
 
 

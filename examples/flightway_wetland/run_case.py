@@ -65,7 +65,9 @@ def run_plan(plan: Any, workdir: Path) -> dict[str, Any]:
     """按任务图顺序执行，并把上游产物按方案声明传给下游。"""
     registry = SkillRegistry()
     for name, handler in rfi_skills.HANDLERS.items():
-        registry.register(Skill(name=name, description=rfi_skills.DESCRIPTIONS[name], handler=handler))
+        registry.register(
+            Skill(name=name, description=rfi_skills.DESCRIPTIONS[name], handler=handler)
+        )
     runtime = LocalRuntime(registry, workdir=str(workdir), node_name="flightway-case")
 
     results: dict[str, dict[str, Any]] = {}
@@ -95,17 +97,21 @@ def run_plan(plan: Any, workdir: Path) -> dict[str, Any]:
         outcome = runtime.execute(ExecuteParams(skill=task.spec["uses"], params=params))
         outputs = dict(outcome.get("outputs") or {})
         results[step_id] = outputs
-        runs.append({
-            "step": step_id,
-            "skill": task.spec["uses"],
-            "params": {k: v for k, v in params.items() if not str(v).startswith("step://")},
-            "outputs": outputs,
-            "status": outcome.get("status", "ok"),
-        })
+        runs.append(
+            {
+                "step": step_id,
+                "skill": task.spec["uses"],
+                "params": {k: v for k, v in params.items() if not str(v).startswith("step://")},
+                "outputs": outputs,
+                "status": outcome.get("status", "ok"),
+            }
+        )
     return {"runs": runs, "results": results}
 
 
-def deliverables_of(plan: Any, results: dict[str, dict[str, Any]], workdir: Path) -> list[dict[str, Any]]:
+def deliverables_of(
+    plan: Any, results: dict[str, dict[str, Any]], workdir: Path
+) -> list[dict[str, Any]]:
     """按方案 `outputs` 声明解析交付物 —— 结论，不是每一步的副产品。"""
     listed: list[dict[str, Any]] = []
     for out in plan.outputs:
@@ -115,16 +121,18 @@ def deliverables_of(plan: Any, results: dict[str, dict[str, Any]], workdir: Path
         if path is not None and not path.is_absolute():
             path = workdir / path
         exists = bool(path and path.exists())
-        listed.append({
-            "name": out.name,
-            "role": out.role,
-            "media_type": out.media_type,
-            "from": out.from_,
-            "path": str(path) if path else None,
-            "exists": exists,
-            "size_bytes": path.stat().st_size if exists and path else None,
-            "checksum": sha256_of(path) if exists and path and path.is_file() else None,
-        })
+        listed.append(
+            {
+                "name": out.name,
+                "role": out.role,
+                "media_type": out.media_type,
+                "from": out.from_,
+                "path": str(path) if path else None,
+                "exists": exists,
+                "size_bytes": path.stat().st_size if exists and path else None,
+                "checksum": sha256_of(path) if exists and path and path.is_file() else None,
+            }
+        )
     return listed
 
 
@@ -135,22 +143,37 @@ def visibility_report(card: GeoCard, *, restricted_hidden: bool) -> dict[str, An
     精确坐标这次是**公开**的（论文补充材料已发表），因此不再拿坐标当受限项 ——
     真正受限的是支撑 PC1 的原始计数数据，这也更符合原文的数据可用性声明。
     """
-    def _card(cid: str, name: str, desc: str, sensitivity: str) -> GeoCard:
-        return GeoCard.model_validate({
-            "geocard_version": "1.0",
-            "id": cid,
-            "type": "data",
-            "name": name,
-            "description": desc,
-            "compliance": {"sensitivity": sensitivity},
-        })
 
-    sites = _card("geocard.eaaf.rfi-priority-sites", "RFI 优先湿地站点表（公开）",
-                  "147 处优先湿地的名称、中心坐标、PC1 与物种记录（论文补充材料 Table 3）。", "public")
-    summary = _card("geocard.eaaf.rfi-country-summary", "国别汇总与框架站点数（公开）",
-                    "论文 Table 1/3/4 的国别汇总。", "public")
-    counts = _card("geocard.eaaf.waterbird-counts-restricted", "逐笔水鸟计数（受限）",
-                   "支撑 PC1 计算的原始计数，由 Wetlands International 许可提供，未公开。", "restricted")
+    def _card(cid: str, name: str, desc: str, sensitivity: str) -> GeoCard:
+        return GeoCard.model_validate(
+            {
+                "geocard_version": "1.0",
+                "id": cid,
+                "type": "data",
+                "name": name,
+                "description": desc,
+                "compliance": {"sensitivity": sensitivity},
+            }
+        )
+
+    sites = _card(
+        "geocard.eaaf.rfi-priority-sites",
+        "RFI 优先湿地站点表（公开）",
+        "147 处优先湿地的名称、中心坐标、PC1 与物种记录（论文补充材料 Table 3）。",
+        "public",
+    )
+    summary = _card(
+        "geocard.eaaf.rfi-country-summary",
+        "国别汇总与框架站点数（公开）",
+        "论文 Table 1/3/4 的国别汇总。",
+        "public",
+    )
+    counts = _card(
+        "geocard.eaaf.waterbird-counts-restricted",
+        "逐笔水鸟计数（受限）",
+        "支撑 PC1 计算的原始计数，由 Wetlands International 许可提供，未公开。",
+        "restricted",
+    )
     library: dict[str, GeoCard] = {
         "geocard.eaaf.rfi-priority-sites": sites,
         "geocard.eaaf.rfi-country-summary": summary,
@@ -163,14 +186,21 @@ def visibility_report(card: GeoCard, *, restricted_hidden: bool) -> dict[str, An
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="按原文五步跑一遍 RFI 优先湿地案例")
-    parser.add_argument("--threshold-prc-mongolia", type=float, default=10.0,
-                        help="中国与蒙古的 PC1 入选阈值（原文区域校准取 10）")
-    parser.add_argument("--threshold-others", type=float, default=1.0,
-                        help="其余八国的 PC1 入选阈值（原文取 1）")
-    parser.add_argument("--no-expert-exceptions", action="store_true",
-                        help="不纳入原文点名的 3 处蒙古专家例外")
-    parser.add_argument("--counts", default="",
-                        help="可选：受限的逐笔计数数据集路径（走完整 PC1 计算）")
+    parser.add_argument(
+        "--threshold-prc-mongolia",
+        type=float,
+        default=10.0,
+        help="中国与蒙古的 PC1 入选阈值（原文区域校准取 10）",
+    )
+    parser.add_argument(
+        "--threshold-others", type=float, default=1.0, help="其余八国的 PC1 入选阈值（原文取 1）"
+    )
+    parser.add_argument(
+        "--no-expert-exceptions", action="store_true", help="不纳入原文点名的 3 处蒙古专家例外"
+    )
+    parser.add_argument(
+        "--counts", default="", help="可选：受限的逐笔计数数据集路径（走完整 PC1 计算）"
+    )
     parser.add_argument("--run-id", default="local-run-1")
     parser.add_argument("--data-dir", default=str(HERE / "data" / "rfi"))
     parser.add_argument("--workdir", default=str(HERE / "output"))
@@ -231,7 +261,8 @@ def main(argv: list[str] | None = None) -> int:
         },
     }
     (workdir / "run.json").write_text(
-        json.dumps(jsonable(report), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        json.dumps(jsonable(report), ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
 
     if args.json:
         print(json.dumps(jsonable(report), ensure_ascii=False, indent=2))
@@ -243,31 +274,43 @@ def main(argv: list[str] | None = None) -> int:
     for run in execution["runs"]:
         print(f"  {run['step']:3s} {run['skill']:24s} {run['status']}")
     print("\n数据校验（与原文公开数字对照）：")
-    print(f"  站点 {funnel.get('priority_sites')} 处 · 沿海 {funnel.get('coastal')} / "
-          f"内陆 {funnel.get('inland')} · 物种记录 {funnel.get('species_rows')} 条")
-    print(f"  候选 {funnel.get('candidate_sites')} → 评估 ≥{funnel.get('assessed_sites_min')} "
-          f"（列出 {funnel.get('assessed_sites_listed')}）→ 优先 {funnel.get('priority_sites')}")
+    print(
+        f"  站点 {funnel.get('priority_sites')} 处 · 沿海 {funnel.get('coastal')} / "
+        f"内陆 {funnel.get('inland')} · 物种记录 {funnel.get('species_rows')} 条"
+    )
+    print(
+        f"  候选 {funnel.get('candidate_sites')} → 评估 ≥{funnel.get('assessed_sites_min')} "
+        f"（列出 {funnel.get('assessed_sites_listed')}）→ 优先 {funnel.get('priority_sites')}"
+    )
     problems = report["validation"]["problems"]
     print("  校验：" + ("通过（与原文一致）" if not problems else "；".join(problems)))
     print("\n取舍规则：")
-    print(f"  阈值 中国/蒙古 {args.threshold_prc_mongolia} · 其余八国 {args.threshold_others} · "
-          f"专家例外 {'纳入' if not args.no_expert_exceptions else '不纳入'}")
+    print(
+        f"  阈值 中国/蒙古 {args.threshold_prc_mongolia} · 其余八国 {args.threshold_others} · "
+        f"专家例外 {'纳入' if not args.no_expert_exceptions else '不纳入'}"
+    )
     print(f"  入选 {s3.get('selected_count')} 处 · 重现原文 147 处：{s3.get('reproduces_147')}")
     totals = report["characterisation"] or {}
     print("\n刻画与统计：")
-    print(f"  沿海 {totals.get('coastal')}（{totals.get('coastal_pct')}%）· "
-          f"受保护/部分保护（正文 Table 4）{totals.get('paper_protected_or_partial')} · "
-          f"补充材料粗体 {totals.get('bold_overlaps_in_supplement')}")
+    print(
+        f"  沿海 {totals.get('coastal')}（{totals.get('coastal_pct')}%）· "
+        f"受保护/部分保护（正文 Table 4）{totals.get('paper_protected_or_partial')} · "
+        f"补充材料粗体 {totals.get('bold_overlaps_in_supplement')}"
+    )
     print("\n交付物：")
     for item in deliverables:
         size = f"{item['size_bytes']} B" if item["size_bytes"] else "缺失"
         print(f"  [{item['role']:9s}] {item['name']:22s} {size:>10s}  {item['path']}")
     print("\n可见性继承：")
-    print(f"  作者视角（含受限计数）：{report['visibility']['as_author']['visibility']}"
-          f" · visible={report['visibility']['as_author']['visible']}")
+    print(
+        f"  作者视角（含受限计数）：{report['visibility']['as_author']['visibility']}"
+        f" · visible={report['visibility']['as_author']['visible']}"
+    )
     public = report["visibility"]["as_public_viewer"]
-    print(f"  访客视角（受限计数不可见）：visible={public['visible']}"
-          f" · missing={public['missing']}  ⇒ 平台应返回 404")
+    print(
+        f"  访客视角（受限计数不可见）：visible={public['visible']}"
+        f" · missing={public['missing']}  ⇒ 平台应返回 404"
+    )
     print(f"\n运行清单：{workdir / 'run.json'}")
     return 0 if s2.get("validated") else 1
 

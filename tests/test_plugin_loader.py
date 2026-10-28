@@ -36,8 +36,12 @@ class _Imperative:
 
     @staticmethod
     def register(node):
-        node.register_skill(name="imp-skill", handler=lambda p, c: {"ok": 1},
-                            description="i", input_schema={"required": []})
+        node.register_skill(
+            name="imp-skill",
+            handler=lambda p, c: {"ok": 1},
+            description="i",
+            input_schema={"required": []},
+        )
 
 
 def test_both_plugin_shapes_load(tmp_path):
@@ -51,10 +55,13 @@ def test_both_plugin_shapes_load(tmp_path):
 
 def test_broken_plugin_is_isolated_and_visible(tmp_path):
     node = GeoNode(name="plug-node", port=0, workdir=str(tmp_path))
-    status = load_plugins(node, entry_points=[
-        _ep("good", _Declarative),
-        _ep("bad", exc=RuntimeError("boom in third-party code")),
-    ])
+    status = load_plugins(
+        node,
+        entry_points=[
+            _ep("good", _Declarative),
+            _ep("bad", exc=RuntimeError("boom in third-party code")),
+        ],
+    )
     good, bad = status
     assert good["ok"] is True
     assert bad["ok"] is False and "boom" in bad["error"]

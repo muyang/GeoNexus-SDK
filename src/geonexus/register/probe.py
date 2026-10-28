@@ -27,16 +27,20 @@ GEOM_NAMES = {"geom", "geometry", "wkt", "the_geom", "shape"}
 
 @dataclass
 class ProbeResult:
-    kind: str                       # ogc-features / ogc-coverages / ogc-tiles / ogc-processes /
-                                    # wms / stac / geotiff / csv / geojson / onnx / torch /
-                                    # safetensors / compute / unknown
+    kind: str  # ogc-features / ogc-coverages / ogc-tiles / ogc-processes /
+    # wms / stac / geotiff / csv / geojson / onnx / torch /
+    # safetensors / compute / unknown
     target: str
     facts: dict[str, Any] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
 
     def as_dict(self) -> dict[str, Any]:
-        return {"kind": self.kind, "target": self.target,
-                "facts": self.facts, "warnings": self.warnings}
+        return {
+            "kind": self.kind,
+            "target": self.target,
+            "facts": self.facts,
+            "warnings": self.warnings,
+        }
 
 
 def probe_target(target: str, timeout: float = TIMEOUT) -> ProbeResult:
@@ -63,17 +67,27 @@ def _probe_url(url: str, timeout: float) -> ProbeResult:
     # 0) 是不是一个 GeoNexus 节点（算力/能力源）
     health = _get(url.rstrip("/") + "/health", timeout)
     caps = _get(url.rstrip("/") + "/capabilities", timeout)
-    if health is not None and caps is not None and health.status_code == 200 and caps.status_code == 200:
+    if (
+        health is not None
+        and caps is not None
+        and health.status_code == 200
+        and caps.status_code == 200
+    ):
         try:
             h = health.json()
             c = caps.json()
             if h.get("status") == "ok" and "methods" in c:
-                return ProbeResult("compute", url, {
-                    "title": c.get("node") or h.get("node"),
-                    "description": f"GeoNexus 能力节点（{len(c.get('skills', []))} 个技能）",
-                    "methods": c.get("methods", []),
-                    "skills": [s.get("name") for s in c.get("skills", [])],
-                }, warnings)
+                return ProbeResult(
+                    "compute",
+                    url,
+                    {
+                        "title": c.get("node") or h.get("node"),
+                        "description": f"GeoNexus 能力节点（{len(c.get('skills', []))} 个技能）",
+                        "methods": c.get("methods", []),
+                        "skills": [s.get("name") for s in c.get("skills", [])],
+                    },
+                    warnings,
+                )
         except Exception:  # noqa: BLE001
             warnings.append("节点 health/capabilities 响应不是预期 JSON，继续按服务探测")
 
@@ -106,7 +120,9 @@ def _probe_url(url: str, timeout: float) -> ProbeResult:
                     first = items[0]
                     facts["title"] = first.get("title") or first.get("id")
                     facts["description"] = first.get("description") or ""
-                    bbox = (((first.get("extent") or {}).get("spatial") or {}).get("bbox") or [[None]])[0]
+                    bbox = (
+                        ((first.get("extent") or {}).get("spatial") or {}).get("bbox") or [[None]]
+                    )[0]
                     if len(bbox) == 4 and all(v is not None for v in bbox):
                         facts["bbox"] = [float(v) for v in bbox]
                     facts["collections"] = [c.get("id") for c in items][:20]
@@ -118,7 +134,9 @@ def _probe_url(url: str, timeout: float) -> ProbeResult:
     if landing is not None and landing.status_code == 200:
         try:
             d = landing.json()
-            if isinstance(d, dict) and (d.get("type") in ("Catalog", "Collection") or "stac_version" in d):
+            if isinstance(d, dict) and (
+                d.get("type") in ("Catalog", "Collection") or "stac_version" in d
+            ):
                 bbox = (((d.get("extent") or {}).get("spatial") or {}).get("bbox") or [[None]])[0]
                 if len(bbox) == 4 and all(v is not None for v in bbox):
                     facts["bbox"] = [float(v) for v in bbox]
@@ -131,17 +149,27 @@ def _probe_url(url: str, timeout: float) -> ProbeResult:
     # 3) WMS/WMTS：GetCapabilities 是 XML
     wms = _get(url, timeout, params={"service": "WMS", "request": "GetCapabilities"})
     if wms is not None and wms.status_code == 200 and b"WMS_Capabilities" in wms.content[:4000]:
-        m = re.search(rb"<EX_GeographicBoundingBox>\s*<westBC>([-\d.]+)</westBC>\s*"
-                      rb"<southBC>([-\d.]+)</southBC>\s*<eastBC>([-\d.]+)</eastBC>\s*"
-                      rb"<northBC>([-\d.]+)</northBC>", wms.content)
+        m = re.search(
+            rb"<EX_GeographicBoundingBox>\s*<westBC>([-\d.]+)</westBC>\s*"
+            rb"<southBC>([-\d.]+)</southBC>\s*<eastBC>([-\d.]+)</eastBC>\s*"
+            rb"<northBC>([-\d.]+)</northBC>",
+            wms.content,
+        )
         if m:
-            facts["bbox"] = [float(m.group(1)), float(m.group(2)), float(m.group(3)), float(m.group(4))]
+            facts["bbox"] = [
+                float(m.group(1)),
+                float(m.group(2)),
+                float(m.group(3)),
+                float(m.group(4)),
+            ]
         t = re.search(rb"<Title[^>]*>([^<]{1,120})</Title>", wms.content)
         if t:
             facts["title"] = t.group(1).decode("utf-8", "replace").strip()
         return ProbeResult("wms", url, facts, warnings)
 
-    warnings.append("未能识别服务类型（试过 GeoNode/OGC API/STAC/WMS）；仍可按 unknown 登记，但需人工补字段")
+    warnings.append(
+        "未能识别服务类型（试过 GeoNode/OGC API/STAC/WMS）；仍可按 unknown 登记，但需人工补字段"
+    )
     return ProbeResult("unknown", url, facts, warnings)
 
 
@@ -178,23 +206,32 @@ def _probe_file(path: Path) -> ProbeResult:
         (n,) = struct.unpack("<Q", head[:8])
         facts = {"size_bytes": size}
         try:
-            meta = json.loads(path.read_bytes()[8:8 + min(n, 1_000_000)])
+            meta = json.loads(path.read_bytes()[8 : 8 + min(n, 1_000_000)])
             if isinstance(meta, dict):
                 names = [k for k in meta if k != "__metadata__"]
                 facts["tensor_names"] = names[:20]
-                facts["tensors"] = {k: meta[k].get("dtype") for k in names[:20]
-                                    if isinstance(meta.get(k), dict)}
+                facts["tensors"] = {
+                    k: meta[k].get("dtype") for k in names[:20] if isinstance(meta.get(k), dict)
+                }
         except Exception:  # noqa: BLE001
             warnings.append("safetensors 头解析失败，仅登记大小")
         return ProbeResult("safetensors", str(path), facts, warnings)
 
     if path.suffix in (".onnx",):
         # 不导入 onnx（重依赖）：只登记大小与文件名，权重结构留给人工或后续工具
-        return ProbeResult("onnx", str(path), {"size_bytes": size},
-                           ["ONNX 仅登记大小与文件名（不解析图结构，避免重依赖与执行风险）"])
+        return ProbeResult(
+            "onnx",
+            str(path),
+            {"size_bytes": size},
+            ["ONNX 仅登记大小与文件名（不解析图结构，避免重依赖与执行风险）"],
+        )
     if path.suffix in (".pt", ".pth", ".bin"):
-        return ProbeResult("torch", str(path), {"size_bytes": size},
-                           ["torch 权重**不做加载**（加载即执行代码）；仅登记大小，结构需人工说明"])
+        return ProbeResult(
+            "torch",
+            str(path),
+            {"size_bytes": size},
+            ["torch 权重**不做加载**（加载即执行代码）；仅登记大小，结构需人工说明"],
+        )
 
     # GeoJSON / JSON
     if path.suffix in (".json", ".geojson"):
@@ -211,7 +248,9 @@ def _probe_file(path: Path) -> ProbeResult:
             else:
                 warnings.append("GeoJSON 里没有可解析的坐标，不上地球（侧栏展示）")
             return ProbeResult("geojson", str(path), facts, warnings)
-        return ProbeResult("unknown", str(path), {}, ["JSON 不是 GeoJSON Feature/FeatureCollection"])
+        return ProbeResult(
+            "unknown", str(path), {}, ["JSON 不是 GeoJSON Feature/FeatureCollection"]
+        )
 
     # CSV / TSV
     if path.suffix in (".csv", ".tsv", ".txt"):
@@ -222,7 +261,7 @@ def _probe_file(path: Path) -> ProbeResult:
         except Exception:  # noqa: BLE001
             delim = ","
         reader = _csv.DictReader(io.StringIO(text), delimiter=delim)
-        header = [ (h or "").strip() for h in (reader.fieldnames or []) ]
+        header = [(h or "").strip() for h in (reader.fieldnames or [])]
         low = {h.lower(): h for h in header}
         lat = next((low[k] for k in low if k in LAT_NAMES), None)
         lon = next((low[k] for k in low if k in LON_NAMES), None)
@@ -241,8 +280,9 @@ def _probe_file(path: Path) -> ProbeResult:
             warnings.append("未发现经纬度/几何列：登记为非空间表格（侧栏展示）")
         return ProbeResult("csv", str(path), facts, warnings)
 
-    return ProbeResult("unknown", str(path), {"size_bytes": size},
-                       ["未识别的文件类型；可人工补字段后登记"])
+    return ProbeResult(
+        "unknown", str(path), {"size_bytes": size}, ["未识别的文件类型；可人工补字段后登记"]
+    )
 
 
 def _bbox_from_csv(text: str, delim: str, lat: str, lon: str, limit: int = 20000):

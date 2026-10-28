@@ -143,7 +143,9 @@ class RecipeStep(BaseModel):
         default_factory=dict, description="cpu / memory_mb / gpu, as a reservation."
     )
     timeout_seconds: float | None = Field(default=None, description="Per-step timeout.")
-    max_attempts: int = Field(default=0, ge=0, description="Extra attempts after a retryable failure.")
+    max_attempts: int = Field(
+        default=0, ge=0, description="Extra attempts after a retryable failure."
+    )
     description: str = ""
 
     @field_validator("id", "uses")
@@ -198,7 +200,9 @@ class RecipeOutput(BaseModel):
         alias="from",
         description="Where it comes from, e.g. 's3.report' (step id . output name).",
     )
-    role: str = Field(default="knowledge", description="One of: " + ", ".join(COMPONENT_ROLES) + ".")
+    role: str = Field(
+        default="knowledge", description="One of: " + ", ".join(COMPONENT_ROLES) + "."
+    )
     media_type: str | None = None
     description: str = ""
 
@@ -351,7 +355,9 @@ class Recipe(BaseModel):
                     continue
                 target, _, field = ref[len("step://") :].partition("/")
                 if target not in by_id:
-                    problems.append(f"step '{step.id}' input '{name}' reads unknown step '{target}'")
+                    problems.append(
+                        f"step '{step.id}' input '{name}' reads unknown step '{target}'"
+                    )
                 elif field and by_id[target].outputs and field not in by_id[target].outputs:
                     problems.append(
                         f"step '{step.id}' input '{name}': step '{target}' "

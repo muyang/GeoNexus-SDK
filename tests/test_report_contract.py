@@ -208,7 +208,9 @@ def test_report_contract_reads_the_source_from_the_card_when_not_given(
 ) -> None:
     """来源也能从卡片自身推出（recipe_ref + params），不必强制调用方重复一遍。"""
     card = report_card_from_run(sdg_plan, report_path=report_file)
-    contract = report_contract(card, source=_source(sdg_plan, load_recipe(EXAMPLE)), report_path=report_file)
+    contract = report_contract(
+        card, source=_source(sdg_plan, load_recipe(EXAMPLE)), report_path=report_file
+    )
     assert contract.scanned_meta["recipe"] == "recipe://geonexus/sdg-15-3-1@1.0.0"
     assert contract.scanned_meta["data_snapshot"] == {"geokg": "2026.09.1", "lc08": "2024.12"}
     assert contract.scanned_meta["params"]["year"] == 2019
@@ -315,7 +317,7 @@ def test_optional_components_do_not_gate_visibility() -> None:
 
 
 def test_visibility_grant_must_cover_the_strictest_component() -> None:
-    """"够得着其中一项"不算够；要看得见就得够得着最严的那一项。"""
+    """ "够得着其中一项"不算够；要看得见就得够得着最严的那一项。"""
     case = (
         GeoCardBuilder(id="case", type="workflow", name="C", description="d")
         .component("a")

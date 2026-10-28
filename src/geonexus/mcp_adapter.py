@@ -39,9 +39,9 @@ def create_mcp_server(server: GeoMCPServer, *, http_guarded: bool = False) -> An
     GeoMCP server's methods as MCP tools."""
     try:
         try:
-            MCPServer=importlib.import_module("mcp.server.mcpserver").MCPServer
+            MCPServer = importlib.import_module("mcp.server.mcpserver").MCPServer
         except ImportError:
-            MCPServer=importlib.import_module("mcp.server.fastmcp").FastMCP
+            MCPServer = importlib.import_module("mcp.server.fastmcp").FastMCP
     except ImportError as exc:  # pragma: no cover - env dependent
         raise ImportError(
             "The MCP bridge requires the official MCP SDK. Install it with "
@@ -60,14 +60,16 @@ def create_mcp_server(server: GeoMCPServer, *, http_guarded: bool = False) -> An
         ),
     )
 
-    supported=inspect.signature(MCPServer).parameters
-    mcp=MCPServer(**{k:v for k,v in options.items() if k in supported})
+    supported = inspect.signature(MCPServer).parameters
+    mcp = MCPServer(**{k: v for k, v in options.items() if k in supported})
 
     def require_execution_key() -> None:
-        if server.api_keys and not http_guarded and os.environ.get("GEONEXUS_NODE_API_KEY") not in server.api_keys:
-            raise PermissionError(
-                    "A valid GEONEXUS_NODE_API_KEY is required for stdio execution."
-                )
+        if (
+            server.api_keys
+            and not http_guarded
+            and os.environ.get("GEONEXUS_NODE_API_KEY") not in server.api_keys
+        ):
+            raise PermissionError("A valid GEONEXUS_NODE_API_KEY is required for stdio execution.")
 
     @mcp.tool(description="List the GeoMCP protocol surface (methods, skills, tools, geocards).")
     async def geo_capabilities() -> dict[str, Any]:

@@ -709,7 +709,6 @@ class RegistryServer:
             self._require_key(request)
             return self.sync_peers()
 
-
         @app.post("/plugins")
         async def publish_plugin(request: Request) -> JSONResponse:
             """发布插件条目。登记 ≠ 上架：默认 pending，approve 后才可被 install。"""
@@ -730,18 +729,19 @@ class RegistryServer:
             # URL 引荐必须带 sha256：没有校验和的下载地址是可投毒的
             if entry.install_ref.startswith(("http://", "https://")) and not entry.sha256:
                 raise HTTPException(
-                    status_code=422,
-                    detail="URL install_ref requires sha256 (install verifies it)")
+                    status_code=422, detail="URL install_ref requires sha256 (install verifies it)"
+                )
             entry.status = STATUS_PENDING  # 提交即待审，不接受自封 approved
             try:
                 self.store.register_plugin(entry)
             except PluginEntryConflict as exc:
                 raise HTTPException(status_code=409, detail=str(exc)) from None
-            return JSONResponse({"status": "published", "entry": entry.to_dict()},
-                                status_code=201)
+            return JSONResponse({"status": "published", "entry": entry.to_dict()}, status_code=201)
 
         @app.get("/plugins")
-        async def list_plugins(request: Request, status: str | None = None, q: str = "") -> dict[str, Any]:
+        async def list_plugins(
+            request: Request, status: str | None = None, q: str = ""
+        ) -> dict[str, Any]:
             # 与 /cards 同约定：不传 = 只看 approved；"all" = 全量（含待审）
             if status and status != STATUS_APPROVED:
                 self._require_key(request, "registry:review")
@@ -756,7 +756,9 @@ class RegistryServer:
         async def get_plugin(name: str, version: str, request: Request) -> dict[str, Any]:
             entry = self.store.get_plugin(name, version)
             if entry is None:
-                raise HTTPException(status_code=404, detail=f"Plugin not published: {name}@{version}")
+                raise HTTPException(
+                    status_code=404, detail=f"Plugin not published: {name}@{version}"
+                )
             if entry.status != STATUS_APPROVED:
                 self._require_key(request, "registry:review")
             return {"entry": entry.to_dict()}
@@ -766,9 +768,13 @@ class RegistryServer:
             self._require_key(request, "registry:review")
             body = await request.json() if request.headers.get("content-length") else {}
             try:
-                entry = self.store.review_plugin(name, version, approve=True,
-                                                 note=(body or {}).get("note"),
-                                                 by=(body or {}).get("by"))
+                entry = self.store.review_plugin(
+                    name,
+                    version,
+                    approve=True,
+                    note=(body or {}).get("note"),
+                    by=(body or {}).get("by"),
+                )
             except PluginEntryNotFound as exc:
                 raise HTTPException(status_code=404, detail=str(exc)) from None
             return {"status": "approved", "entry": entry.to_dict()}
@@ -778,9 +784,13 @@ class RegistryServer:
             self._require_key(request, "registry:review")
             body = await request.json() if request.headers.get("content-length") else {}
             try:
-                entry = self.store.review_plugin(name, version, approve=False,
-                                                 note=(body or {}).get("note"),
-                                                 by=(body or {}).get("by"))
+                entry = self.store.review_plugin(
+                    name,
+                    version,
+                    approve=False,
+                    note=(body or {}).get("note"),
+                    by=(body or {}).get("by"),
+                )
             except PluginEntryNotFound as exc:
                 raise HTTPException(status_code=404, detail=str(exc)) from None
             return {"status": "rejected", "entry": entry.to_dict()}
@@ -809,8 +819,10 @@ class RegistryServer:
         import uvicorn
 
         config = uvicorn.Config(
-            self.create_app(), host=host or "127.0.0.1",
-            port=port if port is not None else 8790, log_level="warning",
+            self.create_app(),
+            host=host or "127.0.0.1",
+            port=port if port is not None else 8790,
+            log_level="warning",
         )
         server = uvicorn.Server(config)
         thread = threading.Thread(target=server.run, daemon=True)
@@ -840,4 +852,3 @@ class RegistryServer:
                 self._thread.join(timeout=timeout)
 
         return RunningRegistry(server, thread)
-

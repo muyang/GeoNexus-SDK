@@ -52,38 +52,146 @@ REGIONS: dict[str, dict[str, Any]] = {
 SPECIES: list[dict[str, Any]] = [
     # 原文点名的类群（勺嘴鹬、大滨鹬、远东杓鹬、斑腿鹬、黑脸琵鹭、丹顶鹤、鸿雁…）
     {"species": "勺嘴鹬", "scientific": "Calidris pygmaea", "population": 700, "threatened": True},
-    {"species": "大滨鹬", "scientific": "Calidris tenuirostris", "population": 380000, "threatened": True},
-    {"species": "远东杓鹬", "scientific": "Numenius madagascariensis", "population": 32000, "threatened": True},
+    {
+        "species": "大滨鹬",
+        "scientific": "Calidris tenuirostris",
+        "population": 380000,
+        "threatened": True,
+    },
+    {
+        "species": "远东杓鹬",
+        "scientific": "Numenius madagascariensis",
+        "population": 32000,
+        "threatened": True,
+    },
     {"species": "斑腿鹬", "scientific": "Tringa guttifer", "population": 1200, "threatened": True},
     {"species": "黑脸琵鹭", "scientific": "Platalea minor", "population": 6200, "threatened": True},
     {"species": "丹顶鹤", "scientific": "Grus japonensis", "population": 3800, "threatened": True},
-    {"species": "白鹤", "scientific": "Leucogeranus leucogeranus", "population": 4000, "threatened": True},
+    {
+        "species": "白鹤",
+        "scientific": "Leucogeranus leucogeranus",
+        "population": 4000,
+        "threatened": True,
+    },
     {"species": "白头鹤", "scientific": "Grus monacha", "population": 16000, "threatened": True},
     {"species": "白枕鹤", "scientific": "Antigone vipio", "population": 10000, "threatened": True},
-    {"species": "东方白鹳", "scientific": "Ciconia boyciana", "population": 9000, "threatened": True},
+    {
+        "species": "东方白鹳",
+        "scientific": "Ciconia boyciana",
+        "population": 9000,
+        "threatened": True,
+    },
     {"species": "鸿雁", "scientific": "Anser cygnoides", "population": 90000, "threatened": True},
-    {"species": "小白额雁", "scientific": "Anser erythropus", "population": 30000, "threatened": True},
+    {
+        "species": "小白额雁",
+        "scientific": "Anser erythropus",
+        "population": 30000,
+        "threatened": True,
+    },
     {"species": "青头潜鸭", "scientific": "Aythya baeri", "population": 1000, "threatened": True},
-    {"species": "大杓鹬", "scientific": "Numenius arquata", "population": 20000, "threatened": True},
-    {"species": "半蹼鹬", "scientific": "Limnodromus semipalmatus", "population": 23000, "threatened": True},
+    {
+        "species": "大杓鹬",
+        "scientific": "Numenius arquata",
+        "population": 20000,
+        "threatened": True,
+    },
+    {
+        "species": "半蹼鹬",
+        "scientific": "Limnodromus semipalmatus",
+        "population": 23000,
+        "threatened": True,
+    },
     # 常见种：数量大，用来体现"常见种与濒危种被同等计数"的偏差（原文第五节）
-    {"species": "绿头鸭", "scientific": "Anas platyrhynchos", "population": 5000000, "threatened": False},
-    {"species": "赤颈鸭", "scientific": "Mareca penelope", "population": 2000000, "threatened": False},
-    {"species": "翘鼻麻鸭", "scientific": "Tadorna tadorna", "population": 700000, "threatened": False},
-    {"species": "环颈鸻", "scientific": "Charadrius hiaticula", "population": 400000, "threatened": False},
-    {"species": "红嘴鸥", "scientific": "Chroicocephalus ridibundus", "population": 3000000, "threatened": False},
+    {
+        "species": "绿头鸭",
+        "scientific": "Anas platyrhynchos",
+        "population": 5000000,
+        "threatened": False,
+    },
+    {
+        "species": "赤颈鸭",
+        "scientific": "Mareca penelope",
+        "population": 2000000,
+        "threatened": False,
+    },
+    {
+        "species": "翘鼻麻鸭",
+        "scientific": "Tadorna tadorna",
+        "population": 700000,
+        "threatened": False,
+    },
+    {
+        "species": "环颈鸻",
+        "scientific": "Charadrius hiaticula",
+        "population": 400000,
+        "threatened": False,
+    },
+    {
+        "species": "红嘴鸥",
+        "scientific": "Chroicocephalus ridibundus",
+        "population": 3000000,
+        "threatened": False,
+    },
 ]
 
 #: 每个地点的"人设"：水量、鸟况。用固定种子生成，保证可复现。
 SITE_PROFILES: list[dict[str, Any]] = [
-    {"site_id": "site-01", "name": "示意地点 01（大型潮滩）", "water": 0.62, "abundance": 1.00, "kind": "coastal"},
-    {"site_id": "site-02", "name": "示意地点 02（河口沙洲）", "water": 0.41, "abundance": 0.72, "kind": "coastal"},
-    {"site_id": "site-03", "name": "示意地点 03（围垦养殖塘）", "water": 0.33, "abundance": 0.45, "kind": "artificial"},
-    {"site_id": "site-04", "name": "示意地点 04（高潮位休息地）", "water": 0.18, "abundance": 0.60, "kind": "coastal"},
-    {"site_id": "site-05", "name": "示意地点 05（盐田）", "water": 0.28, "abundance": 0.38, "kind": "artificial"},
-    {"site_id": "site-06", "name": "示意地点 06（内陆湖泊）", "water": 0.55, "abundance": 0.66, "kind": "inland"},
-    {"site_id": "site-07", "name": "示意地点 07（洪泛平原）", "water": 0.47, "abundance": 0.30, "kind": "inland"},
-    {"site_id": "site-08", "name": "示意地点 08（小型停歇地）", "water": 0.12, "abundance": 0.22, "kind": "inland"},
+    {
+        "site_id": "site-01",
+        "name": "示意地点 01（大型潮滩）",
+        "water": 0.62,
+        "abundance": 1.00,
+        "kind": "coastal",
+    },
+    {
+        "site_id": "site-02",
+        "name": "示意地点 02（河口沙洲）",
+        "water": 0.41,
+        "abundance": 0.72,
+        "kind": "coastal",
+    },
+    {
+        "site_id": "site-03",
+        "name": "示意地点 03（围垦养殖塘）",
+        "water": 0.33,
+        "abundance": 0.45,
+        "kind": "artificial",
+    },
+    {
+        "site_id": "site-04",
+        "name": "示意地点 04（高潮位休息地）",
+        "water": 0.18,
+        "abundance": 0.60,
+        "kind": "coastal",
+    },
+    {
+        "site_id": "site-05",
+        "name": "示意地点 05（盐田）",
+        "water": 0.28,
+        "abundance": 0.38,
+        "kind": "artificial",
+    },
+    {
+        "site_id": "site-06",
+        "name": "示意地点 06（内陆湖泊）",
+        "water": 0.55,
+        "abundance": 0.66,
+        "kind": "inland",
+    },
+    {
+        "site_id": "site-07",
+        "name": "示意地点 07（洪泛平原）",
+        "water": 0.47,
+        "abundance": 0.30,
+        "kind": "inland",
+    },
+    {
+        "site_id": "site-08",
+        "name": "示意地点 08（小型停歇地）",
+        "water": 0.12,
+        "abundance": 0.22,
+        "kind": "inland",
+    },
 ]
 
 
@@ -103,7 +211,9 @@ def _require_rasterio() -> Any:
     return rasterio
 
 
-def _water_field(profile: dict[str, Any], year_kind: str, np: Any, shape: tuple[int, int], rng: Any) -> Any:
+def _water_field(
+    profile: dict[str, Any], year_kind: str, np: Any, shape: tuple[int, int], rng: Any
+) -> Any:
     """造一片"湿地水面"：椭圆主体 + 潮沟，按年份缩放。"""
     height, width = shape
     yy, xx = np.mgrid[0:height, 0:width].astype("float32")
@@ -149,8 +259,15 @@ def write_band_stack(
     transform = rasterio.transform.from_bounds(west, south, east, north, width, height)
     path.parent.mkdir(parents=True, exist_ok=True)
     with rasterio.open(
-        path, "w", driver="GTiff", width=width, height=height, count=2, dtype="float32",
-        crs="EPSG:4326", transform=transform,
+        path,
+        "w",
+        driver="GTiff",
+        width=width,
+        height=height,
+        count=2,
+        dtype="float32",
+        crs="EPSG:4326",
+        transform=transform,
     ) as dst:
         dst.write(green, 1)
         dst.write(nir, 2)
@@ -168,7 +285,7 @@ def write_band_stack(
         "height": height,
         "pixel_size_m": pixel_m,
         "water_pixels": int(water.sum()),
-        "true_water_km2": round(float(water.sum()) * (pixel_m ** 2) / 1e6, 3),
+        "true_water_km2": round(float(water.sum()) * (pixel_m**2) / 1e6, 3),
     }
 
 
@@ -198,16 +315,18 @@ def write_counts(path: Path, *, profiles: list[dict[str, Any]], rng: Any) -> dic
             if not species["threatened"]:
                 base = species["population"] * 0.05
             count = int(max(0, rng.normal(base * profile["abundance"], base * 0.25)))
-            rows.append({
-                "site_id": profile["site_id"],
-                "site_name": profile["name"],
-                "kind": profile["kind"],
-                "species": species["species"],
-                "count": count,
-                "survey_year": 2024,
-                "count_type": "single_max_count",   # 原文：单次最大数量与多年平均混用是已知局限
-                "synthetic": "TRUE",
-            })
+            rows.append(
+                {
+                    "site_id": profile["site_id"],
+                    "site_name": profile["name"],
+                    "kind": profile["kind"],
+                    "species": species["species"],
+                    "count": count,
+                    "survey_year": 2024,
+                    "count_type": "single_max_count",  # 原文：单次最大数量与多年平均混用是已知局限
+                    "synthetic": "TRUE",
+                }
+            )
     with open(path, "w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(rows[0].keys()))
         writer.writeheader()
@@ -220,36 +339,67 @@ def write_populations(path: Path) -> dict[str, Any]:
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["# GEONEXUS_SYNTHETIC=TRUE",
-                         "illustrative flyway population sizes;",
-                         "replace with the EAAF 1% thresholds before any real use"])
+        writer.writerow(
+            [
+                "# GEONEXUS_SYNTHETIC=TRUE",
+                "illustrative flyway population sizes;",
+                "replace with the EAAF 1% thresholds before any real use",
+            ]
+        )
         writer.writerow(["species", "scientific", "flyway_population", "globally_threatened"])
         for species in SPECIES:
-            writer.writerow([species["species"], species["scientific"], species["population"],
-                             str(species["threatened"]).upper()])
+            writer.writerow(
+                [
+                    species["species"],
+                    species["scientific"],
+                    species["population"],
+                    str(species["threatened"]).upper(),
+                ]
+            )
     return {"path": str(path), "species": len(SPECIES)}
 
 
-def write_sites(path: Path, *, bbox: list[float], profiles: list[dict[str, Any]], rng: Any) -> dict[str, Any]:
+def write_sites(
+    path: Path, *, bbox: list[float], profiles: list[dict[str, Any]], rng: Any
+) -> dict[str, Any]:
     """写地点清单（点）：示意坐标，落在 AOI 内。真实的 147 处地点边界必须另行导入。"""
     west, south, east, north = bbox
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["# GEONEXUS_SYNTHETIC=TRUE", "illustrative coordinates inside the sample AOI;",
-                         "not the paper's 147 priority wetland boundaries"])
+        writer.writerow(
+            [
+                "# GEONEXUS_SYNTHETIC=TRUE",
+                "illustrative coordinates inside the sample AOI;",
+                "not the paper's 147 priority wetland boundaries",
+            ]
+        )
         writer.writerow(["site_id", "site_name", "kind", "lon", "lat", "protected_status"])
         for index, profile in enumerate(profiles):
             lon = round(west + (east - west) * (0.16 + 0.68 * rng.random()), 4)
             lat = round(south + (north - south) * (0.16 + 0.68 * rng.random()), 4)
-            writer.writerow([profile["site_id"], profile["name"], profile["kind"], lon, lat,
-                             "protected_or_partial" if index % 3 else "unprotected"])
+            writer.writerow(
+                [
+                    profile["site_id"],
+                    profile["name"],
+                    profile["kind"],
+                    lon,
+                    lat,
+                    "protected_or_partial" if index % 3 else "unprotected",
+                ]
+            )
     return {"path": str(path), "sites": len(profiles)}
 
 
-def generate(out_dir: str | Path, *, region: str = "yellow-sea", seed: int = 20260925,
-             shape: tuple[int, int] = (160, 240), baseline_year: int = 2010,
-             target_year: int = 2024) -> dict[str, Any]:
+def generate(
+    out_dir: str | Path,
+    *,
+    region: str = "yellow-sea",
+    seed: int = 20260925,
+    shape: tuple[int, int] = (160, 240),
+    baseline_year: int = 2010,
+    target_year: int = 2024,
+) -> dict[str, Any]:
     """生成整套样例数据，返回清单（写进 `sample-data.json`）。"""
     np = _require_numpy()
     rng = np.random.default_rng(seed)
@@ -281,16 +431,23 @@ def generate(out_dir: str | Path, *, region: str = "yellow-sea", seed: int = 202
         "files": {},
     }
     manifest["files"]["baseline_stack"] = write_band_stack(
-        out / f"stack_{baseline_year}.tif", bbox=bbox, water=baseline_water, np=np, rng=rng)
+        out / f"stack_{baseline_year}.tif", bbox=bbox, water=baseline_water, np=np, rng=rng
+    )
     manifest["files"]["target_stack"] = write_band_stack(
-        out / f"stack_{target_year}.tif", bbox=bbox, water=target_water, np=np, rng=rng)
-    manifest["files"]["counts"] = write_counts(out / "waterbird_counts.csv", profiles=SITE_PROFILES, rng=rng)
+        out / f"stack_{target_year}.tif", bbox=bbox, water=target_water, np=np, rng=rng
+    )
+    manifest["files"]["counts"] = write_counts(
+        out / "waterbird_counts.csv", profiles=SITE_PROFILES, rng=rng
+    )
     manifest["files"]["populations"] = write_populations(out / "species_populations.csv")
-    manifest["files"]["sites"] = write_sites(out / "sites.csv", bbox=bbox, profiles=SITE_PROFILES, rng=rng)
+    manifest["files"]["sites"] = write_sites(
+        out / "sites.csv", bbox=bbox, profiles=SITE_PROFILES, rng=rng
+    )
     manifest["species"] = [s["species"] for s in SPECIES]
 
     (out / "sample-data.json").write_text(
-        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     return manifest
 
 
@@ -303,10 +460,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--target-year", type=int, default=2024)
     args = parser.parse_args(argv)
 
-    manifest = generate(args.out, region=args.region, seed=args.seed,
-                        baseline_year=args.baseline_year, target_year=args.target_year)
+    manifest = generate(
+        args.out,
+        region=args.region,
+        seed=args.seed,
+        baseline_year=args.baseline_year,
+        target_year=args.target_year,
+    )
     print(f"样例数据已生成：{args.out}/{args.region}/")
-    print(f"  研究区：{manifest['region_name']}（{manifest['wetland_kind']}） bbox={manifest['bbox']}")
+    print(
+        f"  研究区：{manifest['region_name']}（{manifest['wetland_kind']}） bbox={manifest['bbox']}"
+    )
     for key, value in manifest["files"].items():
         detail = value.get("path")
         print(f"  {key:16s} {detail}")

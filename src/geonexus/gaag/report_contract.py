@@ -373,7 +373,9 @@ def report_contract(
         meta.setdefault("recipe", card.recipe_ref.recipe_id)
         meta.setdefault("recipe_version", card.recipe_ref.version)
         meta.setdefault("data_snapshot", dict(card.recipe_ref.data_snapshot))
-    meta.setdefault("params", {p.name: p.default for p in (card.params.params if card.params else [])})
+    meta.setdefault(
+        "params", {p.name: p.default for p in (card.params.params if card.params else [])}
+    )
     if card.access is not None and card.access.endpoint:
         meta.setdefault("deliverable_ref", card.access.endpoint)
 

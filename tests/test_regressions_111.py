@@ -34,7 +34,9 @@ def test_oge_execution_error_has_no_message_attribute() -> None:
     assert str(exc) == "boom"
 
 
-def test_executor_failure_path_reports_error_instead_of_raising(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_executor_failure_path_reports_error_instead_of_raising(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """轮询抛 ``OgeExecutionError`` 时，execute() 必须返回 failed 结果而不是崩掉。"""
 
     class _Client:

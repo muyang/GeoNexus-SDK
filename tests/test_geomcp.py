@@ -188,7 +188,7 @@ def test_execute_output_with_path_survives_http(tmp_path) -> None:
         with GeoMCPClient(f"http://127.0.0.1:{running.port}", timeout=10) as client:
             result = client.execute(skill="pathy")
         outputs = result["outputs"]
-        assert outputs["out"] == str(tmp_path / "result.csv")   # Path → str
-        assert outputs["seen"] == ["a", "b"]                     # set → 有序列表
+        assert outputs["out"] == str(tmp_path / "result.csv")  # Path → str
+        assert outputs["seen"] == ["a", "b"]  # set → 有序列表
     finally:
         running.stop()

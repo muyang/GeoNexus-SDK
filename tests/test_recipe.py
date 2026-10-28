@@ -345,8 +345,11 @@ def test_registry_registers_and_conflicts() -> None:
 
 def test_registry_resolves_unversioned_address_to_latest_approved() -> None:
     registry = RecipeRegistry()
-    for version, status in (("1.0.0", STATUS_APPROVED), ("1.2.0", STATUS_APPROVED),
-                            ("2.0.0", STATUS_PENDING)):
+    for version, status in (
+        ("1.0.0", STATUS_APPROVED),
+        ("1.2.0", STATUS_APPROVED),
+        ("2.0.0", STATUS_PENDING),
+    ):
         data = _recipe_dict()
         data["id"] = f"recipe://geonexus/sdg-15-3-1@{version}"
         registry.register(Recipe.from_dict(data), status=status)
@@ -518,8 +521,9 @@ def test_acceptance_fork_change_params_rerun_report() -> None:
     registry.approve(forked.id, by="reviewer")
 
     # 3) 改参数重跑：同一套步骤，不同的取值与结果引用。
-    plan = materialize(registry.require(forked.id, approved_only=True).recipe, {"year": 2021},
-                       run_id="r2")
+    plan = materialize(
+        registry.require(forked.id, approved_only=True).recipe, {"year": 2021}, run_id="r2"
+    )
     assert plan.recipe_id == forked.id
     assert plan.params["region"] == "墨西哥"
     assert plan.params["year"] == 2021

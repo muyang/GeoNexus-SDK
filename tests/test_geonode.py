@@ -182,13 +182,19 @@ def test_artifact_endpoint_serves_workdir_files_only(tmp_path) -> None:
     running.wait_until_ready()
     try:
         base = f"http://127.0.0.1:{running.port}"
-        ok = httpx.get(f"{base}/artifact", params={"path": str(tmp_path / "report.html")}, timeout=10)
+        ok = httpx.get(
+            f"{base}/artifact", params={"path": str(tmp_path / "report.html")}, timeout=10
+        )
         assert ok.status_code == 200 and "charset=utf-8" in ok.headers["content-type"]
         outside = httpx.get(f"{base}/artifact", params={"path": "/etc/passwd"}, timeout=10)
         assert outside.status_code == 403
-        deep = httpx.get(f"{base}/artifact", params={"path": str(tmp_path / ".." / "escape.txt")}, timeout=10)
+        deep = httpx.get(
+            f"{base}/artifact", params={"path": str(tmp_path / ".." / "escape.txt")}, timeout=10
+        )
         assert deep.status_code == 403
-        missing = httpx.get(f"{base}/artifact", params={"path": str(tmp_path / "nope.csv")}, timeout=10)
+        missing = httpx.get(
+            f"{base}/artifact", params={"path": str(tmp_path / "nope.csv")}, timeout=10
+        )
         assert missing.status_code == 404
     finally:
         running.stop()
@@ -204,9 +210,11 @@ def test_cors_only_when_env_set(tmp_path, monkeypatch) -> None:
     running = node.start_in_thread(port=0)
     running.wait_until_ready()
     try:
-        r = httpx.options(f"http://127.0.0.1:{running.port}/geomcp",
-                          headers={"Origin": "http://example.test",
-                                   "Access-Control-Request-Method": "POST"}, timeout=10)
+        r = httpx.options(
+            f"http://127.0.0.1:{running.port}/geomcp",
+            headers={"Origin": "http://example.test", "Access-Control-Request-Method": "POST"},
+            timeout=10,
+        )
         assert "access-control-allow-origin" not in r.headers
     finally:
         running.stop()
@@ -216,9 +224,11 @@ def test_cors_only_when_env_set(tmp_path, monkeypatch) -> None:
     running2 = node2.start_in_thread(port=0)
     running2.wait_until_ready()
     try:
-        r = httpx.options(f"http://127.0.0.1:{running2.port}/geomcp",
-                          headers={"Origin": "http://example.test",
-                                   "Access-Control-Request-Method": "POST"}, timeout=10)
+        r = httpx.options(
+            f"http://127.0.0.1:{running2.port}/geomcp",
+            headers={"Origin": "http://example.test", "Access-Control-Request-Method": "POST"},
+            timeout=10,
+        )
         assert r.headers.get("access-control-allow-origin") == "http://example.test"
     finally:
         running2.stop()

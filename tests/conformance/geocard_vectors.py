@@ -128,7 +128,13 @@ def _composite_case() -> dict[str, Any]:
         },
         "params": {
             "params": [
-                {"name": "year", "type": "integer", "required": True, "minimum": 2015, "maximum": 2024},
+                {
+                    "name": "year",
+                    "type": "integer",
+                    "required": True,
+                    "minimum": 2015,
+                    "maximum": 2024,
+                },
                 {"name": "region", "type": "enum", "enum": ["蒙古", "墨西哥"], "default": "蒙古"},
                 {"name": "baseline", "type": "integer", "scope": "fixed", "default": 2015},
             ]

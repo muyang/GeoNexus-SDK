@@ -192,9 +192,7 @@ def _substitute(value: Any, params: dict[str, Any], step_id: str) -> Any:
             if name not in params:
                 raise RecipeError(f"step '{step_id}' references undeclared param '{name}'")
             return params[name]
-        return PARAM_TEMPLATE_RE.sub(
-            lambda m: _as_text(params, m.group(1), step_id), value
-        )
+        return PARAM_TEMPLATE_RE.sub(lambda m: _as_text(params, m.group(1), step_id), value)
     if isinstance(value, dict):
         return {k: _substitute(v, params, step_id) for k, v in value.items()}
     if isinstance(value, list):
@@ -391,8 +389,7 @@ def materialize(
                 )
             },
             outputs={
-                name: TaskIO(ref=f"step://{step.id}/{name}", kind="asset")
-                for name in step.outputs
+                name: TaskIO(ref=f"step://{step.id}/{name}", kind="asset") for name in step.outputs
             },
             depends_on=[f"{run_id}:{dep}" for dep in step.depends_on],
             description=step.description,

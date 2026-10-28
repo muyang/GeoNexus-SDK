@@ -110,7 +110,9 @@ class PluginEntry(BaseModel):
     version: str
     plane: str = Field(default="server", description="server (pip) | client (js renderer/panel).")
     install_ref: str = Field(description="Wheel/sdist URL or pip requirement string.")
-    sha256: str | None = Field(default=None, description="Hex digest of the referenced artifact; required for URL refs.")
+    sha256: str | None = Field(
+        default=None, description="Hex digest of the referenced artifact; required for URL refs."
+    )
     description: str = ""
     tags: list[str] = Field(default_factory=list)
     status: str = Field(default=STATUS_PENDING)

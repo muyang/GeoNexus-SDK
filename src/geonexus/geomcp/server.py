@@ -77,6 +77,7 @@ def _recipe_view(entry: Any) -> dict[str, Any]:
         }
     return dict(entry) if isinstance(entry, dict) else {"recipe": str(entry)}
 
+
 # Internal marker preventing delegation loops (never reaches skill handlers).
 DELEGATE_MARKER = "__geonode_delegate"
 
@@ -117,7 +118,6 @@ class _Tool:
         }
 
 
-
 def _json_safe(value: Any) -> Any:
     """传输层防御：把 Path / set 这类"能算出来但不能上线"的值转成 JSON 安全形态。
 
@@ -134,6 +134,8 @@ def _json_safe(value: Any) -> Any:
     if isinstance(value, (set, frozenset)):
         return sorted(str(v) for v in value)
     return value
+
+
 class GeoMCPServer:
     """GeoMCP capability server.
 
@@ -300,8 +302,11 @@ class GeoMCPServer:
             "resources": list(self._resources.keys()),
             "skills": skills,
             # V2 特性广告：客户端按 capabilities 协商，不靠猜（协议冻结纪律）
-            "v2": {"contract_binding": self.gaag_registry is not None,
-                   "pushdown": True, "federation": True},
+            "v2": {
+                "contract_binding": self.gaag_registry is not None,
+                "pushdown": True,
+                "federation": True,
+            },
             "geocards": [c["id"] for c in cards],
             "geocard_ids": [c["id"] for c in cards],
             "recipes": self._recipe_summaries(),
@@ -512,7 +517,9 @@ class GeoMCPServer:
                 return None
             return _RegistryRecipe(Recipe.from_dict(raw))
         except Exception:  # noqa: BLE001 - 注册中心不可达 = 本地也没有
-            logger.debug("Recipe lookup at %s failed for %s", self.registry_url, address, exc_info=True)
+            logger.debug(
+                "Recipe lookup at %s failed for %s", self.registry_url, address, exc_info=True
+            )
             return None
 
     def plan(self, params: PlanParams) -> dict[str, Any]:
@@ -628,13 +635,14 @@ class GeoMCPServer:
         federated_owners: dict[str, str] = {}
         if params.federated_sources:
             known = {c.id for c in resolved_cards}
-            for src in dict.fromkeys(params.federated_sources):   # 去重且保序
+            for src in dict.fromkeys(params.federated_sources):  # 去重且保序
                 card, owner, reg_url = self._resolve_federated(src)
                 if card.id not in known:
                     resolved_cards.append(card)
                     known.add(card.id)
-                federated_meta.append({"source": src, "card": card.id,
-                                       "owner": owner, "registry": reg_url})
+                federated_meta.append(
+                    {"source": src, "card": card.id, "owner": owner, "registry": reg_url}
+                )
                 federated_owners[card.id] = owner
 
         # 2. Contract satisfaction gating (registry / discovery -> contract).
@@ -667,10 +675,11 @@ class GeoMCPServer:
             pushdown_decision = self._decide_pushdown(params, resolved_cards)
             if pushdown_decision["decision"] == "push":
                 delegated, owner_url = self._delegate_to_owner(
-                    params, resolved_cards, known_owners=federated_owners)
+                    params, resolved_cards, known_owners=federated_owners
+                )
                 pushdown_decision["owner"] = owner_url
                 delegated["pushdown"] = pushdown_decision
-                if federated_meta:      # 委托结果也要带联邦溯源，不能半路丢
+                if federated_meta:  # 委托结果也要带联邦溯源，不能半路丢
                     delegated["federated"] = federated_meta
                 return delegated
 
@@ -707,8 +716,9 @@ class GeoMCPServer:
     # ------------------------------------------------------------------ #
     # V2 下推：在哪里算，先算一笔账
     # ------------------------------------------------------------------ #
-    def _decide_pushdown(self, params: ExecuteParams,
-                         resolved_cards: list[GeoCard]) -> dict[str, Any]:
+    def _decide_pushdown(
+        self, params: ExecuteParams, resolved_cards: list[GeoCard]
+    ) -> dict[str, Any]:
         """local（数据拉来本节点算）vs push（推到数据属主节点算）的成本决策。
 
         估算全部显式：请求的 pushdown_spec 覆盖节点缺省，缺省覆盖内置保守值；
@@ -717,7 +727,7 @@ class GeoMCPServer:
         """
         spec = dict(params.pushdown_spec or {})
         strategy = str(spec.get("strategy", "auto")).lower()
-        if strategy == "migrate":          # 方案文档用词：migrate = 数据迁来算
+        if strategy == "migrate":  # 方案文档用词：migrate = 数据迁来算
             strategy = "local"
         if strategy not in ("local", "push", "auto"):
             raise GeoMCPProtocolError(
@@ -725,8 +735,10 @@ class GeoMCPServer:
                 f"pushdown_spec.strategy 只认 local|migrate|push|auto，收到 {strategy!r}",
                 {"field": "pushdown_spec.strategy"},
             )
-        est = {**self.pushdown_defaults, **{k: v for k, v in spec.items()
-                                            if k != "strategy" and v is not None}}
+        est = {
+            **self.pushdown_defaults,
+            **{k: v for k, v in spec.items() if k != "strategy" and v is not None},
+        }
         data_bytes = est.get("data_bytes")
         bandwidth = est.get("bandwidth_bps")
         remote_queue = est.get("remote_queue_s")
@@ -734,9 +746,9 @@ class GeoMCPServer:
 
         pull_s = push_s = None
         if data_bytes is not None and bandwidth:
-            pull_s = round(float(data_bytes) / float(bandwidth), 3)   # 数据拉来本节点
+            pull_s = round(float(data_bytes) / float(bandwidth), 3)  # 数据拉来本节点
         if remote_queue is not None:
-            push_s = round(float(remote_queue), 3)                    # 属主排队+远端执行开销
+            push_s = round(float(remote_queue), 3)  # 属主排队+远端执行开销
 
         if strategy == "local":
             decision, why = "local", "strategy=local（调用方指定，数据迁移成本自担）"
@@ -745,8 +757,10 @@ class GeoMCPServer:
         else:  # auto
             if pull_s is None or push_s is None:
                 decision = "local"
-                why = ("auto 回退 local：估算不全（缺 data_bytes/bandwidth_bps/"
-                       "remote_queue_s 之一），不做无依据的决策")
+                why = (
+                    "auto 回退 local：估算不全（缺 data_bytes/bandwidth_bps/"
+                    "remote_queue_s 之一），不做无依据的决策"
+                )
                 reasons.append("missing-estimates")
             elif push_s < pull_s:
                 decision, why = "push", f"auto：push 估算 {push_s}s < 拉数据 {pull_s}s"
@@ -755,17 +769,23 @@ class GeoMCPServer:
         return {
             "requested": str(spec.get("strategy", "auto")),
             "decision": decision,
-            "owner": None,                       # _delegate_to_owner 解析后回填
-            "estimates": {"pull_data_s": pull_s, "push_exec_s": push_s,
-                          "data_bytes": data_bytes, "bandwidth_bps": bandwidth,
-                          "remote_queue_s": remote_queue},
+            "owner": None,  # _delegate_to_owner 解析后回填
+            "estimates": {
+                "pull_data_s": pull_s,
+                "push_exec_s": push_s,
+                "data_bytes": data_bytes,
+                "bandwidth_bps": bandwidth,
+                "remote_queue_s": remote_queue,
+            },
             "reasons": reasons + [why],
         }
 
-    def _delegate_to_owner(self, params: ExecuteParams,
-                           resolved_cards: list[GeoCard],
-                           known_owners: dict[str, str] | None = None
-                           ) -> tuple[dict[str, Any], str]:
+    def _delegate_to_owner(
+        self,
+        params: ExecuteParams,
+        resolved_cards: list[GeoCard],
+        known_owners: dict[str, str] | None = None,
+    ) -> tuple[dict[str, Any], str]:
         """push 决策落地：解析属主节点并委托（复用一跳委托语义）。"""
         if not self.registry_url:
             raise GeoMCPProtocolError(
@@ -783,7 +803,7 @@ class GeoMCPServer:
                         entry = registry.get(card.id)
                     except RegistryClientError as miss:
                         if miss.code == 404:
-                            continue          # 查无此卡 → 走 owner_unknown，不是查询故障
+                            continue  # 查无此卡 → 走 owner_unknown，不是查询故障
                         raise
                     if isinstance(entry, dict) and entry.get("node_url"):
                         owners[card.id] = entry["node_url"]
@@ -808,8 +828,12 @@ class GeoMCPServer:
                 {"reason": "multi_owner", "owners": target},
             )
         unknown = [c.id for c in resolved_cards if self._resolve_card(c.id) is None]
-        return (self._delegate(params, unknown or [c.id for c in resolved_cards],
-                               extra_owners=known_owners), target[0])
+        return (
+            self._delegate(
+                params, unknown or [c.id for c in resolved_cards], extra_owners=known_owners
+            ),
+            target[0],
+        )
 
     def _resolve_federated(self, source: str) -> tuple[GeoCard, str, str]:
         """解析一条跨注册中心引用：``<registry_url>#<card_id>``。
@@ -841,8 +865,11 @@ class GeoMCPServer:
             raise GeoMCPProtocolError(
                 FEDERATION_UNRESOLVED,
                 f"联邦条目未批准，拒绝引用：{source}",
-                {"reason": "not_approved", "source": source,
-                 "status": entry.get("status") if isinstance(entry, dict) else None},
+                {
+                    "reason": "not_approved",
+                    "source": source,
+                    "status": entry.get("status") if isinstance(entry, dict) else None,
+                },
             )
         try:
             card = GeoCard.model_validate(entry["card"])
@@ -879,9 +906,7 @@ class GeoMCPServer:
         if self._contract_gate is None:
             self._contract_gate = ContractGate()
         # 意图文本 = 技能名 + 参数值（词面相似度对确定性嵌入是可复现的）
-        query_text = " ".join(
-            [params.skill, *(str(v) for v in list(params.params.values())[:8])]
-        )
+        query_text = " ".join([params.skill, *(str(v) for v in list(params.params.values())[:8])])
         spatial = params.spatial
         temporal = params.temporal
         result = self._contract_gate.gate(
@@ -922,8 +947,9 @@ class GeoMCPServer:
         self.registry_url = registry_url
         logger.info("GeoMCP server '%s' registry binding: %s", self.name, registry_url)
 
-    def _delegate(self, params: ExecuteParams, unknown: list[str],
-                  extra_owners: dict[str, str] | None = None) -> dict[str, Any]:
+    def _delegate(
+        self, params: ExecuteParams, unknown: list[str], extra_owners: dict[str, str] | None = None
+    ) -> dict[str, Any]:
         """Forward a request to the node that owns the first unknown card.
 
         One-hop semantics: the forwarded request carries the delegation
@@ -1113,15 +1139,23 @@ class GeoMCPServer:
             from fastapi.responses import FileResponse as _FileResponse
 
             if self.api_keys and request.headers.get("X-API-Key") not in self.api_keys:
-                return JSONResponse({"error": "artifact requires a valid X-API-Key header"}, status_code=401)
+                return JSONResponse(
+                    {"error": "artifact requires a valid X-API-Key header"}, status_code=401
+                )
             roots = list(self.artifact_roots)
-            roots += [r for r in _os.environ.get("GEONODE_ARTIFACT_ROOTS", "").split(_os.pathsep) if r]
+            roots += [
+                r for r in _os.environ.get("GEONODE_ARTIFACT_ROOTS", "").split(_os.pathsep) if r
+            ]
             roots.append(_os.getcwd())
             target = _os.path.realpath(_os.path.abspath(path))
-            allowed = any(target == r or target.startswith(r + _os.sep)
-                          for r in (_os.path.realpath(x) for x in roots))
+            allowed = any(
+                target == r or target.startswith(r + _os.sep)
+                for r in (_os.path.realpath(x) for x in roots)
+            )
             if not allowed:
-                return JSONResponse({"error": "artifact path is outside the node's allowed roots"}, status_code=403)
+                return JSONResponse(
+                    {"error": "artifact path is outside the node's allowed roots"}, status_code=403
+                )
             if not _os.path.isfile(target):
                 return JSONResponse({"error": "artifact not found"}, status_code=404)
             media = mimetypes.guess_type(target)[0] or "application/octet-stream"

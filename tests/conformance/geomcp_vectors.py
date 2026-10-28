@@ -49,16 +49,19 @@ REQUESTS: list[tuple[str, dict[str, Any], Any, dict[str, Any]]] = [
     (
         # V2：federated_sources 格式错 → 2009（不静默忽略）
         "geo.execute",
-        {"skill": "echo", "geocards": [], "params": {},
-         "federated_sources": ["garbage-without-hash"]},
+        {
+            "skill": "echo",
+            "geocards": [],
+            "params": {},
+            "federated_sources": ["garbage-without-hash"],
+        },
         "e9",
         {"error_code": 2009},  # FEDERATION_UNRESOLVED
     ),
     (
         # V2：pushdown 的 strategy 只认 local|migrate|push|auto，其余 2004
         "geo.execute",
-        {"skill": "echo", "geocards": [], "params": {},
-         "pushdown_spec": {"strategy": "teleport"}},
+        {"skill": "echo", "geocards": [], "params": {}, "pushdown_spec": {"strategy": "teleport"}},
         "e8",
         {"error_code": 2004},  # INVALID_ARGUMENT
     ),

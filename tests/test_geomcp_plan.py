@@ -120,14 +120,18 @@ def test_geo_plan_reports_parameter_contract_failures_machine_readably() -> None
     missing = _call(server, {"recipe": ADDRESS, "params": {}, "run_id": "r"})
     assert missing["error"]["data"]["code"] == "param_missing"
 
-    unknown = _call(server, {"recipe": ADDRESS, "params": {"year": 2019, "crs": "x"}, "run_id": "r"})
+    unknown = _call(
+        server, {"recipe": ADDRESS, "params": {"year": 2019, "crs": "x"}, "run_id": "r"}
+    )
     assert unknown["error"]["data"] == {
         "field": "crs",
         "code": "param_unknown",
         "message": "recipe recipe://geonexus/sdg-15-3-1@1.0.0 has no parameter(s): crs",
     }
 
-    fixed = _call(server, {"recipe": ADDRESS, "params": {"year": 2019, "baseline": 2010}, "run_id": "r"})
+    fixed = _call(
+        server, {"recipe": ADDRESS, "params": {"year": 2019, "baseline": 2010}, "run_id": "r"}
+    )
     assert fixed["error"]["data"]["code"] == "param_fixed"
 
 
@@ -231,10 +235,10 @@ def test_client_plan_round_trip_over_http(tmp_path) -> None:
 def test_catalogue_reloads_when_another_process_writes_it(tmp_path) -> None:
     """`recipe register --catalogue` 是**另一个进程**在写文件，节点必须看得见。"""
     path = tmp_path / "recipes.json"
-    node_side = RecipeRegistry(path)          # 节点：先启动，目录为空
+    node_side = RecipeRegistry(path)  # 节点：先启动，目录为空
     assert len(node_side) == 0
 
-    writer_side = RecipeRegistry(path)        # 另一个进程写进去
+    writer_side = RecipeRegistry(path)  # 另一个进程写进去
     writer_side.register(load_recipe(EXAMPLE), status=STATUS_APPROVED)
 
     assert node_side.reload_if_changed() is True
@@ -268,9 +272,7 @@ def test_geo_plan_falls_back_to_the_bound_registry(tmp_path) -> None:
             client.register_recipe(load_recipe(EXAMPLE).to_dict(), status=STATUS_APPROVED)
 
         # 节点侧目录是空的（模拟"启动时注册中心还没有这个方案"）
-        node = GeoMCPServer(
-            name="late-node", recipe_registry=RecipeRegistry(), registry_url=url
-        )
+        node = GeoMCPServer(name="late-node", recipe_registry=RecipeRegistry(), registry_url=url)
         result = _call(node, {"recipe": ADDRESS, "params": {"year": 2019}, "run_id": "r"})["result"]
         assert result["recipe_id"] == "recipe://geonexus/sdg-15-3-1@1.0.0"
         assert [t["step"] for t in result["tasks"]] == ["s1", "s2", "s3"]

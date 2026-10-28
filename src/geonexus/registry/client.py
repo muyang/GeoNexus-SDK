@@ -195,8 +195,11 @@ class RegistryClient:
         register: bool = True,
     ) -> dict[str, Any]:
         """Fork a recipe into a new address; the source is not modified."""
-        body: dict[str, Any] = {"recipe_id": recipe_id, "provider_url": provider_url,
-                                "register": register}
+        body: dict[str, Any] = {
+            "recipe_id": recipe_id,
+            "provider_url": provider_url,
+            "register": register,
+        }
         for key, value in (
             ("namespace", namespace),
             ("name", name),
@@ -273,15 +276,19 @@ class RegistryClient:
     def get_plugin(self, name: str, version: str) -> dict[str, Any]:
         return self._call("GET", f"/plugins/{name}/{version}").get("entry", {})
 
-    def approve_plugin(self, name: str, version: str, note: str | None = None,
-                       by: str | None = None) -> dict[str, Any]:
-        return self._call("POST", f"/plugins/{name}/{version}/approve",
-                          json={"note": note, "by": by})
+    def approve_plugin(
+        self, name: str, version: str, note: str | None = None, by: str | None = None
+    ) -> dict[str, Any]:
+        return self._call(
+            "POST", f"/plugins/{name}/{version}/approve", json={"note": note, "by": by}
+        )
 
-    def reject_plugin(self, name: str, version: str, note: str | None = None,
-                      by: str | None = None) -> dict[str, Any]:
-        return self._call("POST", f"/plugins/{name}/{version}/reject",
-                          json={"note": note, "by": by})
+    def reject_plugin(
+        self, name: str, version: str, note: str | None = None, by: str | None = None
+    ) -> dict[str, Any]:
+        return self._call(
+            "POST", f"/plugins/{name}/{version}/reject", json={"note": note, "by": by}
+        )
 
     def remove_plugin(self, name: str, version: str) -> dict[str, Any]:
         return self._call("DELETE", f"/plugins/{name}/{version}")

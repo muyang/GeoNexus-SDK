@@ -344,7 +344,9 @@ class RegistryStore:
             items = [e for e in items if e.status == status]
         return sorted(items, key=lambda e: (e.name, e.registered_at))
 
-    def search_plugins(self, query: str = "", status: str | None = STATUS_APPROVED) -> list[PluginEntry]:
+    def search_plugins(
+        self, query: str = "", status: str | None = STATUS_APPROVED
+    ) -> list[PluginEntry]:
         q = (query or "").lower()
         out = []
         for e in self.list_plugins(status=status):
@@ -353,8 +355,15 @@ class RegistryStore:
                 out.append(e)
         return out
 
-    def review_plugin(self, name: str, version: str, *, approve: bool,
-                      note: str | None = None, by: str | None = None) -> PluginEntry:
+    def review_plugin(
+        self,
+        name: str,
+        version: str,
+        *,
+        approve: bool,
+        note: str | None = None,
+        by: str | None = None,
+    ) -> PluginEntry:
         with self._lock:
             entry = self._plugins.get(f"{name}@{version}")
             if entry is None:

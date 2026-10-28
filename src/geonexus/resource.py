@@ -187,7 +187,9 @@ def match_resource(
         if req_cpu is not None:
             if cap.cpu is None:
                 node_reasons.append(
-                    f"cpu: model needs {req_cpu}, node capacity unknown (" + ("rejected" if strict else "assumed ok") + ")"
+                    f"cpu: model needs {req_cpu}, node capacity unknown ("
+                    + ("rejected" if strict else "assumed ok")
+                    + ")"
                 )
                 if strict:
                     ok = False
@@ -197,7 +199,9 @@ def match_resource(
         if req_mem is not None:
             if cap.memory_gb is None:
                 node_reasons.append(
-                    f"memory: model needs {req_mem:.1f}Gi, node capacity unknown (" + ("rejected" if strict else "assumed ok") + ")"
+                    f"memory: model needs {req_mem:.1f}Gi, node capacity unknown ("
+                    + ("rejected" if strict else "assumed ok")
+                    + ")"
                 )
                 if strict:
                     ok = False

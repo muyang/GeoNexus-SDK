@@ -10,15 +10,34 @@ import pytest
 
 from geonexus.register import build_card, probe_target, submit, validate_card
 
-OGC_CONFORMANCE = {"conformsTo": [
-    "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
-    "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson"]}
-OGC_COLLECTIONS = {"collections": [{
-    "id": "lakes", "title": "Lakes", "description": "Freshwater lakes",
-    "extent": {"spatial": {"bbox": [[100.0, 0.0, 110.0, 10.0]],
-                           "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84"}}}]}
-STAC_CATALOG = {"type": "Catalog", "id": "demo", "title": "Demo Catalog",
-                "stac_version": "1.0.0", "links": []}
+OGC_CONFORMANCE = {
+    "conformsTo": [
+        "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
+        "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson",
+    ]
+}
+OGC_COLLECTIONS = {
+    "collections": [
+        {
+            "id": "lakes",
+            "title": "Lakes",
+            "description": "Freshwater lakes",
+            "extent": {
+                "spatial": {
+                    "bbox": [[100.0, 0.0, 110.0, 10.0]],
+                    "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                }
+            },
+        }
+    ]
+}
+STAC_CATALOG = {
+    "type": "Catalog",
+    "id": "demo",
+    "title": "Demo Catalog",
+    "stac_version": "1.0.0",
+    "links": [],
+}
 WMS_XML = b"""<?xml version="1.0"?>
 <WMS_Capabilities version="1.3.0">
   <Capability><Layer><Title>Demo WMS</Title>
@@ -87,9 +106,17 @@ def test_probe_geotiff_reads_real_bounds(tmp_path):
     from rasterio.transform import from_bounds
 
     path = tmp_path / "demo.tif"
-    with rasterio.open(path, "w", driver="GTiff", width=4, height=4, count=1,
-                       dtype="uint8", crs="EPSG:4326",
-                       transform=from_bounds(120, 30, 121, 31, 4, 4)) as dst:
+    with rasterio.open(
+        path,
+        "w",
+        driver="GTiff",
+        width=4,
+        height=4,
+        count=1,
+        dtype="uint8",
+        crs="EPSG:4326",
+        transform=from_bounds(120, 30, 121, 31, 4, 4),
+    ) as dst:
         dst.write(np.zeros((1, 4, 4), dtype="uint8"))
     r = probe_target(str(path))
     assert r.kind == "geotiff"
@@ -115,9 +142,21 @@ def test_probe_csv_without_coords_warns_not_invents(tmp_path):
 
 def test_probe_geojson_bbox(tmp_path):
     p = tmp_path / "f.geojson"
-    p.write_text(json.dumps({"type": "FeatureCollection", "features": [
-        {"type": "Feature", "properties": {}, "geometry":
-         {"type": "Point", "coordinates": [121.0, 31.0]}}]}), encoding="utf-8")
+    p.write_text(
+        json.dumps(
+            {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {},
+                        "geometry": {"type": "Point", "coordinates": [121.0, 31.0]},
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
     r = probe_target(str(p))
     assert r.kind == "geojson" and r.facts["bbox"] == [121.0, 31.0, 121.0, 31.0]
 
@@ -127,7 +166,7 @@ def test_probe_torch_never_loads_weights(tmp_path):
     p.write_bytes(b"\x00" * 64)
     r = probe_target(str(p))
     assert r.kind == "torch"
-    assert any("不做加载" in w for w in r.warnings)   # 加载即执行，登记工具不碰
+    assert any("不做加载" in w for w in r.warnings)  # 加载即执行，登记工具不碰
 
 
 def test_probe_missing_file(server):
@@ -195,7 +234,9 @@ def test_submit_to_registry_sends_pending_by_default(server):
     t.start()
     try:
         card, _ = build_card(probe_target(f"{server}/ogc"), {"license": "CC-BY-4.0"})
-        out = submit(card, to="registry", registry_url=f"http://127.0.0.1:{httpd.server_address[1]}")
+        out = submit(
+            card, to="registry", registry_url=f"http://127.0.0.1:{httpd.server_address[1]}"
+        )
         assert out["submitted"], out
         assert seen["status"] == "pending", "默认必须是 pending：登记不等于发布"
         assert seen["card"]["id"] == card["id"]

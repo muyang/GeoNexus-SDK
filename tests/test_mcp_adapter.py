@@ -146,7 +146,14 @@ def test_create_mcp_server_tools() -> None:
     mcp_server = create_mcp_server(server)
     assert mcp_server.name == "geonexus"
     tool_names = {t.name for t in asyncio.run(mcp_server.list_tools())}
-    assert tool_names == {"geo_capabilities", "geo_describe", "geo_execute", "geo_health", "geo_plan", "geo_invoke"}
+    assert tool_names == {
+        "geo_capabilities",
+        "geo_describe",
+        "geo_execute",
+        "geo_health",
+        "geo_plan",
+        "geo_invoke",
+    }
 
 
 # --------------------------------------------------------------------------- #

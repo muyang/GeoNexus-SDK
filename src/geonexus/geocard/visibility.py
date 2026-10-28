@@ -161,7 +161,7 @@ def invisible_components(
     等于提供了一个探测后者的接口。
     """
     missing: list[str] = []
-    for component in (card.composition.components if card.composition else []):
+    for component in card.composition.components if card.composition else []:
         if component.required is False:
             # 可选组成项：缺了照样跑（这是方案作者显式声明的），因此不影响可见性。
             continue

@@ -231,7 +231,12 @@ def test_params_reject_incoherent_range() -> None:
     import pydantic
 
     bad = _composite_dict()
-    bad["params"]["params"][0] = {"name": "year", "type": "integer", "minimum": 2024, "maximum": 2015}
+    bad["params"]["params"][0] = {
+        "name": "year",
+        "type": "integer",
+        "minimum": 2024,
+        "maximum": 2015,
+    }
     with pytest.raises(pydantic.ValidationError, match="minimum .* > maximum"):
         GeoCard.model_validate(bad)
 

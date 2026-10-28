@@ -33,20 +33,22 @@ def sha256_file(path: str | Path) -> str:
 
 
 def _pip(args: list[str]) -> subprocess.CompletedProcess:
-    proc = subprocess.run([sys.executable, "-m", "pip", *args],
-                          capture_output=True, text=True)
+    proc = subprocess.run([sys.executable, "-m", "pip", *args], capture_output=True, text=True)
     if proc.returncode != 0:
         tail = (proc.stderr or proc.stdout or "").strip().splitlines()[-3:]
         raise MarketError(f"pip 失败（exit {proc.returncode}）：{' | '.join(tail)}")
     return proc
 
 
-def install_plugin(entry: dict[str, Any], *, target: str | None = None,
-                   timeout: float = 60.0) -> dict[str, Any]:
+def install_plugin(
+    entry: dict[str, Any], *, target: str | None = None, timeout: float = 60.0
+) -> dict[str, Any]:
     """安装一个**已批准**的市场条目。返回安装摘要（含校验结果）。"""
     if entry.get("status") != "approved":
-        raise MarketError(f"条目 {entry.get('name')}@{entry.get('version')} 状态为 "
-                          f"{entry.get('status')}：只有 approved 才能安装（先过审）")
+        raise MarketError(
+            f"条目 {entry.get('name')}@{entry.get('version')} 状态为 "
+            f"{entry.get('status')}：只有 approved 才能安装（先过审）"
+        )
     ref = entry.get("install_ref", "")
     name, version = entry.get("name"), entry.get("version")
     # --target 托管安装只放插件本体：依赖（如 geonexus-sdk）由节点环境提供，
@@ -61,6 +63,7 @@ def install_plugin(entry: dict[str, Any], *, target: str | None = None,
         # pip 会校验 wheel 文件名结构（name-ver-pytag-abi-plat.whl），
         # 所以临时文件必须沿用 URL 里的规范名，不能叫 tmpXXXX.whl
         import re as _re
+
         fname = ref.rsplit("/", 1)[-1].split("?")[0]
         if not _re.fullmatch(r"[A-Za-z0-9_.\-]+\.whl", fname):
             fname = f"{name}-{version}-py3-none-any.whl"
@@ -76,10 +79,12 @@ def install_plugin(entry: dict[str, Any], *, target: str | None = None,
             verified = sha256_file(tmp_path)
             if verified != expected:
                 raise MarketError(
-                    f"sha256 不匹配，中止安装：期望 {expected[:16]}… 实际 {verified[:16]}…")
+                    f"sha256 不匹配，中止安装：期望 {expected[:16]}… 实际 {verified[:16]}…"
+                )
             _pip(["install", *target_args, str(tmp_path)])
         finally:
             import shutil as _sh
+
             _sh.rmtree(tmp_dir, ignore_errors=True)
     else:
         if entry.get("sha256"):
@@ -87,8 +92,11 @@ def install_plugin(entry: dict[str, Any], *, target: str | None = None,
             verified = "unverifiable(pip-ref)"
         _pip(["install", *target_args, ref])
 
-    return {"installed": f"{name}@{version}", "target": target or "current-env",
-            "sha256_verified": verified}
+    return {
+        "installed": f"{name}@{version}",
+        "target": target or "current-env",
+        "sha256_verified": verified,
+    }
 
 
 def uninstall_plugin(name: str, *, target: str | None = None) -> dict[str, Any]:
@@ -97,10 +105,11 @@ def uninstall_plugin(name: str, *, target: str | None = None) -> dict[str, Any]:
         root = Path(target)
         norm = name.replace("-", "_").lower()
         removed = []
-        for cand in (root.iterdir() if root.exists() else []):
+        for cand in root.iterdir() if root.exists() else []:
             low = cand.name.lower()
-            is_dist_info = (low.endswith(".dist-info")
-                            and (low == f"{norm}.dist-info" or low.startswith(f"{norm}-")))
+            is_dist_info = low.endswith(".dist-info") and (
+                low == f"{norm}.dist-info" or low.startswith(f"{norm}-")
+            )
             is_pkg_dir = low in (norm, name.lower())
             if cand.is_dir() and (is_dist_info or is_pkg_dir):
                 shutil.rmtree(cand, ignore_errors=True)

@@ -47,11 +47,17 @@ def vectorize_raster(path: Path, *, keep: list[int] | None = None) -> dict[str, 
 
     out_features = []
     for value, polygons in sorted(buckets.items()):
-        out_features.append(_feature(
-            {"type": "MultiPolygon", "coordinates": polygons},
-            {"class": CHANGE_CLASSES[value], "class_code": value,
-             "pixels": int((data == value).sum()), "synthetic": True},
-        ))
+        out_features.append(
+            _feature(
+                {"type": "MultiPolygon", "coordinates": polygons},
+                {
+                    "class": CHANGE_CLASSES[value],
+                    "class_code": value,
+                    "pixels": int((data == value).sum()),
+                    "synthetic": True,
+                },
+            )
+        )
     # RFC 7946 不认 GeoJSON 里的 crs 成员（规定必须是 WGS84），Cesium 会把字符串型 crs
     # 当对象解析并抛 "crs.properties is undefined" —— 所以这里不写 crs。
     return {"type": "FeatureCollection", "features": out_features}
@@ -63,21 +69,27 @@ def export(workdir: Path, out_dir: Path) -> dict[str, Any]:
     if not change_raster.exists():
         raise SystemExit(f"找不到 {change_raster}；先跑 `python run_extension.py`")
     files: dict[str, Any] = {}
-    change = vectorize_raster(change_raster, keep=[-1, 1])   # stable 面积太大，默认不画
+    change = vectorize_raster(change_raster, keep=[-1, 1])  # stable 面积太大，默认不画
     (out_dir / "water_change.geojson").write_text(
-        json.dumps(change, ensure_ascii=False), encoding="utf-8")
-    files["water_change"] = {"path": str(out_dir / "water_change.geojson"),
-                             "features": len(change["features"]),
-                             "classes": [f["properties"]["class"] for f in change["features"]]}
+        json.dumps(change, ensure_ascii=False), encoding="utf-8"
+    )
+    files["water_change"] = {
+        "path": str(out_dir / "water_change.geojson"),
+        "features": len(change["features"]),
+        "classes": [f["properties"]["class"] for f in change["features"]],
+    }
     baseline = workdir / "water_mask_2010.tif"
     if baseline.exists():
         mask = vectorize_raster(baseline, keep=[1])
         for feature in mask["features"]:
             feature["properties"]["class"] = "water"
         (out_dir / "water_baseline.geojson").write_text(
-            json.dumps(mask, ensure_ascii=False), encoding="utf-8")
-        files["water_baseline"] = {"path": str(out_dir / "water_baseline.geojson"),
-                                   "features": len(mask["features"])}
+            json.dumps(mask, ensure_ascii=False), encoding="utf-8"
+        )
+        files["water_baseline"] = {
+            "path": str(out_dir / "water_baseline.geojson"),
+            "features": len(mask["features"]),
+        }
     manifest = {
         "case": "geocard.case.eaaf-habitat-change-demo",
         "synthetic": True,
@@ -86,7 +98,8 @@ def export(workdir: Path, out_dir: Path) -> dict[str, Any]:
         "files": files,
     }
     (out_dir / "manifest.json").write_text(
-        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     return manifest
 
 

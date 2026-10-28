@@ -156,8 +156,11 @@ def water_extent_handler(params: dict[str, Any], context: Any) -> dict[str, Any]
 
     water_pixels = int(water.sum())
     stats_path = params.get("stats_output")
-    stats_path = _resolve(stats_path, context) if stats_path else str(
-        _workdir(context) / f"water_stats_{year or 'year'}.json")
+    stats_path = (
+        _resolve(stats_path, context)
+        if stats_path
+        else str(_workdir(context) / f"water_stats_{year or 'year'}.json")
+    )
     result = {
         "water_mask": str(out_path),
         "stats_json": stats_path,
@@ -172,7 +175,9 @@ def water_extent_handler(params: dict[str, Any], context: Any) -> dict[str, Any]
         "crs": crs,
         "synthetic": tags.get("GEONEXUS_SYNTHETIC") == "TRUE",
     }
-    Path(stats_path).write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    Path(stats_path).write_text(
+        json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     return result
 
 
@@ -193,7 +198,12 @@ def _drop_small_patches(water: Any, min_patch: int, np: Any) -> Any:
                 cy, cx = stack.pop()
                 size += 1
                 for ny, nx in ((cy - 1, cx), (cy + 1, cx), (cy, cx - 1), (cy, cx + 1)):
-                    if 0 <= ny < height and 0 <= nx < width and water[ny, nx] and not labels[ny, nx]:
+                    if (
+                        0 <= ny < height
+                        and 0 <= nx < width
+                        and water[ny, nx]
+                        and not labels[ny, nx]
+                    ):
                         labels[ny, nx] = current
                         stack.append((ny, nx))
             if size < min_patch:
@@ -218,8 +228,10 @@ def water_change_handler(params: dict[str, Any], context: Any) -> dict[str, Any]
     if not baseline_mask or not target_mask:
         raise ValueError("wetland-water-change 需要 'baseline_mask' 与 'target_mask'")
 
-    with rasterio.open(_resolve(baseline_mask, context)) as src_a, \
-            rasterio.open(_resolve(target_mask, context)) as src_b:
+    with (
+        rasterio.open(_resolve(baseline_mask, context)) as src_a,
+        rasterio.open(_resolve(target_mask, context)) as src_b,
+    ):
         if (src_a.height, src_a.width) != (src_b.height, src_b.width):
             raise ValueError(
                 f"两期掩膜尺寸不一致：{src_a.height}x{src_a.width} vs {src_b.height}x{src_b.width}"
@@ -239,8 +251,11 @@ def water_change_handler(params: dict[str, Any], context: Any) -> dict[str, Any]
     change[lost] = -1
     change[gained] = 1
 
-    out_path = _resolve(params["output"], context) if params.get("output") else str(
-        _workdir(context) / "water_change.tif")
+    out_path = (
+        _resolve(params["output"], context)
+        if params.get("output")
+        else str(_workdir(context) / "water_change.tif")
+    )
     profile.update(dtype="int8", count=1, nodata=-9)
     profile.pop("blockxsize", None)
     profile.pop("blockysize", None)
@@ -256,8 +271,11 @@ def water_change_handler(params: dict[str, Any], context: Any) -> dict[str, Any]
     lost_km2 = float(lost.sum()) * pixel_km2
     gained_km2 = float(gained.sum()) * pixel_km2
     summary_path = params.get("summary_output")
-    summary_path = _resolve(summary_path, context) if summary_path else str(
-        _workdir(context) / "water_change.json")
+    summary_path = (
+        _resolve(summary_path, context)
+        if summary_path
+        else str(_workdir(context) / "water_change.json")
+    )
     result = {
         "change_raster": str(out_path),
         "summary_json": summary_path,
@@ -270,7 +288,9 @@ def water_change_handler(params: dict[str, Any], context: Any) -> dict[str, Any]
         "loss_rate_pct": round(lost_km2 / baseline_km2 * 100.0, 2) if baseline_km2 else None,
         "stable_water_km2": round(float(stable_water.sum()) * pixel_km2, 3),
     }
-    Path(summary_path).write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    Path(summary_path).write_text(
+        json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     return result
 
 
@@ -335,15 +355,18 @@ def pc1_priority_score_handler(params: dict[str, Any], context: Any) -> dict[str
         if count < min_count:
             continue
         site_id = row.get("site_id") or row.get("site_name") or "unknown"
-        entry = sites.setdefault(site_id, {
-            "site_id": site_id,
-            "site_name": row.get("site_name") or site_id,
-            "kind": row.get("kind") or None,
-            "pc1": 0.0,
-            "species_meeting_1pct": 0,
-            "species_records": 0,
-            "populations": [],
-        })
+        entry = sites.setdefault(
+            site_id,
+            {
+                "site_id": site_id,
+                "site_name": row.get("site_name") or site_id,
+                "kind": row.get("kind") or None,
+                "pc1": 0.0,
+                "species_meeting_1pct": 0,
+                "species_records": 0,
+                "populations": [],
+            },
+        )
         entry["species_records"] += 1
         population = populations[species]["population"]
         share = count / population
@@ -352,13 +375,15 @@ def pc1_priority_score_handler(params: dict[str, Any], context: Any) -> dict[str
             # 1% 规则：只有达到国际重要数量的种群才计入 PC1（原文第五、六节）
             entry["pc1"] += share
             entry["species_meeting_1pct"] += 1
-            entry["populations"].append({
-                "species": species,
-                "count": int(count),
-                "flyway_population": int(population),
-                "share_pct": round(share * 100.0, 4),
-                "globally_threatened": populations[species]["threatened"],
-            })
+            entry["populations"].append(
+                {
+                    "species": species,
+                    "count": int(count),
+                    "flyway_population": int(population),
+                    "share_pct": round(share * 100.0, 4),
+                    "globally_threatened": populations[species]["threatened"],
+                }
+            )
 
     ranked = sorted(sites.values(), key=lambda s: s["pc1"], reverse=True)
     for rank, entry in enumerate(ranked, 1):
@@ -370,22 +395,47 @@ def pc1_priority_score_handler(params: dict[str, Any], context: Any) -> dict[str
         )
 
     out_dir = _workdir(context)
-    table_path = _resolve(params["output"], context) if params.get("output") else str(
-        out_dir / "priority_sites.csv")
+    table_path = (
+        _resolve(params["output"], context)
+        if params.get("output")
+        else str(out_dir / "priority_sites.csv")
+    )
     with open(table_path, "w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["rank", "site_id", "site_name", "kind", "pc1", "priority",
-                         "species_meeting_1pct", "threatened_species_meeting_1pct",
-                         "top_species"])
+        writer.writerow(
+            [
+                "rank",
+                "site_id",
+                "site_name",
+                "kind",
+                "pc1",
+                "priority",
+                "species_meeting_1pct",
+                "threatened_species_meeting_1pct",
+                "top_species",
+            ]
+        )
         for entry in ranked:
             top = max(entry["populations"], key=lambda p: p["share_pct"], default=None)
-            writer.writerow([entry["rank"], entry["site_id"], entry["site_name"], entry["kind"] or "",
-                             entry["pc1"], str(entry["priority"]).upper(),
-                             entry["species_meeting_1pct"], entry["threatened_species_meeting_1pct"],
-                             top["species"] if top else ""])
+            writer.writerow(
+                [
+                    entry["rank"],
+                    entry["site_id"],
+                    entry["site_name"],
+                    entry["kind"] or "",
+                    entry["pc1"],
+                    str(entry["priority"]).upper(),
+                    entry["species_meeting_1pct"],
+                    entry["threatened_species_meeting_1pct"],
+                    top["species"] if top else "",
+                ]
+            )
 
-    scores_path = _resolve(params["scores_output"], context) if params.get("scores_output") else str(
-        out_dir / "priority_scores.json")
+    scores_path = (
+        _resolve(params["scores_output"], context)
+        if params.get("scores_output")
+        else str(out_dir / "priority_scores.json")
+    )
     payload = {
         "metric": "PC1 = 各达到国际重要数量（≥1%）的种群比例之和",
         "threshold": threshold,
@@ -398,7 +448,9 @@ def pc1_priority_score_handler(params: dict[str, Any], context: Any) -> dict[str
         "skipped_species": sorted(skipped_unknown_species),
         "synthetic": True,
     }
-    Path(scores_path).write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    Path(scores_path).write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
 
     return {
         "priority_table": table_path,
@@ -407,8 +459,12 @@ def pc1_priority_score_handler(params: dict[str, Any], context: Any) -> dict[str
         "priority_count": payload["priority_count"],
         "site_count": payload["site_count"],
         "top_sites": [
-            {"site_id": entry["site_id"], "pc1": entry["pc1"],
-             "priority": entry["priority"], "species_meeting_1pct": entry["species_meeting_1pct"]}
+            {
+                "site_id": entry["site_id"],
+                "pc1": entry["pc1"],
+                "priority": entry["priority"],
+                "species_meeting_1pct": entry["species_meeting_1pct"],
+            }
             for entry in ranked[:5]
         ],
         "skipped_species": payload["skipped_species"],
@@ -466,14 +522,26 @@ def report_handler(params: dict[str, Any], context: Any) -> dict[str, Any]:
         return "\n".join(out)
 
     top_sites = (priority.get("sites") or [])[:8]
-    site_rows = _rows(top_sites, [("rank", ""), ("site_name", ""), ("pc1", ""),
-                                 ("species_meeting_1pct", ""), ("priority", "")])
+    site_rows = _rows(
+        top_sites,
+        [
+            ("rank", ""),
+            ("site_name", ""),
+            ("pc1", ""),
+            ("species_meeting_1pct", ""),
+            ("priority", ""),
+        ],
+    )
 
     synthetic_note = (
-        "<p class='warn'>本报告的全部输入为<strong>合成/示意数据</strong>"
-        "（GEONEXUS_SYNTHETIC=TRUE），用于验证流程与模版，<strong>不得用于任何科研或保护决策</strong>。"
-        "替换真实数据后本节会自动消失。</p>"
-    ) if params.get("synthetic") else ""
+        (
+            "<p class='warn'>本报告的全部输入为<strong>合成/示意数据</strong>"
+            "（GEONEXUS_SYNTHETIC=TRUE），用于验证流程与模版，<strong>不得用于任何科研或保护决策</strong>。"
+            "替换真实数据后本节会自动消失。</p>"
+        )
+        if params.get("synthetic")
+        else ""
+    )
 
     html = f"""<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
@@ -498,16 +566,16 @@ def report_handler(params: dict[str, Any], context: Any) -> dict[str, Any]:
 
 <h2>一、结论</h2>
 <ul>
-  <li>水面变化：基线期水面 <strong>{_fmt(change.get('baseline_water_km2'), 3)} km²</strong>，
-      目标期损失 <strong>{_fmt(change.get('lost_water_km2'), 3)} km²</strong>、
-      增加 <strong>{_fmt(change.get('gained_water_km2'), 3)} km²</strong>，
-      净变化 <strong>{_fmt(change.get('net_change_km2'), 3)} km²</strong>
-      （损失率 <strong>{_fmt(change.get('loss_rate_pct'))}%</strong>）。</li>
+  <li>水面变化：基线期水面 <strong>{_fmt(change.get("baseline_water_km2"), 3)} km²</strong>，
+      目标期损失 <strong>{_fmt(change.get("lost_water_km2"), 3)} km²</strong>、
+      增加 <strong>{_fmt(change.get("gained_water_km2"), 3)} km²</strong>，
+      净变化 <strong>{_fmt(change.get("net_change_km2"), 3)} km²</strong>
+      （损失率 <strong>{_fmt(change.get("loss_rate_pct"))}%</strong>）。</li>
   <li>优先地点：PC1 阈值 <strong>{_fmt(threshold)}</strong> 下，
-      {_fmt(priority.get('site_count'))} 个评估地点中有
-      <strong>{_fmt(priority.get('priority_count'))} 个</strong>达到入选标准。</li>
-  <li>水体提取：目标年水面占比 <strong>{_fmt((water or {}).get('water_fraction') and (water or {}).get('water_fraction') * 100)}%</strong>，
-      NDWI 阈值 <strong>{_fmt((water or {}).get('threshold'))}</strong>。</li>
+      {_fmt(priority.get("site_count"))} 个评估地点中有
+      <strong>{_fmt(priority.get("priority_count"))} 个</strong>达到入选标准。</li>
+  <li>水体提取：目标年水面占比 <strong>{_fmt((water or {}).get("water_fraction") and (water or {}).get("water_fraction") * 100)}%</strong>，
+      NDWI 阈值 <strong>{_fmt((water or {}).get("threshold"))}</strong>。</li>
 </ul>
 <p>结论口径：PC1 衡量的是"一个地点承载了多少国际重要种群比例"，
 <strong>它不评价栖息地质量、当前威胁与未来开发风险</strong>（原文第十五、十六节明确列为局限）。
@@ -515,13 +583,13 @@ def report_handler(params: dict[str, Any], context: Any) -> dict[str, Any]:
 
 <h2>二、方法</h2>
 <table class="kv">
-  <tr><td>水面提取</td><td>NDWI = (Green − NIR) / (Green + NIR)，阈值 {_fmt((water or {}).get('threshold'))}；
+  <tr><td>水面提取</td><td>NDWI = (Green − NIR) / (Green + NIR)，阈值 {_fmt((water or {}).get("threshold"))}；
       像元面积按中心纬度近似换算</td></tr>
   <tr><td>水面变化</td><td>两期掩膜逐像元对比，统计损失/增加/净变化与损失率</td></tr>
   <tr><td>优先分值 PC1</td><td>对每个达到国际重要数量（≥ 种群 1%）的种群累加"本地点个体数 ÷ 种群总量"，
       得到该地点综合分值；阈值 {_fmt(threshold)}</td></tr>
-  <tr><td>1% 规则</td><td>{'启用' if priority.get('one_percent_rule', True) else '未启用'}（Ramsar 第 6 条标准）</td></tr>
-  <tr><td>区域校准</td><td>{priority.get('region_calibration') or '—'}</td></tr>
+  <tr><td>1% 规则</td><td>{"启用" if priority.get("one_percent_rule", True) else "未启用"}（Ramsar 第 6 条标准）</td></tr>
+  <tr><td>区域校准</td><td>{priority.get("region_calibration") or "—"}</td></tr>
 </table>
 
 <h2>三、优先地点（按 PC1 排序，前 8）</h2>
@@ -534,10 +602,10 @@ def report_handler(params: dict[str, Any], context: Any) -> dict[str, Any]:
 <h2>四、数据来源与快照</h2>
 <table class="kv">
   <tr><td>研究区</td><td>{region}</td></tr>
-  <tr><td>数据快照</td><td><code>{json.dumps(snapshot, ensure_ascii=False) if snapshot else '—'}</code></td></tr>
-  <tr><td>方法来源</td><td>{source.get('citation') or '—'}</td></tr>
-  <tr><td>方法来源链接</td><td>{source.get('doi') or '—'}</td></tr>
-  <tr><td>运行身份</td><td><code>{params.get('run_id') or '—'}</code></td></tr>
+  <tr><td>数据快照</td><td><code>{json.dumps(snapshot, ensure_ascii=False) if snapshot else "—"}</code></td></tr>
+  <tr><td>方法来源</td><td>{source.get("citation") or "—"}</td></tr>
+  <tr><td>方法来源链接</td><td>{source.get("doi") or "—"}</td></tr>
+  <tr><td>运行身份</td><td><code>{params.get("run_id") or "—"}</code></td></tr>
 </table>
 
 <h2>五、局限（必读）</h2>
@@ -552,8 +620,11 @@ def report_handler(params: dict[str, Any], context: Any) -> dict[str, Any]:
 <p class="meta">详细的事实台账与待补槽位见 <code>docs/cases/flightway-wetland.md</code>。</p>
 </body></html>
 """
-    out_path = _resolve(params["output"], context) if params.get("output") else str(
-        _workdir(context) / "report.html")
+    out_path = (
+        _resolve(params["output"], context)
+        if params.get("output")
+        else str(_workdir(context) / "report.html")
+    )
     Path(out_path).write_text(html, encoding="utf-8")
     return {
         "report": str(out_path),
