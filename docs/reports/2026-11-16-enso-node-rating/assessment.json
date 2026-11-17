@@ -1,0 +1,2504 @@
+{
+  "node": {
+    "endpoint": "http://192.168.100.182:9841",
+    "node_id": "node-enso-nino34",
+    "node_software_version": "1.0.0",
+    "assessment_mode": "provisional legacy discovery mapping; not provider-submitted announcement",
+    "mapping": {
+      "node_id": "GET /health.node",
+      "name": "GET /.name",
+      "operator": "Compute GeoCard provenance.provider (unverified institutional identity)",
+      "capacity": "Compute GeoCard runtime, unverified self-declaration",
+      "jurisdictions": "unknown for node; resource sovereignty CN is not silently promoted to a node declaration",
+      "revision": "local assessment revision, not upstream revision",
+      "lease": "local assessment lifetime only, upstream signed/renewed lease unknown",
+      "resource_versions": "snapshot hash is local identity, not a provider release version"
+    },
+    "rating": {
+      "subject_digest": "84bff03b94407bd8192da25ffcec54af0a5fdec5f9997c7d76f06f313f9eeaca",
+      "policy_version": "readiness-v1",
+      "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+      "evaluated_at": "2026-11-16T09:12:03.401434Z",
+      "score": 70.6,
+      "grade": "B",
+      "dimensions": {
+        "declaration": {
+          "score": 70.0,
+          "basis": "validated identity/endpoint; jurisdictions declared adds 30"
+        },
+        "compute": {
+          "score": 40.0,
+          "basis": "capacity declaration=40; trusted compute probe=100; GPU absence is not a penalty"
+        },
+        "availability": {
+          "score": 100.0,
+          "basis": "fresh independent endpoint observation; unknown is not online"
+        },
+        "inventory": {
+          "score": 72.0,
+          "basis": "share of declared resources without incompatible binding schemas, not resource volume"
+        }
+      },
+      "observed_checks": {
+        "compute_verified": "unknown",
+        "endpoint_reachable": "pass"
+      },
+      "evidence_coverage": 0.5,
+      "blockers": [],
+      "capacity_profile": {
+        "class": "small_cpu",
+        "declared": {
+          "cpu_cores": 8.0,
+          "memory_gib": 12.0,
+          "gpu_count": 0
+        },
+        "basis": "unverified_declaration",
+        "live_free_capacity": "unknown"
+      },
+      "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+    },
+    "admission_recommendation": "request_changes_before_production_admission",
+    "approval_status": "not inspected or modified; no Platform approval conferred",
+    "executability_status": "10 skills blocked by advertised schema; HTTP model execution untested; no compute executed",
+    "formal_announcement_observed": false,
+    "scientific_validation": "unknown",
+    "limits": [
+      "Single point-in-time reachability is not an uptime/SLA assessment",
+      "Trusted issuer is a local report observer, not a deployed Platform-authenticated observation identity",
+      "No formal announcement advertised by inspected root/health/capabilities/describe responses",
+      "Native readiness-v1 counts non-empty license text and local snapshot version: license and publisher release remain unknown",
+      "Native node inventory counts unbound catalog-only models: passing this dimension does not imply executability"
+    ]
+  },
+  "policy": {
+    "version": "readiness-v1",
+    "trusted_issuers": [
+      "local-readonly-assessor-20261116"
+    ],
+    "weights": {
+      "metadata": 25,
+      "provenance": 20,
+      "publication": 15,
+      "contract": 25,
+      "reproducibility": 15
+    },
+    "max_lease_seconds": 86400,
+    "require_reachable": true,
+    "standard_cpu_cores": 8,
+    "standard_memory_gib": 16,
+    "large_cpu_cores": 32,
+    "large_memory_gib": 64
+  },
+  "inventory": {
+    "compute": 1,
+    "data": 14,
+    "model": 10,
+    "skill": 10,
+    "workflow": 1
+  },
+  "unique_operator_count": 10,
+  "geocard_count": 36,
+  "resource_grade_distribution": {
+    "D": 18,
+    "C": 8,
+    "not_ready": 10
+  },
+  "resources": [
+    {
+      "id": "ensopred.compute.182-pool",
+      "name": "El Niño node compute (CPU, model service)",
+      "type": "compute",
+      "assessment_view_version": "snapshot-b6361012bbae44d65b23865c88685577826e0069d15d4deb4b2aa9a807ee9d46",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "8f3e6c12c3587740a5f628ce1ea02d860677209a77ccca89870a03c2066d8b2e",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 18.75,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 50.0,
+            "basis": "mean of generic metadata and compute capacity evidence"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          },
+          "compute_capacity": {
+            "score": 40.0,
+            "basis": "declared CPU/memory=40; independent probe=100; not guaranteed free capacity"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown",
+          "compute_verified": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "capacity_is_self_declared_not_benchmarked"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "ensopred.data.climatology-1991-2020",
+      "name": "月气候态场（1991–2020）",
+      "type": "data",
+      "assessment_view_version": "snapshot-92ef8dace910df1d0f58f0f20e80538d4db174bd5f71929659c49b06ad00769c",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "eeb29b260c74dab4655c90ce715cc08e54df65a399ac47af0e05f9e4245bff5c",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 20.0,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 55.0,
+            "basis": "mean of generic metadata and data descriptor/access completeness"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          },
+          "data_completeness": {
+            "score": 30.0,
+            "basis": "five declared data descriptors (10 each) plus trusted access check (50); not full coverage, accuracy or raster-content validation"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown",
+          "data_access": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "data_access_endpoint_missing"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "ensopred.data.features",
+      "name": "预测特征表（features.csv）",
+      "type": "data",
+      "assessment_view_version": "snapshot-e890faf489619ec7544f2a7ba778fa0cd9ce5c1e845c8e6d2fc88f325280c312",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "5f2e9f556d80880b268efe5a4359e3994f911fef261df0c52ab14737bc52ec6b",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 17.5,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 45.0,
+            "basis": "mean of generic metadata and data descriptor/access completeness"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          },
+          "data_completeness": {
+            "score": 10.0,
+            "basis": "five declared data descriptors (10 each) plus trusted access check (50); not full coverage, accuracy or raster-content validation"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown",
+          "data_access": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "data_access_endpoint_missing"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "ensopred.data.monthly-mean-fields",
+      "name": "赤道带月平均海温场（2020-01 至 2026-08）",
+      "type": "data",
+      "assessment_view_version": "snapshot-590a9f4cc5203891751e28d41607c7f56feff80303f7f78597c23ee076788549",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "fa11173266d27f3d8e6776835b96424d6cca4df9f1c2c215f5e3d52700b5ebb9",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 20.0,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 55.0,
+            "basis": "mean of generic metadata and data descriptor/access completeness"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          },
+          "data_completeness": {
+            "score": 30.0,
+            "basis": "five declared data descriptors (10 each) plus trusted access check (50); not full coverage, accuracy or raster-content validation"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown",
+          "data_access": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "data_access_endpoint_missing"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "ensopred.data.regional-indices",
+      "name": "NINO 区域月指数（1981-10 至 2026-08）",
+      "type": "data",
+      "assessment_view_version": "snapshot-76b2619ba952420efe14362138dfcf00a1b42ac98dc446da999eea0b1dd9de3f",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "e704278ec261445e9b2f6d9f212a5d1cde0f86fad54d881596678acea3a7f4a3",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 20.0,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 55.0,
+            "basis": "mean of generic metadata and data descriptor/access completeness"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          },
+          "data_completeness": {
+            "score": 30.0,
+            "basis": "five declared data descriptors (10 each) plus trusted access check (50); not full coverage, accuracy or raster-content validation"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown",
+          "data_access": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "data_access_endpoint_missing"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "ensopred.data.walk-forward-sigmas",
+      "name": "逐月预测不确定性（团队回测）",
+      "type": "data",
+      "assessment_view_version": "snapshot-80a92e1d2a778f6217e25e8c01a3a00562edf6670a53fed779203b1485c1c61a",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "389e87d3941bb2e94057934939f943e4303e648313c9c694251e050ce3aa9147",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 16.25,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 40.0,
+            "basis": "mean of generic metadata and data descriptor/access completeness"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          },
+          "data_completeness": {
+            "score": 0.0,
+            "basis": "five declared data descriptors (10 each) plus trusted access check (50); not full coverage, accuracy or raster-content validation"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown",
+          "data_access": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "data_access_endpoint_missing"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "noaa.cpc.oni",
+      "name": "ONI（NINO3.4 官方参照）",
+      "type": "data",
+      "assessment_view_version": "snapshot-3cc1d36cb03708d340eb77c753278bf47335d10f8522725b9f5ca55ecef8e331",
+      "provider_resource_version": null,
+      "readiness": "input",
+      "rating": {
+        "subject_digest": "6c9aac108dce7dae6ebc7add4029224b43d6447ba8db2ca2d58d6226ac58e257",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 53.0,
+        "grade": "C",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "mean of generic metadata and data descriptor/access completeness"
+          },
+          "provenance": {
+            "score": 40.0,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 100.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          },
+          "data_completeness": {
+            "score": 60.0,
+            "basis": "five declared data descriptors (10 each) plus trusted access check (50); not full coverage, accuracy or raster-content validation"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown",
+          "data_access": "pass"
+        },
+        "evidence_coverage": 0.25,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "noaa.psl.dmi",
+      "name": "IOD/DMI 印度洋偶极子",
+      "type": "data",
+      "assessment_view_version": "snapshot-f0827599fa5e147e76b51fc6a500d40bb30f0517cc08535076b7e25cf466c062",
+      "provider_resource_version": null,
+      "readiness": "input",
+      "rating": {
+        "subject_digest": "9c22780d4b93b11998cfb366754e1e77fcc34b74c3cb624a67ba6b3e9bd30271",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 53.0,
+        "grade": "C",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "mean of generic metadata and data descriptor/access completeness"
+          },
+          "provenance": {
+            "score": 40.0,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 100.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          },
+          "data_completeness": {
+            "score": 60.0,
+            "basis": "five declared data descriptors (10 each) plus trusted access check (50); not full coverage, accuracy or raster-content validation"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown",
+          "data_access": "pass"
+        },
+        "evidence_coverage": 0.25,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "noaa.psl.meiv2",
+      "name": "MEIv2 多变量 ENSO",
+      "type": "data",
+      "assessment_view_version": "snapshot-c14f5785288ff06d98f5aca2702b8e2bb1f893765ee67006189429be0ccb7345",
+      "provider_resource_version": null,
+      "readiness": "input",
+      "rating": {
+        "subject_digest": "4e5198176e85f0e3118379ee885b4692cf7586bb540fe11d332654cbe21cf582",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 53.0,
+        "grade": "C",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "mean of generic metadata and data descriptor/access completeness"
+          },
+          "provenance": {
+            "score": 40.0,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 100.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          },
+          "data_completeness": {
+            "score": 60.0,
+            "basis": "five declared data descriptors (10 each) plus trusted access check (50); not full coverage, accuracy or raster-content validation"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown",
+          "data_access": "pass"
+        },
+        "evidence_coverage": 0.25,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "noaa.psl.pacwarm",
+      "name": "太平洋暖池区域 SST",
+      "type": "data",
+      "assessment_view_version": "snapshot-83f537a95d7d63a0227b7851d97e4b6c1775349238dca3c95815586dfc759b53",
+      "provider_resource_version": null,
+      "readiness": "input",
+      "rating": {
+        "subject_digest": "1a3d1abc26a89ce9a6490cf9e577e37640e5d26feda7761d8d914ea7554d3011",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 53.0,
+        "grade": "C",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "mean of generic metadata and data descriptor/access completeness"
+          },
+          "provenance": {
+            "score": 40.0,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 100.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          },
+          "data_completeness": {
+            "score": 60.0,
+            "basis": "five declared data descriptors (10 each) plus trusted access check (50); not full coverage, accuracy or raster-content validation"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown",
+          "data_access": "pass"
+        },
+        "evidence_coverage": 0.25,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "noaa.psl.pdo",
+      "name": "PDO 太平洋年代际振荡",
+      "type": "data",
+      "assessment_view_version": "snapshot-16688b6e51ed8858d0e9a3660debf2194e8be960fdf96712f9837922f774127d",
+      "provider_resource_version": null,
+      "readiness": "input",
+      "rating": {
+        "subject_digest": "ecbc690cdd601184cd16e78187f98322023ee75581d7c6ea40e396eff08a479d",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 53.0,
+        "grade": "C",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "mean of generic metadata and data descriptor/access completeness"
+          },
+          "provenance": {
+            "score": 40.0,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 100.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          },
+          "data_completeness": {
+            "score": 60.0,
+            "basis": "five declared data descriptors (10 each) plus trusted access check (50); not full coverage, accuracy or raster-content validation"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown",
+          "data_access": "pass"
+        },
+        "evidence_coverage": 0.25,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "noaa.psl.qbo",
+      "name": "QBO 准两年振荡",
+      "type": "data",
+      "assessment_view_version": "snapshot-6bd464cc859c0ed9f7720476b540d953b12ec0784ed920c5d324c934fda29103",
+      "provider_resource_version": null,
+      "readiness": "input",
+      "rating": {
+        "subject_digest": "4128eabbfb80e7a6be8c0cc6558f6c014df81a697108540428f74cf5fa16522f",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 53.0,
+        "grade": "C",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "mean of generic metadata and data descriptor/access completeness"
+          },
+          "provenance": {
+            "score": 40.0,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 100.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          },
+          "data_completeness": {
+            "score": 60.0,
+            "basis": "five declared data descriptors (10 each) plus trusted access check (50); not full coverage, accuracy or raster-content validation"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown",
+          "data_access": "pass"
+        },
+        "evidence_coverage": 0.25,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "noaa.psl.soi",
+      "name": "SOI 南方涛动指数",
+      "type": "data",
+      "assessment_view_version": "snapshot-93dc9bc3951883242567fad0217957d0c7a17a1921012d493a115a513441c272",
+      "provider_resource_version": null,
+      "readiness": "input",
+      "rating": {
+        "subject_digest": "efeb2db3d3e075f99dac9e941394f4334ce7602ce515326c54089cd218120e0e",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 53.0,
+        "grade": "C",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "mean of generic metadata and data descriptor/access completeness"
+          },
+          "provenance": {
+            "score": 40.0,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 100.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          },
+          "data_completeness": {
+            "score": 60.0,
+            "basis": "five declared data descriptors (10 each) plus trusted access check (50); not full coverage, accuracy or raster-content validation"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown",
+          "data_access": "pass"
+        },
+        "evidence_coverage": 0.25,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "noaa.psl.tni",
+      "name": "TNI Trans-Niño",
+      "type": "data",
+      "assessment_view_version": "snapshot-d4ba0baeb24918e2e2ba06d3cae30db8ebd3a10015ec334b246a4cf4bad10d89",
+      "provider_resource_version": null,
+      "readiness": "input",
+      "rating": {
+        "subject_digest": "00ed76b72908257f8e066a66125e8f1910fc2e04f982f1dfd647bd30e85aa5ae",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 53.0,
+        "grade": "C",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "mean of generic metadata and data descriptor/access completeness"
+          },
+          "provenance": {
+            "score": 40.0,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 100.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          },
+          "data_completeness": {
+            "score": 60.0,
+            "basis": "five declared data descriptors (10 each) plus trusted access check (50); not full coverage, accuracy or raster-content validation"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown",
+          "data_access": "pass"
+        },
+        "evidence_coverage": 0.25,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "nsoas.data.sst-daily",
+      "name": "NSOAS 逐日海表温度融合数据（不在本节点）",
+      "type": "data",
+      "assessment_view_version": "snapshot-6838e8d06d72bf8e766e260bb588547a557373b36df2d6ae43367dee22b43410",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "d2c93890dec1b4ca14e2e211eb346dd746eded9c52742d386ccecfa57aef009e",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 20.0,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 55.0,
+            "basis": "mean of generic metadata and data descriptor/access completeness"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          },
+          "data_completeness": {
+            "score": 30.0,
+            "basis": "five declared data descriptors (10 each) plus trusted access check (50); not full coverage, accuracy or raster-content validation"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown",
+          "data_access": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "data_access_endpoint_missing"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "ensopred.model.anomaly",
+      "name": "海温距平",
+      "type": "model",
+      "assessment_view_version": "snapshot-e5f97065601525debebbca48b69971ccc4dee1f60ae02862d15b64db1d1ca7b1",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "9f8cfea20e0839d19571b7bedfe37ced1017ed336b7a03c8c9ee995a9d320a49",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 26.25,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "http_model_execution_contract_and_behavior_not_verified"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "ensopred.model.build-indices",
+      "name": "区域指数",
+      "type": "model",
+      "assessment_view_version": "snapshot-b7623dbd9533c218c75411e451d22341c0b2e7eab06c6075226a259c400810c5",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "3d307f7bafb12f6ee21e68ed92323f5863b6633ca96caec7ab37962ec838717f",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 26.25,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "http_model_execution_contract_and_behavior_not_verified"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "ensopred.model.ensemble-forecast",
+      "name": "NINO3.4 预测",
+      "type": "model",
+      "assessment_view_version": "snapshot-1cb83bab93b8de73b1e80af73509ec000840fc4133ac18f141d8f53386813810",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "b4bb996d212fc4746321e01e4df08c0196a3d8e39c88dd885310c79463bef3c7",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 26.25,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "http_model_execution_contract_and_behavior_not_verified"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "ensopred.model.equatorial-section",
+      "name": "赤道时间剖面",
+      "type": "model",
+      "assessment_view_version": "snapshot-052eeacf44abc53922fd51586534c163adcf2c1a597dd77688ce624fc0f6e719",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "4d7c51d90183607091525548020c6ef2075bbd231e72119188a21104de18bb3f",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 26.25,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "http_model_execution_contract_and_behavior_not_verified"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "ensopred.model.front",
+      "name": "海温锋面",
+      "type": "model",
+      "assessment_view_version": "snapshot-4afd83a3845b46d437d433e5af1668c7f839d8f545b063be6ecb1a4b32551a59",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "4116a18bcd5cc02b848e73c7a40764feaca5ad312d38157c6132db93c5f40043",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 26.25,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "http_model_execution_contract_and_behavior_not_verified"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "ensopred.model.monthly-change",
+      "name": "海温月变化",
+      "type": "model",
+      "assessment_view_version": "snapshot-0e670f9381ecf2a05e24021855602f8fd440075dfd4c9d0280ba016126d86da4",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "46854db1b461d76ec8bb16889fc5cc83553a2b79574ef0e7193b023d14e9d22e",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 26.25,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "http_model_execution_contract_and_behavior_not_verified"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "ensopred.model.monthly-mean",
+      "name": "海温月平均",
+      "type": "model",
+      "assessment_view_version": "snapshot-2c2bee2d96c91184a298335d4a8f4291b3be332bc05b5141631f3a7b291e7b71",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "329fc063e4e2ba1c9ed3b3f3f9c48db4b15e6f247edf117984f97c6f48c6f479",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 26.25,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "http_model_execution_contract_and_behavior_not_verified"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "ensopred.model.region-boxes",
+      "name": "监测海区",
+      "type": "model",
+      "assessment_view_version": "snapshot-22404a370a003868591755ef65ffb8426b2ec144202b4b2938dede0b02de6d84",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "abb29d08268e42812e5ff72c853c1c520e17f798e16ee1d3e19b9a19b1e4d903",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 26.25,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "http_model_execution_contract_and_behavior_not_verified"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "ensopred.model.report",
+      "name": "预测报告",
+      "type": "model",
+      "assessment_view_version": "snapshot-203a609072f55b0786b4bc06634a5f7dc0bc40d3de111178bd110ab7999ee436",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "ab5baf5f216e5568c93a9051c9d0f1b977fc9070a6a37127f9bd72b8801ce7cd",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 26.25,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "http_model_execution_contract_and_behavior_not_verified"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "ensopred.model.walk-forward",
+      "name": "模型检验",
+      "type": "model",
+      "assessment_view_version": "snapshot-162b0c1f5608244821883fb547a15aa8fdac89d572fed0dbdcb536975dccc289",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "467623c9a60fedc42f77a0663f9cfcd69e7346febacf48a603e10d24ec6e0026",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 26.25,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "http_model_execution_contract_and_behavior_not_verified"
+      ],
+      "tool_binding_origin": null
+    },
+    {
+      "id": "ensopred.skill.anomaly",
+      "name": "海温距平",
+      "type": "skill",
+      "assessment_view_version": "snapshot-868d39d897a8140c2084df528b7bf7186c3e212ec0e2045944b016881ce97ada",
+      "provider_resource_version": null,
+      "readiness": "unsupported_schema",
+      "rating": {
+        "subject_digest": "1d8e2509f6ec081ca428b8f6c16ec7f5d1d782e8c026faf69df55d5de7325b40",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 20.0,
+        "grade": "not_ready",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 0.0,
+            "basis": "Invalid JSON Schema: 'grid' is not valid under any of the given schemas"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [
+          "Invalid JSON Schema: 'grid' is not valid under any of the given schemas"
+        ],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": "geo.describe.skills"
+    },
+    {
+      "id": "ensopred.skill.build-indices",
+      "name": "区域指数",
+      "type": "skill",
+      "assessment_view_version": "snapshot-c864027b35ef0a7f05551e8df9293e9b6350a613c27ff08964ecc4cbcb0b4fae",
+      "provider_resource_version": null,
+      "readiness": "unsupported_schema",
+      "rating": {
+        "subject_digest": "6948c91d471bb7482b52b75ef3d1ad375ec171b48b8dfcd4f45843fdaa67ef95",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 20.0,
+        "grade": "not_ready",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 0.0,
+            "basis": "Invalid JSON Schema: 'table' is not valid under any of the given schemas"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [
+          "Invalid JSON Schema: 'table' is not valid under any of the given schemas"
+        ],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": "geo.describe.skills"
+    },
+    {
+      "id": "ensopred.skill.ensemble-forecast",
+      "name": "NINO3.4 预测",
+      "type": "skill",
+      "assessment_view_version": "snapshot-1656f0d52bf38c714a69b48fe18589f1ba2ee78f008d8c404955ca8935df1909",
+      "provider_resource_version": null,
+      "readiness": "unsupported_schema",
+      "rating": {
+        "subject_digest": "2b419d807dbdbc05e107e06d95e54b61beee61039ea59c5f1d69494c6ad89c52",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 20.0,
+        "grade": "not_ready",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 0.0,
+            "basis": "Invalid JSON Schema: 'table' is not valid under any of the given schemas"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [
+          "Invalid JSON Schema: 'table' is not valid under any of the given schemas"
+        ],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": "geo.describe.skills"
+    },
+    {
+      "id": "ensopred.skill.equatorial-section",
+      "name": "赤道时间剖面",
+      "type": "skill",
+      "assessment_view_version": "snapshot-6a77067e574af60ffb7dfcf6b0f19fd02e581eabbb985c40e574ab6545a9ffbc",
+      "provider_resource_version": null,
+      "readiness": "unsupported_schema",
+      "rating": {
+        "subject_digest": "26c0a7d16f3a349370459b9879a236dc9e4384dff9d9637630d35a01fff5654c",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 20.0,
+        "grade": "not_ready",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 0.0,
+            "basis": "Invalid JSON Schema: 'grid' is not valid under any of the given schemas"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [
+          "Invalid JSON Schema: 'grid' is not valid under any of the given schemas"
+        ],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": "geo.describe.skills"
+    },
+    {
+      "id": "ensopred.skill.front",
+      "name": "海温锋面",
+      "type": "skill",
+      "assessment_view_version": "snapshot-32a2e8a8544ec272972a105b335a9583eb6a79275e4005b25619a78d0bbe6540",
+      "provider_resource_version": null,
+      "readiness": "unsupported_schema",
+      "rating": {
+        "subject_digest": "ea605db38d15c5f9be56e89e30f36c28df136e0a631f042044b6434eb081b7a6",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 20.0,
+        "grade": "not_ready",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 0.0,
+            "basis": "Invalid JSON Schema: 'grid' is not valid under any of the given schemas"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [
+          "Invalid JSON Schema: 'grid' is not valid under any of the given schemas"
+        ],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": "geo.describe.skills"
+    },
+    {
+      "id": "ensopred.skill.monthly-change",
+      "name": "海温月变化",
+      "type": "skill",
+      "assessment_view_version": "snapshot-235280465ad1322edac4f0a8c81372f332a08a491eb289e553f967fdd5666963",
+      "provider_resource_version": null,
+      "readiness": "unsupported_schema",
+      "rating": {
+        "subject_digest": "a0896339bcc4962cc0b44de360826b51648643aa6c02ec2b7a400793fd2c6ecf",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 20.0,
+        "grade": "not_ready",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 0.0,
+            "basis": "Invalid JSON Schema: 'grid' is not valid under any of the given schemas"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [
+          "Invalid JSON Schema: 'grid' is not valid under any of the given schemas"
+        ],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": "geo.describe.skills"
+    },
+    {
+      "id": "ensopred.skill.monthly-mean",
+      "name": "海温月平均",
+      "type": "skill",
+      "assessment_view_version": "snapshot-a407f0b19aa69939135f843c34c754a1ce611408a3d0e9e559a1b9d920b51390",
+      "provider_resource_version": null,
+      "readiness": "unsupported_schema",
+      "rating": {
+        "subject_digest": "1261875b66170d690c9b3a1be88384c39bb9849352f5512faa44932ee65f07ab",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 20.0,
+        "grade": "not_ready",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 0.0,
+            "basis": "Invalid JSON Schema: 'grid' is not valid under any of the given schemas"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [
+          "Invalid JSON Schema: 'grid' is not valid under any of the given schemas"
+        ],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": "geo.describe.skills"
+    },
+    {
+      "id": "ensopred.skill.region-boxes",
+      "name": "监测海区",
+      "type": "skill",
+      "assessment_view_version": "snapshot-70f9e1e3b0746baee3feb7a8c26fac289b2e95601ae5af191366ba474d0bfae4",
+      "provider_resource_version": null,
+      "readiness": "unsupported_schema",
+      "rating": {
+        "subject_digest": "42382cf9186293a73c081d990ccdcd327312478901b89725e18b27ef4920e3cc",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 20.0,
+        "grade": "not_ready",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 0.0,
+            "basis": "Invalid JSON Schema: 'table' is not valid under any of the given schemas"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [
+          "Invalid JSON Schema: 'table' is not valid under any of the given schemas"
+        ],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": "geo.describe.skills"
+    },
+    {
+      "id": "ensopred.skill.report",
+      "name": "预测报告",
+      "type": "skill",
+      "assessment_view_version": "snapshot-00ccfe8bd8afcaee6162aac160e665c84e85f5a7f3be7dedd8e01f27ea3258d8",
+      "provider_resource_version": null,
+      "readiness": "unsupported_schema",
+      "rating": {
+        "subject_digest": "4eaaebf91b725e225d63df914597372aec1064fae2c915be443acfed8caf8238",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 20.0,
+        "grade": "not_ready",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 0.0,
+            "basis": "Invalid JSON Schema: 'grid' is not valid under any of the given schemas"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [
+          "Invalid JSON Schema: 'grid' is not valid under any of the given schemas"
+        ],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": "geo.describe.skills"
+    },
+    {
+      "id": "ensopred.skill.walk-forward",
+      "name": "模型检验",
+      "type": "skill",
+      "assessment_view_version": "snapshot-15f1c0ad899f339d397147d930b1f9dba43ada00aade7a115e5859ca0ca52a8c",
+      "provider_resource_version": null,
+      "readiness": "unsupported_schema",
+      "rating": {
+        "subject_digest": "7443c9485a217b91b69acb04d7401b409b6029b7dd06be1b035a4588bd5bd5ea",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 20.0,
+        "grade": "not_ready",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 0.0,
+            "basis": "Invalid JSON Schema: 'table' is not valid under any of the given schemas"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [
+          "Invalid JSON Schema: 'table' is not valid under any of the given schemas"
+        ],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown"
+      ],
+      "tool_binding_origin": "geo.describe.skills"
+    },
+    {
+      "id": "ensopred.case.nino34-forecast",
+      "name": "NINO3.4 季节尺度预测",
+      "type": "workflow",
+      "assessment_view_version": "snapshot-920faba291013223e26214a3ba85d52f6a6798307e4fb2bf43c3d319eed24bfa",
+      "provider_resource_version": null,
+      "readiness": "catalog_only",
+      "rating": {
+        "subject_digest": "1f600b0972e9485773c882fa295c8dc487d61b4624a0daf01077bdfd4cbba30a",
+        "policy_version": "readiness-v1",
+        "policy_digest": "80d544c02b0900981e218ce8e51c755a919e44f69036db8f91fdb01c5564003d",
+        "evaluated_at": "2026-11-16T09:12:03.401434Z",
+        "score": 26.25,
+        "grade": "D",
+        "dimensions": {
+          "metadata": {
+            "score": 80.0,
+            "basis": "description, license, provider, source reference, version (20 each)"
+          },
+          "provenance": {
+            "score": null,
+            "basis": "declared source reference=40; independent verification=100; failed verification=0"
+          },
+          "publication": {
+            "score": 0.0,
+            "basis": "stage plus documentation/example; source-code publication recorded separately, not required for proprietary products"
+          },
+          "contract": {
+            "score": 25.0,
+            "basis": "standard tool binding or data access; catalogue-only=25"
+          },
+          "reproducibility": {
+            "score": null,
+            "basis": "independent replay evidence required; example URL alone is not a verified replay"
+          }
+        },
+        "observed_checks": {
+          "source_verified": "unknown",
+          "reproducibility": "unknown",
+          "scientific_validation": "unknown"
+        },
+        "evidence_coverage": 0.0,
+        "blockers": [],
+        "capacity_profile": null,
+        "notice": "Readiness is not scientific correctness, approval, authorization or live capacity."
+      },
+      "audit_findings": [
+        "license_unknown",
+        "provider_resource_version_unknown",
+        "publication_stage_unknown",
+        "required_skill_contracts_blocked",
+        "required_source_data_not_available_on_this_node",
+        "recipe_status_is_node_self_declaration_not_Platform_approval"
+      ],
+      "tool_binding_origin": null
+    }
+  ],
+  "schema_diagnostics": [
+    {
+      "resource_id": "ensopred.skill.anomaly",
+      "schema": "input_schema",
+      "valid": false,
+      "unsupported_types": [
+        {
+          "path": "/properties/mean/type",
+          "value": "grid"
+        }
+      ]
+    },
+    {
+      "resource_id": "ensopred.skill.anomaly",
+      "schema": "output_schema",
+      "valid": false,
+      "unsupported_types": [
+        {
+          "path": "/properties/anomaly_field/type",
+          "value": "grid"
+        }
+      ]
+    },
+    {
+      "resource_id": "ensopred.skill.build-indices",
+      "schema": "input_schema",
+      "valid": true,
+      "unsupported_types": []
+    },
+    {
+      "resource_id": "ensopred.skill.build-indices",
+      "schema": "output_schema",
+      "valid": false,
+      "unsupported_types": [
+        {
+          "path": "/properties/indices/type",
+          "value": "table"
+        },
+        {
+          "path": "/properties/scores/type",
+          "value": "table"
+        }
+      ]
+    },
+    {
+      "resource_id": "ensopred.skill.ensemble-forecast",
+      "schema": "input_schema",
+      "valid": false,
+      "unsupported_types": [
+        {
+          "path": "/properties/indices/type",
+          "value": "table"
+        }
+      ]
+    },
+    {
+      "resource_id": "ensopred.skill.ensemble-forecast",
+      "schema": "output_schema",
+      "valid": false,
+      "unsupported_types": [
+        {
+          "path": "/properties/forecast/type",
+          "value": "table"
+        }
+      ]
+    },
+    {
+      "resource_id": "ensopred.skill.equatorial-section",
+      "schema": "input_schema",
+      "valid": true,
+      "unsupported_types": []
+    },
+    {
+      "resource_id": "ensopred.skill.equatorial-section",
+      "schema": "output_schema",
+      "valid": false,
+      "unsupported_types": [
+        {
+          "path": "/properties/section/type",
+          "value": "grid"
+        }
+      ]
+    },
+    {
+      "resource_id": "ensopred.skill.front",
+      "schema": "input_schema",
+      "valid": false,
+      "unsupported_types": [
+        {
+          "path": "/properties/mean/type",
+          "value": "grid"
+        }
+      ]
+    },
+    {
+      "resource_id": "ensopred.skill.front",
+      "schema": "output_schema",
+      "valid": false,
+      "unsupported_types": [
+        {
+          "path": "/properties/front_field/type",
+          "value": "grid"
+        }
+      ]
+    },
+    {
+      "resource_id": "ensopred.skill.monthly-change",
+      "schema": "input_schema",
+      "valid": false,
+      "unsupported_types": [
+        {
+          "path": "/properties/anomaly/type",
+          "value": "grid"
+        }
+      ]
+    },
+    {
+      "resource_id": "ensopred.skill.monthly-change",
+      "schema": "output_schema",
+      "valid": false,
+      "unsupported_types": [
+        {
+          "path": "/properties/change_field/type",
+          "value": "grid"
+        }
+      ]
+    },
+    {
+      "resource_id": "ensopred.skill.monthly-mean",
+      "schema": "input_schema",
+      "valid": true,
+      "unsupported_types": []
+    },
+    {
+      "resource_id": "ensopred.skill.monthly-mean",
+      "schema": "output_schema",
+      "valid": false,
+      "unsupported_types": [
+        {
+          "path": "/properties/mean_field/type",
+          "value": "grid"
+        }
+      ]
+    },
+    {
+      "resource_id": "ensopred.skill.region-boxes",
+      "schema": "input_schema",
+      "valid": true,
+      "unsupported_types": []
+    },
+    {
+      "resource_id": "ensopred.skill.region-boxes",
+      "schema": "output_schema",
+      "valid": false,
+      "unsupported_types": [
+        {
+          "path": "/properties/regions/type",
+          "value": "table"
+        }
+      ]
+    },
+    {
+      "resource_id": "ensopred.skill.report",
+      "schema": "input_schema",
+      "valid": false,
+      "unsupported_types": [
+        {
+          "path": "/properties/forecast/type",
+          "value": "table"
+        },
+        {
+          "path": "/properties/skill/type",
+          "value": "table"
+        },
+        {
+          "path": "/properties/fields/type",
+          "value": "grid"
+        }
+      ]
+    },
+    {
+      "resource_id": "ensopred.skill.report",
+      "schema": "output_schema",
+      "valid": true,
+      "unsupported_types": []
+    },
+    {
+      "resource_id": "ensopred.skill.walk-forward",
+      "schema": "input_schema",
+      "valid": false,
+      "unsupported_types": [
+        {
+          "path": "/properties/indices/type",
+          "value": "table"
+        }
+      ]
+    },
+    {
+      "resource_id": "ensopred.skill.walk-forward",
+      "schema": "output_schema",
+      "valid": false,
+      "unsupported_types": [
+        {
+          "path": "/properties/rmse/type",
+          "value": "table"
+        },
+        {
+          "path": "/properties/skill_score/type",
+          "value": "table"
+        }
+      ]
+    }
+  ],
+  "data_access_checks": [
+    {
+      "resource_id": "noaa.cpc.oni",
+      "outcome": "pass",
+      "meaning": "HTTPS GET plus numeric time-series layout check only",
+      "url": "https://cpc.ncep.noaa.gov/data/indices/oni.ascii.txt",
+      "final_url": "https://cpc.ncep.noaa.gov/data/indices/oni.ascii.txt",
+      "observed_at": "2026-11-16T09:04:32.639833+00:00",
+      "sha256": "118c563331335c8649cdc2677e6be7ae89d1259d901345fcddbc2857af280f7f",
+      "bytes": 23050,
+      "layout": "season/year/total/anomaly",
+      "valid_values": 921,
+      "missing_values": 0,
+      "missing_code": null,
+      "first_period_index": "1950-01",
+      "last_period_index": "2026-09",
+      "period_semantics": "三个月季节值，月份仅为中心月索引；不能等同逐月区域指数",
+      "target_period_index": "2026-08",
+      "target_present": true
+    },
+    {
+      "resource_id": "noaa.psl.dmi",
+      "outcome": "pass",
+      "meaning": "HTTPS GET plus numeric time-series layout check only",
+      "url": "https://psl.noaa.gov/gcos_wgsp/Timeseries/Data/dmi.had.long.data",
+      "final_url": "https://psl.noaa.gov/gcos_wgsp/Timeseries/Data/dmi.had.long.data",
+      "observed_at": "2026-11-16T09:04:32.640639+00:00",
+      "sha256": "42c1000e221addacac4451b8b9ddfbc5ee732b99ee69b0be5105e69ebe881e05",
+      "bytes": 19861,
+      "layout": "year plus 12 numeric columns and explicit missing sentinel",
+      "valid_values": 1877,
+      "missing_values": 7,
+      "missing_code": -9999.0,
+      "first_period_index": "1870-01",
+      "last_period_index": "2026-05",
+      "period_semantics": "年度12列；各指数单位、基准期与缺测策略需另行匹配",
+      "target_period_index": "2026-08",
+      "target_present": false
+    },
+    {
+      "resource_id": "noaa.psl.meiv2",
+      "outcome": "pass",
+      "meaning": "HTTPS GET plus numeric time-series layout check only",
+      "url": "https://psl.noaa.gov/enso/mei/data/meiv2.data",
+      "final_url": "https://psl.noaa.gov/enso/mei/data/meiv2.data",
+      "observed_at": "2026-11-16T09:04:32.641543+00:00",
+      "sha256": "22e6386305d55ac67f76a96967ed850eab9f7b2d54ca23640a617cbb6278307a",
+      "bytes": 5599,
+      "layout": "year plus 12 numeric columns and explicit missing sentinel",
+      "valid_values": 574,
+      "missing_values": 2,
+      "missing_code": -999.0,
+      "first_period_index": "1979-01",
+      "last_period_index": "2026-10",
+      "period_semantics": "MEIv2 为两个月季节列，不能直接当逐月值",
+      "target_period_index": "2026-08",
+      "target_present": true
+    },
+    {
+      "resource_id": "noaa.psl.pacwarm",
+      "outcome": "pass",
+      "meaning": "HTTPS GET plus numeric time-series layout check only",
+      "url": "https://psl.noaa.gov/data/correlation/pacwarm.data",
+      "final_url": "https://psl.noaa.gov/data/correlation/pacwarm.data",
+      "observed_at": "2026-11-16T09:04:32.643010+00:00",
+      "sha256": "c87a26cffc02fd4282bb46778e095ba808878779b856f5503b015ceadb2cae36",
+      "bytes": 10027,
+      "layout": "year plus 12 numeric columns and explicit missing sentinel",
+      "valid_values": 944,
+      "missing_values": 4,
+      "missing_code": -9999.0,
+      "first_period_index": "1948-01",
+      "last_period_index": "2026-08",
+      "period_semantics": "年度12列；各指数单位、基准期与缺测策略需另行匹配",
+      "target_period_index": "2026-08",
+      "target_present": true
+    },
+    {
+      "resource_id": "noaa.psl.pdo",
+      "outcome": "pass",
+      "meaning": "HTTPS GET plus numeric time-series layout check only",
+      "url": "https://psl.noaa.gov/data/correlation/pdo.data",
+      "final_url": "https://psl.noaa.gov/data/correlation/pdo.data",
+      "observed_at": "2026-11-16T09:04:37.330028+00:00",
+      "sha256": "c7aef29bb9ab991fbb3702b9889047db73a090bd98358aed242fb2aba7ed0200",
+      "bytes": 7514,
+      "layout": "year plus 12 numeric columns and explicit missing sentinel",
+      "valid_values": 932,
+      "missing_values": 4,
+      "missing_code": -9.9,
+      "first_period_index": "1948-01",
+      "last_period_index": "2025-08",
+      "period_semantics": "年度12列；各指数单位、基准期与缺测策略需另行匹配",
+      "target_period_index": "2026-08",
+      "target_present": false
+    },
+    {
+      "resource_id": "noaa.psl.qbo",
+      "outcome": "pass",
+      "meaning": "HTTPS GET plus numeric time-series layout check only",
+      "url": "https://psl.noaa.gov/data/correlation/qbo.data",
+      "final_url": "https://psl.noaa.gov/data/correlation/qbo.data",
+      "observed_at": "2026-11-16T09:04:37.690053+00:00",
+      "sha256": "2d06ed3d14b28e948d55098ff4ce9bbd894d4eeac1fbb17e5d9895efe9d7afb0",
+      "bytes": 8152,
+      "layout": "year plus 12 numeric columns and explicit missing sentinel",
+      "valid_values": 938,
+      "missing_values": 10,
+      "missing_code": -999.0,
+      "first_period_index": "1948-01",
+      "last_period_index": "2026-02",
+      "period_semantics": "年度12列；各指数单位、基准期与缺测策略需另行匹配",
+      "target_period_index": "2026-08",
+      "target_present": false
+    },
+    {
+      "resource_id": "noaa.psl.soi",
+      "outcome": "pass",
+      "meaning": "HTTPS GET plus numeric time-series layout check only",
+      "url": "https://psl.noaa.gov/data/correlation/soi.data",
+      "final_url": "https://psl.noaa.gov/data/correlation/soi.data",
+      "observed_at": "2026-11-16T09:04:37.898272+00:00",
+      "sha256": "dbf3126ccf9e542461858c7ad049decdaf526cca05802c67268e9bffda35fc07",
+      "bytes": 7139,
+      "layout": "year plus 12 numeric columns and explicit missing sentinel",
+      "valid_values": 907,
+      "missing_values": 41,
+      "missing_code": -99.99,
+      "first_period_index": "1951-01",
+      "last_period_index": "2026-07",
+      "period_semantics": "年度12列；各指数单位、基准期与缺测策略需另行匹配",
+      "target_period_index": "2026-08",
+      "target_present": false
+    },
+    {
+      "resource_id": "noaa.psl.tni",
+      "outcome": "pass",
+      "meaning": "HTTPS GET plus numeric time-series layout check only",
+      "url": "https://psl.noaa.gov/data/correlation/tni.data",
+      "final_url": "https://psl.noaa.gov/data/correlation/tni.data",
+      "observed_at": "2026-11-16T09:04:40.742034+00:00",
+      "sha256": "8e8ccd86fbf2eb1d905470dca51a6eabca63f5951ad8f00d16368f14cce05490",
+      "bytes": 8446,
+      "layout": "year plus 12 numeric columns and explicit missing sentinel",
+      "valid_values": 943,
+      "missing_values": 5,
+      "missing_code": -99.99,
+      "first_period_index": "1948-01",
+      "last_period_index": "2026-07",
+      "period_semantics": "年度12列；各指数单位、基准期与缺测策略需另行匹配",
+      "target_period_index": "2026-08",
+      "target_present": false
+    }
+  ],
+  "blocked_workflows": [
+    {
+      "id": "ensopred.case.nino34-forecast",
+      "reason": "10 required skills have invalid execution schemas; required raw NSOAS data has no access endpoint"
+    }
+  ]
+}

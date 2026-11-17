@@ -1,0 +1,62 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "subject_digest": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Subject Digest",
+      "type": "string"
+    },
+    "check": {
+      "enum": [
+        "endpoint_reachable",
+        "compute_verified",
+        "source_verified",
+        "data_access",
+        "reproducibility",
+        "scientific_validation"
+      ],
+      "title": "Check",
+      "type": "string"
+    },
+    "outcome": {
+      "enum": [
+        "pass",
+        "fail",
+        "unknown"
+      ],
+      "title": "Outcome",
+      "type": "string"
+    },
+    "issuer": {
+      "title": "Issuer",
+      "type": "string"
+    },
+    "observed_at": {
+      "format": "date-time",
+      "title": "Observed At",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "reference": {
+      "maxLength": 1000,
+      "minLength": 1,
+      "title": "Reference",
+      "type": "string"
+    }
+  },
+  "required": [
+    "subject_digest",
+    "check",
+    "outcome",
+    "issuer",
+    "observed_at",
+    "expires_at",
+    "reference"
+  ],
+  "title": "Evidence",
+  "type": "object"
+}

@@ -4,6 +4,29 @@ All notable changes to GeoNexus (the reference stack) are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/) and the
 project uses Semantic Versioning.
 
+## [1.1.2] - 2026-11-17
+
+### Added
+
+- Opt-in `geonexus.admission`: versioned node/resource announcements, capacity
+  declarations, deterministic readiness ratings, digest-bound independent
+  evidence, manual review, revocation and task eligibility. Official and
+  third-party nodes use the same gates.
+- `GeoNode.declaration()` / `announce()`, JSON Schemas, optional HTTP governance
+  adapter, `geonode-admission` CLI and governed federation demo.
+- Offline remediation toolkit 0.1 (`geonode-repair`): snapshot diagnosis,
+  sample-driven binding drafts, sample validation and agent task export.
+- Archived ENSO/NINO3.4 assessment, 36-resource inventory and 17-page visual PDF.
+
+### Boundaries
+
+- Ratings and sample checks do not grant authorization or scientific validation.
+- The toolkit does not execute remote jobs, install code, modify nodes or approve
+  resources. Platform/RuoYi production integration remains a host task.
+- The readiness-v1 limitations concerning placeholder licenses, snapshot
+  versions and unbound catalog items are documented, not silently hidden.
+- No PyPI publication is performed as part of the GitHub release.
+
 ## [Unreleased]
 
 ### Added

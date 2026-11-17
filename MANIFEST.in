@@ -1,0 +1,3 @@
+include LICENSE
+recursive-include docs *.md *.json *.csv *.pdf
+recursive-include tools/remediation-toolkit *.md *.py

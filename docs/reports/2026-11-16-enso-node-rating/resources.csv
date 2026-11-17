@@ -1,0 +1,37 @@
+id,type,name,grade,score,readiness,blockers,audit_findings
+ensopred.compute.182-pool,compute,"El Niño node compute (CPU, model service)",D,18.75,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; capacity_is_self_declared_not_benchmarked
+ensopred.data.climatology-1991-2020,data,月气候态场（1991–2020）,D,20.0,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; data_access_endpoint_missing
+ensopred.data.features,data,预测特征表（features.csv）,D,17.5,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; data_access_endpoint_missing
+ensopred.data.monthly-mean-fields,data,赤道带月平均海温场（2020-01 至 2026-08）,D,20.0,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; data_access_endpoint_missing
+ensopred.data.regional-indices,data,NINO 区域月指数（1981-10 至 2026-08）,D,20.0,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; data_access_endpoint_missing
+ensopred.data.walk-forward-sigmas,data,逐月预测不确定性（团队回测）,D,16.25,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; data_access_endpoint_missing
+noaa.cpc.oni,data,ONI（NINO3.4 官方参照）,C,53.0,input,,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+noaa.psl.dmi,data,IOD/DMI 印度洋偶极子,C,53.0,input,,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+noaa.psl.meiv2,data,MEIv2 多变量 ENSO,C,53.0,input,,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+noaa.psl.pacwarm,data,太平洋暖池区域 SST,C,53.0,input,,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+noaa.psl.pdo,data,PDO 太平洋年代际振荡,C,53.0,input,,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+noaa.psl.qbo,data,QBO 准两年振荡,C,53.0,input,,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+noaa.psl.soi,data,SOI 南方涛动指数,C,53.0,input,,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+noaa.psl.tni,data,TNI Trans-Niño,C,53.0,input,,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+nsoas.data.sst-daily,data,NSOAS 逐日海表温度融合数据（不在本节点）,D,20.0,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; data_access_endpoint_missing
+ensopred.model.anomaly,model,海温距平,D,26.25,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; http_model_execution_contract_and_behavior_not_verified
+ensopred.model.build-indices,model,区域指数,D,26.25,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; http_model_execution_contract_and_behavior_not_verified
+ensopred.model.ensemble-forecast,model,NINO3.4 预测,D,26.25,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; http_model_execution_contract_and_behavior_not_verified
+ensopred.model.equatorial-section,model,赤道时间剖面,D,26.25,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; http_model_execution_contract_and_behavior_not_verified
+ensopred.model.front,model,海温锋面,D,26.25,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; http_model_execution_contract_and_behavior_not_verified
+ensopred.model.monthly-change,model,海温月变化,D,26.25,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; http_model_execution_contract_and_behavior_not_verified
+ensopred.model.monthly-mean,model,海温月平均,D,26.25,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; http_model_execution_contract_and_behavior_not_verified
+ensopred.model.region-boxes,model,监测海区,D,26.25,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; http_model_execution_contract_and_behavior_not_verified
+ensopred.model.report,model,预测报告,D,26.25,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; http_model_execution_contract_and_behavior_not_verified
+ensopred.model.walk-forward,model,模型检验,D,26.25,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; http_model_execution_contract_and_behavior_not_verified
+ensopred.skill.anomaly,skill,海温距平,not_ready,20.0,unsupported_schema,Invalid JSON Schema: 'grid' is not valid under any of the given schemas,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+ensopred.skill.build-indices,skill,区域指数,not_ready,20.0,unsupported_schema,Invalid JSON Schema: 'table' is not valid under any of the given schemas,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+ensopred.skill.ensemble-forecast,skill,NINO3.4 预测,not_ready,20.0,unsupported_schema,Invalid JSON Schema: 'table' is not valid under any of the given schemas,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+ensopred.skill.equatorial-section,skill,赤道时间剖面,not_ready,20.0,unsupported_schema,Invalid JSON Schema: 'grid' is not valid under any of the given schemas,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+ensopred.skill.front,skill,海温锋面,not_ready,20.0,unsupported_schema,Invalid JSON Schema: 'grid' is not valid under any of the given schemas,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+ensopred.skill.monthly-change,skill,海温月变化,not_ready,20.0,unsupported_schema,Invalid JSON Schema: 'grid' is not valid under any of the given schemas,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+ensopred.skill.monthly-mean,skill,海温月平均,not_ready,20.0,unsupported_schema,Invalid JSON Schema: 'grid' is not valid under any of the given schemas,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+ensopred.skill.region-boxes,skill,监测海区,not_ready,20.0,unsupported_schema,Invalid JSON Schema: 'table' is not valid under any of the given schemas,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+ensopred.skill.report,skill,预测报告,not_ready,20.0,unsupported_schema,Invalid JSON Schema: 'grid' is not valid under any of the given schemas,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+ensopred.skill.walk-forward,skill,模型检验,not_ready,20.0,unsupported_schema,Invalid JSON Schema: 'table' is not valid under any of the given schemas,license_unknown; provider_resource_version_unknown; publication_stage_unknown
+ensopred.case.nino34-forecast,workflow,NINO3.4 季节尺度预测,D,26.25,catalog_only,,license_unknown; provider_resource_version_unknown; publication_stage_unknown; required_skill_contracts_blocked; required_source_data_not_available_on_this_node; recipe_status_is_node_self_declaration_not_Platform_approval

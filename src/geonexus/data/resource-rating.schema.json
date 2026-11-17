@@ -1,0 +1,117 @@
+{
+  "$defs": {
+    "Dimension": {
+      "additionalProperties": false,
+      "properties": {
+        "score": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Score"
+        },
+        "basis": {
+          "title": "Basis",
+          "type": "string"
+        }
+      },
+      "required": [
+        "basis"
+      ],
+      "title": "Dimension",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "subject_digest": {
+      "title": "Subject Digest",
+      "type": "string"
+    },
+    "policy_version": {
+      "title": "Policy Version",
+      "type": "string"
+    },
+    "policy_digest": {
+      "title": "Policy Digest",
+      "type": "string"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "score": {
+      "title": "Score",
+      "type": "number"
+    },
+    "grade": {
+      "title": "Grade",
+      "type": "string"
+    },
+    "dimensions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Dimension"
+      },
+      "title": "Dimensions",
+      "type": "object"
+    },
+    "observed_checks": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Observed Checks",
+      "type": "object"
+    },
+    "evidence_coverage": {
+      "title": "Evidence Coverage",
+      "type": "number"
+    },
+    "blockers": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Blockers",
+      "type": "array"
+    },
+    "capacity_profile": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Capacity Profile"
+    },
+    "notice": {
+      "default": "Readiness is not scientific correctness, approval, authorization or live capacity.",
+      "title": "Notice",
+      "type": "string"
+    }
+  },
+  "required": [
+    "subject_digest",
+    "policy_version",
+    "policy_digest",
+    "evaluated_at",
+    "score",
+    "grade",
+    "dimensions",
+    "observed_checks",
+    "evidence_coverage",
+    "blockers"
+  ],
+  "title": "Rating",
+  "type": "object"
+}

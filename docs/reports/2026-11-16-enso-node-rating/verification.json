@@ -1,0 +1,10 @@
+{
+  "offline_scores_grades_blockers_and_full_diagnostics_identical": true,
+  "resource_count": 36,
+  "data_downloads_parsed": 8,
+  "schema_checks": 20,
+  "invalid_schemas": 15,
+  "archived_http_responses_hash_verified": 14,
+  "mutating_or_compute_requests": 0,
+  "decision_sha256": "2c2ec8746aea4ef4e21eba898058e2911b999d5f5c191012429280d51c185bb5"
+}

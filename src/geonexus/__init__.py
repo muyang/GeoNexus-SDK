@@ -6,5 +6,5 @@ GeoNode provides sovereign local execution capability.
 GeoSkill packages reusable geospatial capabilities.
 """
 
-__version__ = "1.1.1.dev20261015"
+__version__ = "1.1.2"
 __all__ = ["__version__"]

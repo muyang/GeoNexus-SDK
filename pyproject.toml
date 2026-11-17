@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "geonexus-sdk"
-version = "1.1.1.dev20261015"
+version = "1.1.2"
 description = "GeoNexus - federated geospatial intelligence: GeoCard, GeoMCP, GeoNode, GeoSkill"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -65,6 +65,8 @@ all = [
 [project.scripts]
 geonexus = "geonexus.cli:main"
 georegister = "geonexus.registration:main"
+geonode-admission = "geonexus.admission.cli:main"
+geonode-repair = "geonexus.remediation.__main__:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

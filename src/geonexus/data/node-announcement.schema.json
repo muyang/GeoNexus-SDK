@@ -1,0 +1,293 @@
+{
+  "$defs": {
+    "Capacity": {
+      "additionalProperties": false,
+      "properties": {
+        "cpu_cores": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cpu Cores"
+        },
+        "memory_gib": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Memory Gib"
+        },
+        "gpu_count": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gpu Count"
+        }
+      },
+      "title": "Capacity",
+      "type": "object"
+    },
+    "NodeDeclaration": {
+      "additionalProperties": false,
+      "properties": {
+        "node_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "operator": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Operator",
+          "type": "string"
+        },
+        "endpoint": {
+          "title": "Endpoint",
+          "type": "string"
+        },
+        "protocol": {
+          "default": "geomcp-http",
+          "enum": [
+            "geomcp-http",
+            "mcp-http"
+          ],
+          "title": "Protocol",
+          "type": "string"
+        },
+        "jurisdictions": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Jurisdictions",
+          "type": "array"
+        },
+        "capacity": {
+          "$ref": "#/$defs/Capacity"
+        },
+        "provider_class": {
+          "default": "third_party",
+          "enum": [
+            "third_party",
+            "official"
+          ],
+          "title": "Provider Class",
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_id",
+        "name",
+        "operator",
+        "endpoint"
+      ],
+      "title": "NodeDeclaration",
+      "type": "object"
+    },
+    "Publication": {
+      "additionalProperties": false,
+      "properties": {
+        "stage": {
+          "default": "unknown",
+          "enum": [
+            "unknown",
+            "draft",
+            "experimental",
+            "stable",
+            "deprecated"
+          ],
+          "title": "Stage",
+          "type": "string"
+        },
+        "documentation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Documentation"
+        },
+        "source_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Code"
+        },
+        "reproducible_example": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reproducible Example"
+        }
+      },
+      "title": "Publication",
+      "type": "object"
+    },
+    "ResourceDeclaration": {
+      "additionalProperties": false,
+      "properties": {
+        "card": {
+          "additionalProperties": true,
+          "title": "Card",
+          "type": "object"
+        },
+        "version": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "visibility": {
+          "default": "restricted",
+          "enum": [
+            "public",
+            "restricted",
+            "sensitive",
+            "secret"
+          ],
+          "title": "Visibility",
+          "type": "string"
+        },
+        "publication": {
+          "$ref": "#/$defs/Publication"
+        },
+        "binding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ToolBinding"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "card",
+        "version"
+      ],
+      "title": "ResourceDeclaration",
+      "type": "object"
+    },
+    "ToolBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "tool": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Tool",
+          "type": "string"
+        },
+        "input_schema": {
+          "additionalProperties": true,
+          "title": "Input Schema",
+          "type": "object"
+        },
+        "output_schema": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Output Schema"
+        }
+      },
+      "required": [
+        "tool",
+        "input_schema"
+      ],
+      "title": "ToolBinding",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "node-admission/1.0",
+      "default": "node-admission/1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "revision": {
+      "minimum": 1,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "declared_at": {
+      "format": "date-time",
+      "title": "Declared At",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "node": {
+      "$ref": "#/$defs/NodeDeclaration"
+    },
+    "resources": {
+      "items": {
+        "$ref": "#/$defs/ResourceDeclaration"
+      },
+      "maxItems": 1000,
+      "title": "Resources",
+      "type": "array"
+    }
+  },
+  "required": [
+    "revision",
+    "expires_at",
+    "node",
+    "resources"
+  ],
+  "title": "NodeAnnouncement",
+  "type": "object"
+}

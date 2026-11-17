@@ -1,6 +1,24 @@
 # GeoNexus Reference Stack MVP
 
-## Development snapshot: 1.1.1.dev20261015
+## Release 1.1.2
+
+This release adds opt-in governed node announcements, explainable node/resource
+readiness ratings, independent evidence, manual admission and the offline
+remediation toolkit 0.1. The toolkit diagnoses saved snapshots, drafts binding
+changes from caller-supplied samples, validates samples and exports agent tasks;
+it does not modify live nodes or grant approval. See the
+[release notes](docs/RELEASE_1.1.2.md),
+[admission design](docs/node-admission-rating.md), and
+[remediation guide](docs/node-remediation-toolkit.md).
+
+Download the wheel, source package, remediation toolkit ZIP and visual report
+from the [v1.1.2 GitHub release](https://github.com/muyang/GeoNexus-SDK/releases/tag/v1.1.2).
+
+Historical reports retain their original evaluation dates, policy limitations
+and unknown evidence. Publishing this release does not deploy Platform/RuoYi
+integration or publish the package to PyPI.
+
+## Previous development snapshot: 1.1.1.dev20261015
 
 This development snapshot includes `geonexus.geocard.contracts`, the official
 MCP adapter's `http_guarded` integration option, and `geonexus.registration`
@@ -243,3 +261,11 @@ core/
 ## License
 
 Apache License 2.0. See `LICENSE`.
+
+### Governed node federation (incremental, opt-in)
+
+An offline [remediation toolkit](docs/node-remediation-toolkit.md) converts saved discovery/assessment evidence into repair tasks, sample-driven binding drafts and sample checks. Run `python -m geonexus.remediation --help`; it does not modify live nodes, approve resources or claim scientific validity.
+
+`geonexus.admission` adds versioned node/resource announcements, explainable readiness ratings, independent evidence, manual node/resource review and digest-bound orchestration eligibility. Third-party and official providers use the same gates; registration and rating never grant execution rights. Existing GeoCard/GeoMCP/MCP paths remain compatible. See [节点准入与评级](docs/node-admission-rating.md) and run `python examples/governed_node_demo.py --output /tmp/geonexus-admission-demo`. Platform/RuoYi integration is an explicit host task; the SDK reference service is not a deployed platform backend.
+
+Read the [real-node assessment and 17-page visual report](docs/reports/2026-11-16-enso-node-rating/README.md) for measured results, resource-level blockers, and current readiness-policy limitations.

@@ -84,7 +84,7 @@ def load_plugins(node: GeoNode, entry_points: list[Any] | None = None) -> list[d
     状态进 ``node.plugin_status`` 与 health 面，运维一眼能看到谁没装上。
     """
     status: list[dict[str, Any]] = []
-    for ep in (entry_points if entry_points is not None else discover_plugin_entry_points()):
+    for ep in entry_points if entry_points is not None else discover_plugin_entry_points():
         name = getattr(ep, "name", "unknown")
         version = ""
         try:
@@ -215,6 +215,44 @@ class GeoNode:
     # Federation (V0.3+): advertise this node's cards and skills to a
     # shared registry
     # ------------------------------------------------------------------ #
+    def declaration(
+        self,
+        metadata,
+        *,
+        version: str,
+        revision: int = 1,
+        ttl_seconds: int = 3600,
+        visibility: str = "restricted",
+        publication=None,
+    ):
+        """Build a versioned node/resource announcement without contacting a server.
+
+        metadata is an admission.NodeDeclaration; every exposed skill needs a
+        GeoCard. Dynamic ratings and human review are never embedded in cards.
+        """
+        from ..admission import from_node
+
+        return from_node(
+            self,
+            metadata,
+            version=version,
+            revision=revision,
+            ttl_seconds=ttl_seconds,
+            visibility=visibility,
+            publication=publication,
+        )
+
+    def announce(self, registry_url: str, announcement, *, api_key: str | None = None):
+        """Submit to an explicit governance service; registration is not approval.
+
+        Unlike the legacy advertise API, this uses /api/v1/node-announcements.
+        Platform owns authenticated inspection, independent review and admission.
+        """
+        from ..admission import AdmissionClient
+
+        with AdmissionClient(registry_url, api_key) as client:
+            return client.submit(announcement)
+
     def advertise(
         self,
         registry_url: str,
